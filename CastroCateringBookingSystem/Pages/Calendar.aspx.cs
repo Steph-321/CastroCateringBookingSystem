@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Web.UI.WebControls;
 
 namespace CastroCateringBookingSystem.Pages
 {
     public partial class CalendarPage : System.Web.UI.Page
     {
+        private static string ConnStr =>
+            ConfigurationManager.ConnectionStrings["CastroDB"].ConnectionString;
+
         // Which month/year the calendar is currently showing
         public DateTime ViewDate
         {
@@ -15,59 +20,79 @@ namespace CastroCateringBookingSystem.Pages
             set => ViewState["ViewDate"] = value;
         }
 
-        // The date the user has highlighted (tan/gold)
+        // The date the user has highlighted
         public DateTime? SelectedDate
         {
             get  => (DateTime?)ViewState["SelectedDate"];
             set  => ViewState["SelectedDate"] = value;
         }
 
-        // Simulated booked-dates store — replace with a DB query in production
-        public List<DateTime> BookedDates
-        {
-            get
-            {
-                if (ViewState["BookedDates"] == null)
-                    ViewState["BookedDates"] = new List<DateTime>();
-                return (List<DateTime>)ViewState["BookedDates"];
-            }
-            set => ViewState["BookedDates"] = value;
-        }
-
+        // ─────────────────────────────────────────────────────────────────────
+        // PAGE LOAD
+        // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack) RenderCalendar();
         }
 
-        // "Book This Date" clicked
+        // ─────────────────────────────────────────────────────────────────────
+        // LOAD BOOKED DATES FROM DATABASE
+        // ─────────────────────────────────────────────────────────────────────
+        private List<DateTime> GetBookedDates()
+        {
+            var dates = new List<DateTime>();
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                {
+                    conn.Open();
+                    // Get all upcoming/confirmed event dates from Bookings table
+                    const string sql = @"
+                        SELECT DISTINCT CAST(EventDate AS DATE)
+                        FROM   Bookings
+                        WHERE  [Status] IN ('Upcoming')";
+
+                    using (var cmd = new SqlCommand(sql, conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                            dates.Add(Convert.ToDateTime(reader[0]).Date);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("GetBookedDates error: " + ex.Message);
+            }
+            return dates;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // "Book This Date" clicked — redirect to Booking page with date pre-filled
+        // ─────────────────────────────────────────────────────────────────────
         protected void btnBook_Click(object sender, EventArgs e)
         {
             if (!SelectedDate.HasValue) return;
 
-            var dates = BookedDates;
-            if (!dates.Contains(SelectedDate.Value.Date))
-            {
-                dates.Add(SelectedDate.Value.Date);
-                BookedDates = dates;
-            }
-
-            SelectedDate       = null;
-            pnlBooking.Visible = false;
-            RenderCalendar();
+            // Redirect to Booking page with the selected date as a query param
+            string dateStr = SelectedDate.Value.ToString("yyyy-MM-dd");
+            Response.Redirect("~/Pages/Booking.aspx?date=" + dateStr);
         }
 
-        // A day cell was clicked
+        // ─────────────────────────────────────────────────────────────────────
+        // DAY CELL CLICKED
+        // ─────────────────────────────────────────────────────────────────────
         protected void rptCalendar_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             if (e.CommandName != "SelectDay") return;
-
             if (!int.TryParse(e.CommandArgument.ToString(), out int day)) return;
 
             DateTime clicked = new DateTime(ViewDate.Year, ViewDate.Month, day);
 
-            // Ignore past dates and already-booked dates
             if (clicked.Date < DateTime.Today) return;
-            if (BookedDates.Contains(clicked.Date)) return;
+
+            var bookedDates = GetBookedDates();
+            if (bookedDates.Contains(clicked.Date)) return;
 
             SelectedDate          = clicked;
             lblSelection.Text     = "Selected: " + clicked.ToString("MMMM dd, yyyy");
@@ -77,7 +102,6 @@ namespace CastroCateringBookingSystem.Pages
 
         protected void btnPrev_Click(object sender, EventArgs e)
         {
-            // Don't navigate before the current month
             DateTime prev = ViewDate.AddMonths(-1);
             if (prev >= new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1))
                 ViewDate = prev;
@@ -90,33 +114,36 @@ namespace CastroCateringBookingSystem.Pages
             RenderCalendar();
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // RENDER CALENDAR GRID
+        // ─────────────────────────────────────────────────────────────────────
         private void RenderCalendar()
         {
             lblMonthYear.Text = ViewDate.ToString("MMMM yyyy");
 
-            var days = new List<CalendarDay>();
+            var bookedDates  = GetBookedDates();
+            var days         = new List<CalendarDay>();
             var firstOfMonth = new DateTime(ViewDate.Year, ViewDate.Month, 1);
             int startOffset  = (int)firstOfMonth.DayOfWeek;
             int daysInMonth  = DateTime.DaysInMonth(ViewDate.Year, ViewDate.Month);
 
-            // Empty cells before the 1st
             for (int i = 0; i < startOffset; i++)
                 days.Add(new CalendarDay { DayNumber = "", CssClass = "day-cell empty", IsAvailable = false });
 
             for (int d = 1; d <= daysInMonth; d++)
-                days.Add(GetDayDetails(new DateTime(ViewDate.Year, ViewDate.Month, d), d));
+                days.Add(GetDayDetails(new DateTime(ViewDate.Year, ViewDate.Month, d), d, bookedDates));
 
             rptCalendar.DataSource = days;
             rptCalendar.DataBind();
         }
 
-        private CalendarDay GetDayDetails(DateTime date, int dayNum)
+        private CalendarDay GetDayDetails(DateTime date, int dayNum, List<DateTime> bookedDates)
         {
             string css    = "day-cell";
             string status = "";
             bool canSelect = true;
 
-            if (BookedDates.Contains(date.Date))
+            if (bookedDates.Contains(date.Date))
             {
                 css       += " booked";
                 status     = "BOOKED";
@@ -132,11 +159,8 @@ namespace CastroCateringBookingSystem.Pages
                 css += " available";
             }
 
-            if (date.Date == DateTime.Today)
-                css += " today";
-
-            if (SelectedDate.HasValue && date.Date == SelectedDate.Value.Date)
-                css += " selected";
+            if (date.Date == DateTime.Today) css += " today";
+            if (SelectedDate.HasValue && date.Date == SelectedDate.Value.Date) css += " selected";
 
             return new CalendarDay
             {

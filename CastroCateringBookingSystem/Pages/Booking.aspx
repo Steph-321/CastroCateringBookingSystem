@@ -669,6 +669,7 @@
     </nav>
 
     <!-- PAGE -->
+    <form id="bookingForm" runat="server">
     <div class="page-wrapper">
         <div class="page-header">
             <h1>Book an Event</h1>
@@ -678,64 +679,64 @@
         <div class="booking-layout">
             <!-- LEFT: FORM -->
             <div class="booking-form-col">
-                <form id="bookingForm" novalidate>
+                <div>
 
                     <!-- SECTION 1: CLIENT INFO -->
                     <div class="form-section">
                         <h2><span class="section-num">1</span> Client Information</h2>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="clientName">Client Name <span class="req">*</span></label>
-                                <input type="text" id="clientName" name="clientName" placeholder="Full name" required>
+                                <label for="txtClientName">Client Name <span class="req">*</span></label>
+                                <asp:TextBox ID="txtClientName" runat="server" CssClass="form-input" placeholder="Full name" />
                             </div>
                             <div class="form-group">
-                                <label for="phoneNumber">Phone Number <span class="req">*</span></label>
-                                <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="e.g. 09XX XXX XXXX" required>
+                                <label for="txtPhoneNumber">Phone Number <span class="req">*</span></label>
+                                <asp:TextBox ID="txtPhoneNumber" runat="server" CssClass="form-input" placeholder="e.g. 09XX XXX XXXX" />
                             </div>
                             <div class="form-group">
-                                <label for="eventType">Event Type <span class="req">*</span></label>
-                                <select id="eventType" name="eventType" required>
-                                    <option value="" disabled selected>Select event type</option>
-                                    <option value="Wedding">Wedding</option>
-                                    <option value="Birthday">Birthday</option>
-                                    <option value="Christening">Christening</option>
-                                    <option value="Corporate Event">Corporate Event</option>
-                                    <option value="Anniversary">Anniversary</option>
-                                    <option value="Debut">Debut</option>
-                                    <option value="Family Gathering">Family Gathering</option>
-                                    <option value="Others">Others</option>
-                                </select>
+                                <label for="ddlEventType">Event Type <span class="req">*</span></label>
+                                <asp:DropDownList ID="ddlEventType" runat="server" CssClass="form-input">
+                                    <asp:ListItem Text="Select event type" Value="" />
+                                    <asp:ListItem Text="Wedding" Value="Wedding" />
+                                    <asp:ListItem Text="Birthday" Value="Birthday" />
+                                    <asp:ListItem Text="Christening" Value="Christening" />
+                                    <asp:ListItem Text="Corporate Event" Value="Corporate Event" />
+                                    <asp:ListItem Text="Anniversary" Value="Anniversary" />
+                                    <asp:ListItem Text="Debut" Value="Debut" />
+                                    <asp:ListItem Text="Family Gathering" Value="Family Gathering" />
+                                    <asp:ListItem Text="Others" Value="Others" />
+                                </asp:DropDownList>
                             </div>
                             <div class="form-group">
-                                <label for="eventDate">Event Date <span class="req">*</span></label>
-                                <input type="date" id="eventDate" name="eventDate" required>
+                                <label for="txtEventDate">Event Date <span class="req">*</span></label>
+                                <asp:TextBox ID="txtEventDate" runat="server" CssClass="form-input" TextMode="Date" />
                             </div>
                             <div class="form-group">
-                                <label for="guestCount">Number of Guests <span class="req">*</span></label>
-                                <input type="number" id="guestCount" name="guestCount" min="10" placeholder="Minimum 10" required>
+                                <label for="txtGuestCount">Number of Guests <span class="req">*</span></label>
+                                <asp:TextBox ID="txtGuestCount" runat="server" CssClass="form-input" TextMode="Number" placeholder="Minimum 10" />
                             </div>
                             <div class="form-group">
-                                <label for="paymentMode">Mode of Payment <span class="req">*</span></label>
-                                <select id="paymentMode" name="paymentMode" required>
-                                    <option value="" disabled selected>Select payment method</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="Credit Card">Credit Card</option>
-                                    <option value="Debit Card">Debit Card</option>
-                                    <option value="E-Wallet (GCash/PayMaya)">E-Wallet (GCash/PayMaya)</option>
-                                    <option value="Cash (Upon Event)">Cash (Upon Event)</option>
-                                </select>
+                                <label for="ddlPaymentMode">Mode of Payment <span class="req">*</span></label>
+                                <asp:DropDownList ID="ddlPaymentMode" runat="server" CssClass="form-input">
+                                    <asp:ListItem Text="Select payment method" Value="" />
+                                    <asp:ListItem Text="Bank Transfer" Value="Bank Transfer" />
+                                    <asp:ListItem Text="Credit Card" Value="Credit Card" />
+                                    <asp:ListItem Text="Debit Card" Value="Debit Card" />
+                                    <asp:ListItem Text="E-Wallet (GCash/PayMaya)" Value="E-Wallet (GCash/PayMaya)" />
+                                    <asp:ListItem Text="Cash (Upon Event)" Value="Cash (Upon Event)" />
+                                </asp:DropDownList>
                             </div>
                             <div class="form-group full">
-                                <label for="venue">Venue / Address <span class="req">*</span></label>
-                                <input type="text" id="venue" name="venue" placeholder="Full venue address" required>
+                                <label for="txtVenue">Venue / Address <span class="req">*</span></label>
+                                <asp:TextBox ID="txtVenue" runat="server" CssClass="form-input" placeholder="Full venue address" />
                             </div>
                             <div class="form-group full">
-                                <label for="venueLocation">Is venue within Argao? <span class="req">*</span></label>
-                                <select id="venueLocation" name="venueLocation" required>
-                                    <option value="" disabled selected>Select location</option>
-                                    <option value="within">Yes - within Argao (Free)</option>
-                                    <option value="outside">No - outside Argao (+&#8369;2,500)</option>
-                                </select>
+                                <label for="ddlVenueLocation">Is venue within Argao? <span class="req">*</span></label>
+                                <asp:DropDownList ID="ddlVenueLocation" runat="server" CssClass="form-input">
+                                    <asp:ListItem Text="Select location" Value="" />
+                                    <asp:ListItem Text="Yes - within Argao (Free)" Value="within" />
+                                    <asp:ListItem Text="No - outside Argao (+₱2,500)" Value="outside" />
+                                </asp:DropDownList>
                             </div>
                         </div>
                     </div>
@@ -785,90 +786,60 @@
                         <div class="package-cards" id="packageCards">
                             <label class="pkg-label" data-pkg="Kids Birthday Fiesta" data-price="350">
                                 <input type="radio" name="packageChoice" value="Kids Birthday Fiesta">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Kids Birthday Fiesta</div>
-                                    <div class="pkg-price">&#8369;350/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Kids Birthday Fiesta</div><div class="pkg-price">&#8369;350/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Corporate Lite Lunch" data-price="380">
                                 <input type="radio" name="packageChoice" value="Corporate Lite Lunch">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Corporate Lite Lunch</div>
-                                    <div class="pkg-price">&#8369;380/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Corporate Lite Lunch</div><div class="pkg-price">&#8369;380/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Family Gathering Spread" data-price="420">
                                 <input type="radio" name="packageChoice" value="Family Gathering Spread">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Family Gathering Spread</div>
-                                    <div class="pkg-price">&#8369;420/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Family Gathering Spread</div><div class="pkg-price">&#8369;420/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Christening Celebration" data-price="750">
                                 <input type="radio" name="packageChoice" value="Christening Celebration">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Christening Celebration</div>
-                                    <div class="pkg-price">&#8369;750/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Christening Celebration</div><div class="pkg-price">&#8369;750/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Cocktail Reception" data-price="900">
                                 <input type="radio" name="packageChoice" value="Cocktail Reception">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Cocktail Reception</div>
-                                    <div class="pkg-price">&#8369;900/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Cocktail Reception</div><div class="pkg-price">&#8369;900/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Classic Wedding Buffet" data-price="950">
                                 <input type="radio" name="packageChoice" value="Classic Wedding Buffet">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Classic Wedding Buffet</div>
-                                    <div class="pkg-price">&#8369;950/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Classic Wedding Buffet</div><div class="pkg-price">&#8369;950/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Debut Soiree" data-price="1050">
                                 <input type="radio" name="packageChoice" value="Debut Soiree">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Debut Soir&#233;e</div>
-                                    <div class="pkg-price">&#8369;1,050/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Debut Soir&#233;e</div><div class="pkg-price">&#8369;1,050/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Birthday Bliss" data-price="850">
                                 <input type="radio" name="packageChoice" value="Birthday Bliss">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Birthday Bliss</div>
-                                    <div class="pkg-price">&#8369;850/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Birthday Bliss</div><div class="pkg-price">&#8369;850/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Anniversary Elegance" data-price="1400">
                                 <input type="radio" name="packageChoice" value="Anniversary Elegance">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Anniversary Elegance</div>
-                                    <div class="pkg-price">&#8369;1,400/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Anniversary Elegance</div><div class="pkg-price">&#8369;1,400/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Grand Wedding Feast" data-price="1200">
                                 <input type="radio" name="packageChoice" value="Grand Wedding Feast">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Grand Wedding Feast</div>
-                                    <div class="pkg-price">&#8369;1,200/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Grand Wedding Feast</div><div class="pkg-price">&#8369;1,200/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Corporate Premium Gala" data-price="1500">
                                 <input type="radio" name="packageChoice" value="Corporate Premium Gala">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Corporate Premium Gala</div>
-                                    <div class="pkg-price">&#8369;1,500/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Corporate Premium Gala</div><div class="pkg-price">&#8369;1,500/guest</div></div>
                             </label>
                             <label class="pkg-label" data-pkg="Intimate Private Dining" data-price="1800">
                                 <input type="radio" name="packageChoice" value="Intimate Private Dining">
-                                <div class="pkg-card">
-                                    <div class="pkg-name">Intimate Private Dining</div>
-                                    <div class="pkg-price">&#8369;1,800/guest</div>
-                                </div>
+                                <div class="pkg-card"><div class="pkg-name">Intimate Private Dining</div><div class="pkg-price">&#8369;1,800/guest</div></div>
                             </label>
                         </div>
                     </div>
+
+                    <%-- Hidden fields: JS writes calculated values here before postback --%>
+                    <asp:HiddenField ID="hfServiceStyle"  runat="server" />
+                    <asp:HiddenField ID="hfPackageName"   runat="server" />
+                    <asp:HiddenField ID="hfPackagePrice"  runat="server" />
+                    <asp:HiddenField ID="hfTotalAmount"   runat="server" />
 
                 </form>
             </div><!-- end booking-form-col -->
@@ -880,90 +851,45 @@
                         <h3>Booking Summary</h3>
                     </div>
                     <div class="summary-body">
-                        <div class="summary-row">
-                            <span class="s-label">Client Name</span>
-                            <span class="s-value placeholder" id="sumName">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Phone</span>
-                            <span class="s-value placeholder" id="sumPhone">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Event type</span>
-                            <span class="s-value placeholder" id="sumEventType">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Date</span>
-                            <span class="s-value placeholder" id="sumDate">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Venue</span>
-                            <span class="s-value placeholder" id="sumVenue">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Guests</span>
-                            <span class="s-value placeholder" id="sumGuests">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Payment</span>
-                            <span class="s-value placeholder" id="sumPayment">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Location</span>
-                            <span class="s-value placeholder" id="sumLocation">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Service style</span>
-                            <span class="s-value placeholder" id="sumService">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Package</span>
-                            <span class="s-value placeholder" id="sumPackage">Not selected</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Per guest</span>
-                            <span class="s-value placeholder" id="sumPerGuest">—</span>
-                        </div>
+                        <div class="summary-row"><span class="s-label">Client Name</span><span class="s-value placeholder" id="sumName">—</span></div>
+                        <div class="summary-row"><span class="s-label">Phone</span><span class="s-value placeholder" id="sumPhone">—</span></div>
+                        <div class="summary-row"><span class="s-label">Event type</span><span class="s-value placeholder" id="sumEventType">—</span></div>
+                        <div class="summary-row"><span class="s-label">Date</span><span class="s-value placeholder" id="sumDate">—</span></div>
+                        <div class="summary-row"><span class="s-label">Venue</span><span class="s-value placeholder" id="sumVenue">—</span></div>
+                        <div class="summary-row"><span class="s-label">Guests</span><span class="s-value placeholder" id="sumGuests">—</span></div>
+                        <div class="summary-row"><span class="s-label">Payment</span><span class="s-value placeholder" id="sumPayment">—</span></div>
+                        <div class="summary-row"><span class="s-label">Location</span><span class="s-value placeholder" id="sumLocation">—</span></div>
+                        <div class="summary-row"><span class="s-label">Service style</span><span class="s-value placeholder" id="sumService">—</span></div>
+                        <div class="summary-row"><span class="s-label">Package</span><span class="s-value placeholder" id="sumPackage">Not selected</span></div>
+                        <div class="summary-row"><span class="s-label">Per guest</span><span class="s-value placeholder" id="sumPerGuest">—</span></div>
 
                         <hr class="summary-divider">
 
                         <div class="notice-badge" id="weekendNotice">&#128197; Weekend date — &#8369;3,000 weekend premium applied.</div>
                         <div class="notice-badge" id="rushNotice">&#9889; Rush booking (within 7 days) — &#8369;5,000 rush fee applied.</div>
 
-                        <div class="cost-row">
-                            <span>Subtotal</span>
-                            <span class="cost-val" id="costSubtotal">&#8369;0</span>
-                        </div>
-                        <div class="cost-row" id="rowServiceFee">
-                            <span>Service fee</span>
-                            <span class="cost-val" id="costServiceFee">Free</span>
-                        </div>
-                        <div class="cost-row" id="rowLocationFee">
-                            <span>Location fee</span>
-                            <span class="cost-val" id="costLocationFee">Free</span>
-                        </div>
-                        <div class="cost-row extra hidden-row" id="rowWeekendFee">
-                            <span>Weekend premium</span>
-                            <span class="cost-val" id="costWeekendFee">+&#8369;3,000</span>
-                        </div>
-                        <div class="cost-row extra hidden-row" id="rowRushFee">
-                            <span>Rush fee</span>
-                            <span class="cost-val" id="costRushFee">+&#8369;5,000</span>
-                        </div>
+                        <div class="cost-row"><span>Subtotal</span><span class="cost-val" id="costSubtotal">&#8369;0</span></div>
+                        <div class="cost-row" id="rowServiceFee"><span>Service fee</span><span class="cost-val" id="costServiceFee">Free</span></div>
+                        <div class="cost-row" id="rowLocationFee"><span>Location fee</span><span class="cost-val" id="costLocationFee">Free</span></div>
+                        <div class="cost-row extra hidden-row" id="rowWeekendFee"><span>Weekend premium</span><span class="cost-val" id="costWeekendFee">+&#8369;3,000</span></div>
+                        <div class="cost-row extra hidden-row" id="rowRushFee"><span>Rush fee</span><span class="cost-val" id="costRushFee">+&#8369;5,000</span></div>
 
                         <div class="total-box">
                             <span class="total-label">Total</span>
                             <span class="total-amount" id="totalAmount">&#8369;0</span>
                         </div>
 
-                        <button type="button" class="btn-confirm" id="confirmBtn">Confirm Booking</button>
+                        <asp:Label ID="lblBookingError" runat="server" CssClass="booking-error" Visible="false" />
+                        <asp:Button ID="btnConfirm" runat="server" Text="Confirm Booking"
+                            CssClass="btn-confirm" OnClick="btnConfirm_Click"
+                            OnClientClick="return prepareBookingPostback();" />
                     </div>
                 </div>
             </div><!-- end summary-sidebar -->
 
         </div><!-- end booking-layout -->
     </div><!-- end page-wrapper -->
-
+    </form>
 
     <!-- MODAL -->
     <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -1128,13 +1054,6 @@
             return diff >= 0 && diff <= 7;
         }
 
-        /* ── SET MIN DATE ── */
-        var dateInput = document.getElementById('eventDate');
-        var today = new Date();
-        dateInput.min = today.getFullYear() + '-'
-            + String(today.getMonth() + 1).padStart(2,'0') + '-'
-            + String(today.getDate()).padStart(2,'0');
-
         /* ── STATE ── */
         var state = {
             name: '', phone: '', eventType: '', date: '', venue: '',
@@ -1226,33 +1145,48 @@
             S.total.textContent = fmt(total);
         }
 
-        /* ── FORM LISTENERS ── */
-        function on(id, evt, fn) {
-            var el = document.getElementById(id);
+        /* ── FORM LISTENERS — use ASP.NET rendered IDs ── */
+        function onById(id, evt, fn) {
+            // Try direct ID first, then look for ASP.NET-generated ID containing the name
+            var el = document.getElementById(id) ||
+                     document.querySelector('[id$="_' + id + '"]') ||
+                     document.querySelector('[id*="' + id + '"]');
             if (el) el.addEventListener(evt, fn);
         }
 
-        on('clientName',   'input',  function(){ state.name      = this.value.trim(); updateSummary(); });
-        on('phoneNumber',  'input',  function(){ state.phone     = this.value.trim(); updateSummary(); });
-        on('eventType',    'change', function(){ state.eventType = this.value;        updateSummary(); });
-        on('eventDate',    'change', function(){
+        // Wire up ASP.NET TextBox / DropDownList controls
+        // ASP.NET renders IDs like "txtClientName", "ddlEventType" etc.
+        onById('txtClientName',   'input',  function(){ state.name      = this.value.trim(); updateSummary(); });
+        onById('txtPhoneNumber',  'input',  function(){ state.phone     = this.value.trim(); updateSummary(); });
+        onById('ddlEventType',    'change', function(){ state.eventType = this.value;        updateSummary(); });
+        onById('txtEventDate',    'change', function(){
             state.date       = this.value;
             state.weekendFee = isWeekend(this.value) ? 3000 : 0;
             state.rushFee    = isRush(this.value)    ? 5000 : 0;
             updateSummary();
         });
-        on('guestCount',   'input',  function(){
+        onById('txtGuestCount',   'input',  function(){
             var v = parseInt(this.value, 10);
             state.guests = isNaN(v) || v < 0 ? 0 : v;
             updateSummary();
         });
-        on('paymentMode',  'change', function(){ state.payment  = this.value; updateSummary(); });
-        on('venue',        'input',  function(){ state.venue    = this.value.trim(); updateSummary(); });
-        on('venueLocation','change', function(){
-            state.location   = this.value;
+        onById('ddlPaymentMode',  'change', function(){ state.payment  = this.value; updateSummary(); });
+        onById('txtVenue',        'input',  function(){ state.venue    = this.value.trim(); updateSummary(); });
+        onById('ddlVenueLocation','change', function(){
+            state.location    = this.value;
             state.locationFee = this.value === 'outside' ? 2500 : 0;
             updateSummary();
         });
+
+        /* ── Set min date on the date field ── */
+        var dateInput = document.getElementById('txtEventDate') ||
+                        document.querySelector('[id*="txtEventDate"]');
+        if (dateInput) {
+            var today = new Date();
+            dateInput.min = today.getFullYear() + '-'
+                + String(today.getMonth() + 1).padStart(2,'0') + '-'
+                + String(today.getDate()).padStart(2,'0');
+        }
 
         /* ── SERVICE CARD CLICK ── */
         var serviceLabels = document.querySelectorAll('#serviceCards .service-label');
@@ -1369,7 +1303,6 @@
                 }
             };
             xhr.send(JSON.stringify(payload));
-        });
 
         /* ── MODAL CLOSE ── */
         function closeModal() {
@@ -1488,6 +1421,13 @@
         /* initial render */
         updateSummary();
 
+        /* ── showConfirmationModal: called by code-behind after successful DB insert ── */
+        window.showConfirmationModal = function(bookingRef) {
+            document.getElementById('modalBookingId').textContent = bookingRef;
+            document.getElementById('modalOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        };
+
         /* ── AUTO-SELECT PACKAGE FROM URL (?package=Name) ── */
         (function() {
             var params = new URLSearchParams(window.location.search);
@@ -1498,13 +1438,50 @@
                 if (lbl.dataset.pkg === pkg) {
                     lbl.click();
                     found = true;
-                    // scroll the package section into view smoothly
                     setTimeout(function() {
                         lbl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }, 300);
                 }
             });
         })();
+
+        /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
+           Validates, writes hidden fields, returns true to allow postback      */
+        window.prepareBookingPostback = function() {
+            var missing = [];
+            if (!state.name)        missing.push('Client Name');
+            if (!state.phone)       missing.push('Phone Number');
+            if (!state.eventType)   missing.push('Event Type');
+            if (!state.date)        missing.push('Event Date');
+            if (!state.guests)      missing.push('Number of Guests');
+            if (!state.payment)     missing.push('Mode of Payment');
+            if (!state.venue)       missing.push('Venue');
+            if (!state.location)    missing.push('Venue Location');
+            if (!state.serviceName) missing.push('Service Style');
+            if (!state.packageName) missing.push('Package');
+
+            if (missing.length > 0) {
+                alert('Please fill in the following before confirming:\n• ' + missing.join('\n• '));
+                return false;
+            }
+
+            var guests   = state.guests;
+            var subtotal = state.packagePrice * guests;
+            var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
+            var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+
+            // Write calculated values into hidden fields so code-behind can read them
+            function setHidden(id, val) {
+                var el = document.getElementById(id) || document.querySelector('[id*="' + id + '"]');
+                if (el) el.value = val;
+            }
+            setHidden('hfServiceStyle', state.serviceName);
+            setHidden('hfPackageName',  state.packageName);
+            setHidden('hfPackagePrice', state.packagePrice);
+            setHidden('hfTotalAmount',  total);
+
+            return true; // allow postback
+        };
 
         function logout() {
             localStorage.removeItem('currentUser');

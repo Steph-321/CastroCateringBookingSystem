@@ -1,64 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace CastroCateringBookingSystem.Pages
 {
-    [Serializable]
-    public class ReviewData
-    {
-        public string Name      { get; set; }
-        public string EventType { get; set; }
-        public string ReviewText{ get; set; }
-        public int    Rating    { get; set; }
-        public DateTime Date    { get; set; }
-    }
-
     public partial class Reviews : Page
     {
-        // ── In-memory store (lives for the page's ViewState lifetime) ──────────
-        private List<ReviewData> ReviewList
-        {
-            get
-            {
-                if (ViewState["ReviewList"] == null)
-                    ViewState["ReviewList"] = SeedReviews();
-                return (List<ReviewData>)ViewState["ReviewList"];
-            }
-            set { ViewState["ReviewList"] = value; }
-        }
+        private static string ConnStr =>
+            ConfigurationManager.ConnectionStrings["CastroDB"].ConnectionString;
 
-        // Three pre-loaded reviews so the page never looks empty
-        private static List<ReviewData> SeedReviews()
-        {
-            return new List<ReviewData>
-            {
-                new ReviewData
-                {
-                    Name       = "Maria Santos",
-                    EventType  = "Wedding",
-                    ReviewText = "Castro Catering made our wedding day absolutely perfect. The food was exquisite, the service was seamless, and every guest kept complimenting the spread. We couldn't have asked for more.",
-                    Rating     = 5,
-                    Date       = new DateTime(2026, 3, 15)
-                },
-                new ReviewData
-                {
-                    Name       = "Jose Reyes",
-                    EventType  = "Corporate",
-                    ReviewText = "We hired Castro Catering for our annual company dinner and they exceeded every expectation. Professional, punctual, and the food quality was outstanding. Will definitely book again.",
-                    Rating     = 5,
-                    Date       = new DateTime(2026, 2, 28)
-                }
-            };
-        }
-
+        // ─────────────────────────────────────────────────────────────────────
+        // PAGE LOAD
+        // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack) BindReviews();
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // SUBMIT REVIEW
+        // ─────────────────────────────────────────────────────────────────────
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
@@ -69,29 +33,101 @@ namespace CastroCateringBookingSystem.Pages
                 return;
             }
 
-            var list = ReviewList;
-            list.Insert(0, new ReviewData
-            {
-                Name       = txtName.Text.Trim(),
-                EventType  = ddlEventType.SelectedValue,
-                ReviewText = txtReview.Text.Trim(),
-                Rating     = GetRating(),
-                Date       = DateTime.Now
-            });
-            ReviewList = list;
+            int rating = GetRating();
 
-            BindReviews();
-            ClearForm();
-            lblStatus.Text      = "Thank you! Your review has been submitted.";
-            lblStatus.ForeColor = System.Drawing.Color.Green;
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                {
+                    conn.Open();
+
+                    // Get UserID from session if logged in (nullable — reviews can be anonymous)
+                    object userId = Session["UserID"] != null
+                        ? (object)Convert.ToInt32(Session["UserID"])
+                        : DBNull.Value;
+
+                    const string sql = @"
+                        INSERT INTO Reviews (UserID, [Name], EventType, [Comment], Rating, DatePosted)
+                        VALUES (@UserID, @Name, @EventType, @Comment, @Rating, GETDATE())";
+
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UserID",    userId);
+                        cmd.Parameters.AddWithValue("@Name",      txtName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@EventType", ddlEventType.SelectedValue);
+                        cmd.Parameters.AddWithValue("@Comment",   txtReview.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Rating",    rating);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                BindReviews();
+                ClearForm();
+                lblStatus.Text      = "Thank you! Your review has been submitted.";
+                lblStatus.ForeColor = System.Drawing.Color.Green;
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text      = "Error saving review: " + ex.Message;
+                lblStatus.ForeColor = System.Drawing.Color.Red;
+                System.Diagnostics.Debug.WriteLine("Review error: " + ex.Message);
+            }
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // BIND REVIEWS FROM DATABASE
+        // ─────────────────────────────────────────────────────────────────────
         private void BindReviews()
         {
-            rptReviews.DataSource = ReviewList;
+            var reviews = new List<ReviewData>();
+
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                {
+                    conn.Open();
+
+                    const string sql = @"
+                        SELECT TOP 50 [Name], EventType, [Comment] AS ReviewText, Rating, DatePosted AS [Date]
+                        FROM   Reviews
+                        ORDER  BY DatePosted DESC";
+
+                    using (var cmd = new SqlCommand(sql, conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            reviews.Add(new ReviewData
+                            {
+                                Name       = reader["Name"].ToString(),
+                                EventType  = reader["EventType"].ToString(),
+                                ReviewText = reader["ReviewText"].ToString(),
+                                Rating     = Convert.ToInt32(reader["Rating"]),
+                                Date       = Convert.ToDateTime(reader["Date"])
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("BindReviews error: " + ex.Message);
+                // Fall back to seed data if DB not available
+                reviews = GetSeedReviews();
+            }
+
+            // If DB is empty, show seed reviews
+            if (reviews.Count == 0) reviews = GetSeedReviews();
+
+            rptReviews.DataSource = reviews;
             rptReviews.DataBind();
-            phEmpty.Visible = !ReviewList.Any();
+            phEmpty.Visible = (reviews.Count == 0);
         }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // HELPERS
+        // ─────────────────────────────────────────────────────────────────────
 
         // Must be public so <%# RenderStars(...) %> in the ItemTemplate can call it
         public string RenderStars(int rating)
@@ -105,7 +141,6 @@ namespace CastroCateringBookingSystem.Pages
             return html;
         }
 
-        // Reads the hidden field that the JS syncs from the plain HTML radio buttons
         private int GetRating()
         {
             if (int.TryParse(hfRating.Value, out int r) && r >= 1 && r <= 5)
@@ -115,10 +150,30 @@ namespace CastroCateringBookingSystem.Pages
 
         private void ClearForm()
         {
-            txtName.Text             = string.Empty;
-            txtReview.Text           = string.Empty;
+            txtName.Text               = string.Empty;
+            txtReview.Text             = string.Empty;
             ddlEventType.SelectedIndex = 0;
-            hfRating.Value           = "1";
+            hfRating.Value             = "1";
         }
+
+        private static List<ReviewData> GetSeedReviews()
+        {
+            return new List<ReviewData>
+            {
+                new ReviewData { Name = "Maria Santos",    EventType = "Wedding",   ReviewText = "Castro Catering made our wedding day absolutely perfect. The food was exquisite, the service was seamless, and every guest kept complimenting the spread.", Rating = 5, Date = new DateTime(2026, 3, 15) },
+                new ReviewData { Name = "Jose Reyes",      EventType = "Corporate", ReviewText = "We hired Castro Catering for our annual company dinner and they exceeded every expectation. Professional, punctual, and the food quality was outstanding.", Rating = 5, Date = new DateTime(2026, 2, 28) },
+                new ReviewData { Name = "Ana Villanueva",  EventType = "Birthday",  ReviewText = "My daughter's debut was a dream come true thanks to Castro Catering. The presentation was elegant, the portions were generous, and the staff were so attentive.", Rating = 4, Date = new DateTime(2026, 1, 20) }
+            };
+        }
+    }
+
+    [Serializable]
+    public class ReviewData
+    {
+        public string   Name       { get; set; }
+        public string   EventType  { get; set; }
+        public string   ReviewText { get; set; }
+        public int      Rating     { get; set; }
+        public DateTime Date       { get; set; }
     }
 }

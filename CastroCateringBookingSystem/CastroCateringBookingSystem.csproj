@@ -164,6 +164,7 @@
     </Compile>
     <Compile Include="Pages\Reviews.aspx.cs">
       <DependentUpon>Reviews.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Pages\Reviews.aspx.designer.cs">
       <DependentUpon>Reviews.aspx</DependentUpon>

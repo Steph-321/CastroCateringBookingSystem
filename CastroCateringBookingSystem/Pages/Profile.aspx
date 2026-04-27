@@ -1,6 +1,7 @@
-﻿<!DOCTYPE html>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Profile.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Profile" %>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+<head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - Castro Catering</title>
@@ -546,6 +547,7 @@
     </nav>
 
     <!-- Main Content -->
+    <form id="form1" runat="server">
     <div class="main-content">
         <div class="page-header">
             <h1>My Profile</h1>
@@ -556,32 +558,27 @@
             <!-- Profile Card -->
             <div class="profile-card">
                 <div class="profile-header">
-                    <div class="profile-avatar" id="profileAvatar">?</div>
-                    <h2 class="profile-name" id="profileName">—</h2>
-                    <p class="profile-email" id="profileEmail">—</p>
+                    <div class="profile-avatar"><asp:Label ID="lblProfileAvatar" runat="server" Text="?" /></div>
+                    <h2 class="profile-name"><asp:Label ID="lblProfileName" runat="server" Text="—" /></h2>
+                    <p class="profile-email"><asp:Label ID="lblProfileEmail" runat="server" Text="—" /></p>
                 </div>
                 <div class="profile-body">
                     <div class="info-group">
                         <div class="info-label">👤 Username</div>
-                        <div class="info-value" id="infoUsername">—</div>
+                        <div class="info-value"><asp:Label ID="lblInfoUsername" runat="server" Text="—" /></div>
                     </div>
-                    
                     <div class="info-group">
                         <div class="info-label">✉️ Email</div>
-                        <div class="info-value" id="infoEmail">—</div>
+                        <div class="info-value"><asp:Label ID="lblInfoEmail" runat="server" Text="—" /></div>
                     </div>
-                    
                     <div class="info-group">
                         <div class="info-label">📞 Phone</div>
-                        <div class="info-value" id="infoPhone">—</div>
+                        <div class="info-value"><asp:Label ID="lblInfoPhone" runat="server" Text="—" /></div>
                     </div>
-                    
                     <div class="info-group">
                         <div class="info-label">📍 Address</div>
-                        <div class="info-value" id="infoAddress">—</div>
+                        <div class="info-value"><asp:Label ID="lblInfoAddress" runat="server" Text="—" /></div>
                     </div>
-                    
-                    <button class="btn-edit-profile" onclick="editProfile()">Edit Profile</button>
                 </div>
             </div>
 
@@ -589,19 +586,52 @@
             <div class="booking-card">
                 <div class="booking-header">
                     <h2>🕐 Booking History</h2>
-                    <span class="booking-count" id="bookingCount">4 bookings</span>
+                    <span class="booking-count"><asp:Label ID="lblBookingCount" runat="server" Text="0 bookings" /></span>
                 </div>
-                
-                <div class="booking-list" id="bookingList">
-                    <!-- Bookings will be loaded here -->
+
+                <div class="booking-list">
+                    <asp:Repeater ID="rptBookings" runat="server">
+                        <ItemTemplate>
+                            <div class="booking-item">
+                                <div class="booking-top">
+                                    <div>
+                                        <div class="booking-package">
+                                            <%# Eval("PackageName") %>
+                                            <span class="booking-status <%# GetStatusClass(Eval("Status").ToString()) %>">
+                                                <%# Eval("Status") %>
+                                            </span>
+                                        </div>
+                                        <div class="booking-id">
+                                            #BK-<%# string.Format("{0:D6}", Eval("BookingID")) %> &middot;
+                                            Booked <%# Eval("BookedAt", "{0:MMM d, yyyy}") %>
+                                        </div>
+                                    </div>
+                                    <div class="booking-amount">&#8369;<%# string.Format("{0:N0}", Eval("Amount")) %></div>
+                                </div>
+                                <div class="booking-details">
+                                    <div class="detail-item">📅 <%# Eval("EventDate", "{0:MMM d, yyyy}") %></div>
+                                    <div class="detail-item"><%# Eval("EventType") %></div>
+                                    <div class="detail-item"><%# Eval("NoOfGuests") %> guests</div>
+                                    <div class="detail-item"><%# Eval("Payment") %></div>
+                                </div>
+                            </div>
+                        </ItemTemplate>
+                        <EmptyDataTemplate>
+                            <div style="padding:2rem;text-align:center;color:#756e64;">
+                                No bookings yet. <a href="Booking.aspx">Book your first event!</a>
+                            </div>
+                        </EmptyDataTemplate>
+                    </asp:Repeater>
                 </div>
-                
+
                 <div class="policy-note">
-                    Cancellation policy: bookings can be cancelled within <strong>12 hours</strong> from the time of booking.
+                    Cancellation policy: contact us within <strong>12 hours</strong> of booking to cancel.
                 </div>
             </div>
         </div>
     </div>
+
+    </form>
 
     <!-- Footer -->
     <footer>
