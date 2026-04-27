@@ -85,7 +85,6 @@
         .mobile-menu[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
         .mobile-menu[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        /* Main Content */
         .main-content {
             max-width: 1400px;
             margin: 0 auto;
@@ -108,7 +107,6 @@
             max-width: 800px;
         }
 
-        /* Filters Section */
         .filters-section {
             background: var(--bg-white);
             border-radius: 12px;
@@ -186,7 +184,6 @@
             white-space: nowrap;
         }
 
-        /* Packages Grid */
         .packages-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
