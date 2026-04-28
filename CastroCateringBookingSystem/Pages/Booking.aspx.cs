@@ -127,9 +127,38 @@ namespace CastroCateringBookingSystem.Pages
                         newBookingId = Convert.ToInt32(cmd.ExecuteScalar());
                     }
 
-                    // Pass booking ID to JS to show in the confirmation modal
-                    string bookingRef = "BK-" + newBookingId.ToString("D6");
-                    string script = $"showConfirmationModal('{bookingRef}');";
+                    // Pass booking ID and all receipt data to JS to show in the confirmation modal
+                    string bookingRef      = "BK-" + newBookingId.ToString("D6");
+                    string withinArgaoText = withinArgao ? "Yes - Within Argao" : "No - Outside Argao (+P2,500)";
+                    string script = string.Format(@"
+                        showConfirmationModal({{
+                            bookingRef:    '{0}',
+                            name:          {1},
+                            phone:         {2},
+                            eventType:     {3},
+                            date:          {4},
+                            venue:         {5},
+                            guests:        {6},
+                            packageName:   {7},
+                            pricePerGuest: {8},
+                            service:       {9},
+                            payment:       {10},
+                            total:         {11}
+                        }});
+                    ",
+                        bookingRef,
+                        J(clientName),
+                        J(phoneNumber),
+                        J(eventType),
+                        J(eventDate.ToString("MMMM dd, yyyy")),
+                        J(venue + " (" + withinArgaoText + ")"),
+                        noOfGuests,
+                        J(packageName),
+                        J("\u20B1" + (totalAmount / noOfGuests).ToString("N0") + "/guest"),
+                        J(serviceStyle),
+                        J(paymentMode),
+                        J("\u20B1" + totalAmount.ToString("N0"))
+                    );
                     ClientScript.RegisterStartupScript(GetType(), "showModal", script, true);
                 }
             }
@@ -147,6 +176,16 @@ namespace CastroCateringBookingSystem.Pages
         {
             lblBookingError.Text    = message;
             lblBookingError.Visible = true;
+        }
+
+        /// <summary>Wraps a C# string as a safe JavaScript string literal.</summary>
+        private static string J(string s)
+        {
+            if (s == null) return "\"\"";
+            return "\"" + s.Replace("\\", "\\\\")
+                           .Replace("\"", "\\\"")
+                           .Replace("\n", "\\n")
+                           .Replace("\r", "\\r") + "\"";
         }
     }
 }

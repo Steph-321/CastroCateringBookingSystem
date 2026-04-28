@@ -616,12 +616,12 @@
                                 </div>
                             </div>
                         </ItemTemplate>
-                        <EmptyDataTemplate>
-                            <div style="padding:2rem;text-align:center;color:#756e64;">
-                                No bookings yet. <a href="Booking.aspx">Book your first event!</a>
-                            </div>
-                        </EmptyDataTemplate>
                     </asp:Repeater>
+                    <asp:PlaceHolder ID="phNoBookings" runat="server" Visible="false">
+                        <div style="padding:2rem;text-align:center;color:#756e64;">
+                            No bookings yet. <a href="Booking.aspx">Book your first event!</a>
+                        </div>
+                    </asp:PlaceHolder>
                 </div>
 
                 <div class="policy-note">

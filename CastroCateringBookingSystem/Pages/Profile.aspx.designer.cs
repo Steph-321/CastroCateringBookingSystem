@@ -37,5 +37,8 @@ namespace CastroCateringBookingSystem.Pages
 
         /// <summary>rptBookings — booking history repeater.</summary>
         protected global::System.Web.UI.WebControls.Repeater rptBookings;
+
+        /// <summary>phNoBookings — shown when user has no bookings.</summary>
+        protected global::System.Web.UI.WebControls.PlaceHolder phNoBookings;
     }
 }

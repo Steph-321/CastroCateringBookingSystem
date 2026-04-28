@@ -134,6 +134,7 @@ namespace CastroCateringBookingSystem.Pages
             rptBookings.DataSource = bookings;
             rptBookings.DataBind();
             lblBookingCount.Text = bookings.Count + " booking" + (bookings.Count != 1 ? "s" : "");
+            phNoBookings.Visible = (bookings.Count == 0);
         }
 
         // ─────────────────────────────────────────────────────────────────────

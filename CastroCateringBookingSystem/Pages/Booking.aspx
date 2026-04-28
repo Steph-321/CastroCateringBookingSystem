@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book an Event - Castro Catering</title>
@@ -841,7 +841,7 @@
                     <asp:HiddenField ID="hfPackagePrice"  runat="server" />
                     <asp:HiddenField ID="hfTotalAmount"   runat="server" />
 
-                </form>
+                </div>
             </div><!-- end booking-form-col -->
 
             <!-- RIGHT: SUMMARY SIDEBAR -->
@@ -1151,42 +1151,35 @@
             S.total.textContent = fmt(total);
         }
 
-        /* ── FORM LISTENERS — use ASP.NET rendered IDs ── */
-        function onById(id, evt, fn) {
-            // Try direct ID first, then look for ASP.NET-generated ID containing the name
-            var el = document.getElementById(id) ||
-                     document.querySelector('[id$="_' + id + '"]') ||
-                     document.querySelector('[id*="' + id + '"]');
+        /* ── FORM LISTENERS — ClientID injected by server at render time ── */
+        function onEl(el, evt, fn) {
             if (el) el.addEventListener(evt, fn);
         }
 
-        // Wire up ASP.NET TextBox / DropDownList controls
-        // ASP.NET renders IDs like "txtClientName", "ddlEventType" etc.
-        onById('txtClientName',   'input',  function(){ state.name      = this.value.trim(); updateSummary(); });
-        onById('txtPhoneNumber',  'input',  function(){ state.phone     = this.value.trim(); updateSummary(); });
-        onById('ddlEventType',    'change', function(){ state.eventType = this.value;        updateSummary(); });
-        onById('txtEventDate',    'change', function(){
+        onEl(document.getElementById('<%= txtClientName.ClientID %>'),   'input',  function(){ state.name      = this.value.trim(); updateSummary(); });
+        onEl(document.getElementById('<%= txtPhoneNumber.ClientID %>'),  'input',  function(){ state.phone     = this.value.trim(); updateSummary(); });
+        onEl(document.getElementById('<%= ddlEventType.ClientID %>'),    'change', function(){ state.eventType = this.value;        updateSummary(); });
+        onEl(document.getElementById('<%= txtEventDate.ClientID %>'),    'change', function(){
             state.date       = this.value;
             state.weekendFee = isWeekend(this.value) ? 3000 : 0;
             state.rushFee    = isRush(this.value)    ? 5000 : 0;
             updateSummary();
         });
-        onById('txtGuestCount',   'input',  function(){
+        onEl(document.getElementById('<%= txtGuestCount.ClientID %>'),   'input',  function(){
             var v = parseInt(this.value, 10);
             state.guests = isNaN(v) || v < 0 ? 0 : v;
             updateSummary();
         });
-        onById('ddlPaymentMode',  'change', function(){ state.payment  = this.value; updateSummary(); });
-        onById('txtVenue',        'input',  function(){ state.venue    = this.value.trim(); updateSummary(); });
-        onById('ddlVenueLocation','change', function(){
+        onEl(document.getElementById('<%= ddlPaymentMode.ClientID %>'),  'change', function(){ state.payment  = this.value; updateSummary(); });
+        onEl(document.getElementById('<%= txtVenue.ClientID %>'),        'input',  function(){ state.venue    = this.value.trim(); updateSummary(); });
+        onEl(document.getElementById('<%= ddlVenueLocation.ClientID %>'), 'change', function(){
             state.location    = this.value;
             state.locationFee = this.value === 'outside' ? 2500 : 0;
             updateSummary();
         });
 
         /* ── Set min date on the date field ── */
-        var dateInput = document.getElementById('txtEventDate') ||
-                        document.querySelector('[id*="txtEventDate"]');
+        var dateInput = document.getElementById('<%= txtEventDate.ClientID %>');
         if (dateInput) {
             var today = new Date();
             dateInput.min = today.getFullYear() + '-'
@@ -1218,97 +1211,6 @@
                 updateSummary();
             });
         });
-
-        /* ── CONFIRM BOOKING ── */
-        document.getElementById('confirmBtn').addEventListener('click', function() {
-            /* basic required field check */
-            var missing = [];
-            if (!state.name)        missing.push('Client Name');
-            if (!state.phone)       missing.push('Phone Number');
-            if (!state.eventType)   missing.push('Event Type');
-            if (!state.date)        missing.push('Event Date');
-            if (!state.guests)      missing.push('Number of Guests');
-            if (!state.payment)     missing.push('Mode of Payment');
-            if (!state.venue)       missing.push('Venue');
-            if (!state.location)    missing.push('Venue Location');
-            if (!state.serviceName) missing.push('Service Style');
-            if (!state.packageName) missing.push('Package');
-
-            if (missing.length > 0) {
-                alert('Please fill in the following before confirming:\n• ' + missing.join('\n• '));
-                return;
-            }
-
-            var guests   = state.guests;
-            var subtotal = state.packagePrice * guests;
-            var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-            var locFee   = state.locationFee;
-            var wkFee    = state.weekendFee;
-            var rushFee  = state.rushFee;
-            var total    = subtotal + svcFee + locFee + wkFee + rushFee;
-
-            /* populate modal */
-            document.getElementById('modalBookingId').textContent = genBookingId();
-            document.getElementById('rcptName').textContent       = state.name;
-            document.getElementById('rcptPhone').textContent      = state.phone;
-            document.getElementById('rcptEventType').textContent  = state.eventType;
-            document.getElementById('rcptDate').textContent       = fmtDate(state.date);
-            document.getElementById('rcptVenue').textContent      = state.venue
-                + (state.location === 'outside' ? ' (Outside Argao)' : ' (Within Argao)');
-            document.getElementById('rcptGuests').textContent     = guests + ' guests';
-            document.getElementById('rcptPackage').textContent    = state.packageName;
-            document.getElementById('rcptPricePerGuest').textContent = fmt(state.packagePrice) + '/guest';
-            document.getElementById('rcptService').textContent    = state.serviceName;
-            document.getElementById('rcptPayment').textContent    = state.payment;
-            document.getElementById('rcptSubtotal').textContent   = fmt(subtotal);
-
-            var rcptSvcRow = document.getElementById('rcptRowService');
-            document.getElementById('rcptServiceFee').textContent = svcFee > 0 ? '+' + fmt(svcFee) : 'Free';
-            rcptSvcRow.style.display = '';
-
-            var rcptLocRow = document.getElementById('rcptRowLocation');
-            document.getElementById('rcptLocationFee').textContent = locFee > 0 ? '+' + fmt(locFee) : 'Free';
-            rcptLocRow.style.display = '';
-
-            document.getElementById('rcptRowWeekend').style.display = wkFee   > 0 ? '' : 'none';
-            document.getElementById('rcptRowRush').style.display    = rushFee > 0 ? '' : 'none';
-            document.getElementById('rcptTotal').textContent        = fmt(total);
-
-            /* ── Save to database, then open modal ── */
-            var payload = {
-                clientName:    state.name,
-                phoneNumber:   state.phone,
-                eventType:     state.eventType,
-                eventDate:     state.date,
-                noOfGuests:    guests,
-                venue:         state.venue,
-                withinArgao:   state.location === 'within',
-                serviceStyle:  state.serviceName,
-                packageName:   state.packageName,
-                modeOfPayment: state.payment,
-                totalAmount:   total
-            };
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'SaveBooking.ashx', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        try {
-                            var result = JSON.parse(xhr.responseText);
-                            if (result.success) {
-                                // Use the real DB booking ID
-                                document.getElementById('modalBookingId').textContent = 'BK-' + String(result.bookingId).padStart(6, '0');
-                            }
-                        } catch(e) { /* use generated ID if parse fails */ }
-                    }
-                    // Open modal regardless — booking is saved
-                    document.getElementById('modalOverlay').classList.add('open');
-                    document.body.style.overflow = 'hidden';
-                }
-            };
-            xhr.send(JSON.stringify(payload));
 
         /* ── MODAL CLOSE ── */
         function closeModal() {
@@ -1427,13 +1329,6 @@
         /* initial render */
         updateSummary();
 
-        /* ── showConfirmationModal: called by code-behind after successful DB insert ── */
-        window.showConfirmationModal = function(bookingRef) {
-            document.getElementById('modalBookingId').textContent = bookingRef;
-            document.getElementById('modalOverlay').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        };
-
         /* ── AUTO-SELECT PACKAGE FROM URL (?package=Name) ── */
         (function() {
             var params = new URLSearchParams(window.location.search);
@@ -1476,15 +1371,11 @@
             var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
             var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
 
-            // Write calculated values into hidden fields so code-behind can read them
-            function setHidden(id, val) {
-                var el = document.getElementById(id) || document.querySelector('[id*="' + id + '"]');
-                if (el) el.value = val;
-            }
-            setHidden('hfServiceStyle', state.serviceName);
-            setHidden('hfPackageName',  state.packageName);
-            setHidden('hfPackagePrice', state.packagePrice);
-            setHidden('hfTotalAmount',  total);
+            // Write calculated values into hidden fields using ClientID
+            document.getElementById('<%= hfServiceStyle.ClientID %>').value = state.serviceName;
+            document.getElementById('<%= hfPackageName.ClientID %>').value  = state.packageName;
+            document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
+            document.getElementById('<%= hfTotalAmount.ClientID %>').value  = total;
 
             return true; // allow postback
         };
@@ -1520,6 +1411,126 @@
         });
 
     })();
+    </script>
+
+    <script>
+        /* ── RECEIPT MODAL — outside IIFE so code-behind can call it after postback ── */
+
+        function closeReceiptModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        /* Called by code-behind via ClientScript.RegisterStartupScript */
+        window.showConfirmationModal = function(d) {
+            document.getElementById('modalBookingId').textContent    = d.bookingRef;
+            document.getElementById('rcptName').textContent          = d.name;
+            document.getElementById('rcptPhone').textContent         = d.phone;
+            document.getElementById('rcptEventType').textContent     = d.eventType;
+            document.getElementById('rcptDate').textContent          = d.date;
+            document.getElementById('rcptVenue').textContent         = d.venue;
+            document.getElementById('rcptGuests').textContent        = d.guests + ' guests';
+            document.getElementById('rcptPackage').textContent       = d.packageName;
+            document.getElementById('rcptPricePerGuest').textContent = d.pricePerGuest;
+            document.getElementById('rcptService').textContent       = d.service;
+            document.getElementById('rcptPayment').textContent       = d.payment;
+            document.getElementById('rcptSubtotal').textContent      = d.total;
+            document.getElementById('rcptServiceFee').textContent    = 'Included';
+            document.getElementById('rcptLocationFee').textContent   = 'Included';
+            document.getElementById('rcptTotal').textContent         = d.total;
+            document.getElementById('rcptRowService').style.display  = '';
+            document.getElementById('rcptRowLocation').style.display = '';
+            document.getElementById('rcptRowWeekend').style.display  = 'none';
+            document.getElementById('rcptRowRush').style.display     = 'none';
+
+            document.getElementById('modalOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        };
+
+        /* ── Done button: close modal and reload page to clear the form ── */
+        document.getElementById('btnDone').addEventListener('click', function() {
+            closeReceiptModal();
+            // Reload the page — this clears all ASP.NET server controls back to defaults
+            window.location.href = 'Booking.aspx';
+        });
+
+        /* ── Print button: generate a printable receipt in a new window ── */
+        document.getElementById('btnPrint').addEventListener('click', function() {
+            var id        = document.getElementById('modalBookingId').textContent;
+            var name      = document.getElementById('rcptName').textContent;
+            var phone     = document.getElementById('rcptPhone').textContent;
+            var evtType   = document.getElementById('rcptEventType').textContent;
+            var date      = document.getElementById('rcptDate').textContent;
+            var venue     = document.getElementById('rcptVenue').textContent;
+            var guests    = document.getElementById('rcptGuests').textContent;
+            var pkg       = document.getElementById('rcptPackage').textContent;
+            var ppg       = document.getElementById('rcptPricePerGuest').textContent;
+            var svc       = document.getElementById('rcptService').textContent;
+            var payment   = document.getElementById('rcptPayment').textContent;
+            var total     = document.getElementById('rcptTotal').textContent;
+
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+                + '<title>Booking Receipt ' + id + '</title>'
+                + '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">'
+                + '<style>'
+                + 'body{font-family:Inter,sans-serif;max-width:620px;margin:40px auto;padding:0 20px;color:#2e211b;background:#fff;}'
+                + '.header{text-align:center;border-bottom:3px solid #C9A961;padding-bottom:20px;margin-bottom:24px;}'
+                + '.header h1{font-family:"Playfair Display",serif;font-size:1.8rem;color:#4A3F35;margin:0 0 4px;}'
+                + '.header .bid{color:#C9A961;font-size:0.9rem;font-weight:600;}'
+                + '.header .issued{font-size:0.8rem;color:#9e9189;margin-top:4px;}'
+                + 'h2{font-family:Inter,sans-serif;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:#C9A961;font-weight:700;margin:20px 0 8px;border-bottom:1px solid #e5dcd0;padding-bottom:4px;}'
+                + 'table{width:100%;border-collapse:collapse;font-size:0.9rem;margin-bottom:4px;}'
+                + 'td{padding:5px 0;vertical-align:top;}'
+                + 'td:first-child{color:#756e64;width:48%;}'
+                + 'td:last-child{font-weight:600;text-align:right;}'
+                + '.total-box{background:#f5ebd3;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:16px;}'
+                + '.total-box .tl{font-family:"Playfair Display",serif;font-size:1rem;font-weight:700;color:#4A3F35;}'
+                + '.total-box .ta{font-family:"Playfair Display",serif;font-size:1.6rem;font-weight:700;color:#C9A961;}'
+                + '.footer{text-align:center;margin-top:28px;padding-top:16px;border-top:1px solid #e5dcd0;font-size:0.8rem;color:#9e9189;}'
+                + '@media print{body{margin:20px auto;}}'
+                + '</style></head><body>'
+                + '<div class="header">'
+                + '<h1>Castro Catering</h1>'
+                + '<div class="bid">Booking Receipt &mdash; ' + id + '</div>'
+                + '<div class="issued">Issued: ' + new Date().toLocaleString('en-PH') + '</div>'
+                + '</div>'
+                + '<h2>Client Information</h2>'
+                + '<table>'
+                + '<tr><td>Name</td><td>' + name + '</td></tr>'
+                + '<tr><td>Phone</td><td>' + phone + '</td></tr>'
+                + '</table>'
+                + '<h2>Event Details</h2>'
+                + '<table>'
+                + '<tr><td>Event Type</td><td>' + evtType + '</td></tr>'
+                + '<tr><td>Date</td><td>' + date + '</td></tr>'
+                + '<tr><td>Venue</td><td>' + venue + '</td></tr>'
+                + '<tr><td>Guests</td><td>' + guests + '</td></tr>'
+                + '</table>'
+                + '<h2>Package &amp; Service</h2>'
+                + '<table>'
+                + '<tr><td>Package</td><td>' + pkg + '</td></tr>'
+                + '<tr><td>Price / guest</td><td>' + ppg + '</td></tr>'
+                + '<tr><td>Service Style</td><td>' + svc + '</td></tr>'
+                + '<tr><td>Payment Method</td><td>' + payment + '</td></tr>'
+                + '</table>'
+                + '<div class="total-box">'
+                + '<span class="tl">Total Amount</span>'
+                + '<span class="ta">' + total + '</span>'
+                + '</div>'
+                + '<div class="footer">Thank you for choosing Castro Catering &mdash; Crafting elegant moments.<br>Argao, Cebu &bull; 0967 539 3045</div>'
+                + '</body></html>';
+
+            var w = window.open('', '_blank');
+            w.document.write(html);
+            w.document.close();
+            w.focus();
+            setTimeout(function(){ w.print(); }, 500);
+        });
+
+        /* Close modal when clicking outside */
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeReceiptModal();
+        });
     </script>
     <!-- Admin Login Modal -->
     <div id="adminLoginOverlay" style="display:none;position:fixed;inset:0;background:rgba(33,28,24,0.65);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeAdminLogin()">
