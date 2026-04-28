@@ -990,6 +990,31 @@
                 <button class="btn-print" id="btnPrint">&#128424; Print Receipt</button>
                 <button class="btn-done" id="btnDone">Done</button>
             </div>
+            <!-- ⚠ Additional Charges Modal -->
+            <div class="modal-overlay" id="warningOverlay" style="display:none;">
+                <div class="modal-box" style="max-width:400px;">
+                    <div class="modal-top">
+                        <div class="modal-check" style="background:#ffc107;">!</div>
+                        <h2>Additional Charges</h2>
+                    </div>
+            
+                    <div class="modal-body">
+                        <p style="font-size:0.9rem; margin-bottom:1rem; color:#6b5c4f;">
+                            The selected date includes extra charges:
+                        </p>
+            
+                        <ul id="warningList" style="font-size:0.9rem; color:#2e211b; padding-left:1.2rem;">
+                            <!-- dynamically filled -->
+                        </ul>
+                    </div>
+            
+                    <div class="modal-actions">
+                        <button class="btn-print" onclick="closeWarningModal()">Cancel</button>
+                        <button class="btn-done" id="btnProceedBooking">Yes, Continue</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1059,7 +1084,7 @@
             var diff = (ev - today) / (1000 * 60 * 60 * 24);
             return diff >= 0 && diff <= 7;
         }
-
+            
         /* ── STATE ── */
         var state = {
             name: '', phone: '', eventType: '', date: '', venue: '',
@@ -1068,6 +1093,36 @@
             packageName: '', packagePrice: 0,
             locationFee: 0, weekendFee: 0, rushFee: 0
         };
+             var proceedAfterWarning = false;
+            
+            // SHOW WARNING MODAL
+            function showWarningModal(warnings) {
+                var list = document.getElementById('warningList');
+                list.innerHTML = '';
+            
+                warnings.forEach(function(w) {
+                    var li = document.createElement('li');
+                    li.textContent = w;
+                    li.style.marginBottom = '0.5rem';
+                    list.appendChild(li);
+                });
+            
+                document.getElementById('warningOverlay').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // CLOSE MODAL
+            function closeWarningModal() {
+                document.getElementById('warningOverlay').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            // HANDLE CONTINUE BUTTON
+            document.getElementById('btnProceedBooking').addEventListener('click', function () {
+                proceedAfterWarning = true;
+                closeWarningModal();
+                document.getElementById('<%= btnConfirm.ClientID %>').click();
+            });
 
         /* ── SUMMARY ELEMENT REFS ── */
         var S = {
@@ -1349,6 +1404,7 @@
         /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
            Validates, writes hidden fields, returns true to allow postback      */
         window.prepareBookingPostback = function() {
+
             var missing = [];
             if (!state.name)        missing.push('Client Name');
             if (!state.phone)       missing.push('Phone Number');
@@ -1360,25 +1416,49 @@
             if (!state.location)    missing.push('Venue Location');
             if (!state.serviceName) missing.push('Service Style');
             if (!state.packageName) missing.push('Package');
-
+        
             if (missing.length > 0) {
                 alert('Please fill in the following before confirming:\n• ' + missing.join('\n• '));
                 return false;
             }
-
+        
+            var warnings = [];
+        
+            if (state.weekendFee > 0) {
+                warnings.push('📅 Weekend fee: ₱3,000');
+            }
+        
+            if (state.rushFee > 0) {
+                warnings.push('⚡ Rush fee: ₱5,000');
+            }
+        
+            // 👉 SHOW CUSTOM MODAL INSTEAD OF confirm()
+            if (warnings.length > 0 && !proceedAfterWarning) {
+                showWarningModal(warnings);
+                return false;
+            }
+        
+            proceedAfterWarning = false;
+        
+            // 👉 COMPUTE TOTAL
             var guests   = state.guests;
             var subtotal = state.packagePrice * guests;
             var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
             var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+        
+            function setHidden(id, val) {
+                var el = document.getElementById(id) || document.querySelector('[id*="' + id + '"]');
+                if (el) el.value = val;
+            }
 
-            // Write calculated values into hidden fields using ClientID
-            document.getElementById('<%= hfServiceStyle.ClientID %>').value = state.serviceName;
-            document.getElementById('<%= hfPackageName.ClientID %>').value  = state.packageName;
-            document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
-            document.getElementById('<%= hfTotalAmount.ClientID %>').value  = total;
+    setHidden('hfServiceStyle', state.serviceName);
+    setHidden('hfPackageName',  state.packageName);
+    setHidden('hfPackagePrice', state.packagePrice);
+    setHidden('hfTotalAmount',  total);
 
-            return true; // allow postback
-        };
+    return true;
+};
+
 
         function logout() {
             localStorage.removeItem('currentUser');
