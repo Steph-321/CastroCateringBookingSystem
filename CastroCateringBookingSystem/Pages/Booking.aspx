@@ -865,8 +865,14 @@
 
                         <hr class="summary-divider">
 
-                        <div class="notice-badge" id="weekendNotice">&#128197; Weekend date — &#8369;3,000 weekend premium applied.</div>
-                        <div class="notice-badge" id="rushNotice">&#9889; Rush booking (within 7 days) — &#8369;5,000 rush fee applied.</div>
+                        <div class="notice-badge" id="weekendNotice">
+                        📅 You selected a weekend date. A ₱3,000 additional fee will be applied.
+                        </div>
+
+                        <div class="notice-badge" id="rushNotice">
+                        ⚡ Your event is within 7 days. A ₱5,000 rush fee will be added.
+                        </div>
+
 
                         <div class="cost-row"><span>Subtotal</span><span class="cost-val" id="costSubtotal">&#8369;0</span></div>
                         <div class="cost-row" id="rowServiceFee"><span>Service fee</span><span class="cost-val" id="costServiceFee">Free</span></div>
@@ -1136,7 +1142,7 @@
                 S.locFee.textContent = 'Free';
                 S.locFee.style.color = 'var(--success)';
             }
-
+            
             S.rowWeekend.classList.toggle('hidden-row', wkFee === 0);
             S.wkNotice.classList.toggle('show', wkFee > 0);
             S.rowRush.classList.toggle('hidden-row', rushFee === 0);
