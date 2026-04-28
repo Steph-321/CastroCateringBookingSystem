@@ -1,6 +1,7 @@
-﻿<!DOCTYPE html>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SmartPicker.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.SmartPicker" %>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+<head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Pick - Castro Catering</title>

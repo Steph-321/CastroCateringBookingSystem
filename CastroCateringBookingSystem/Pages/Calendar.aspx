@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Calendar.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.CalendarPage" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Calendar.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.CalendarPage" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,34 +8,34 @@
     <title>Booking Calendar | Castro Catering</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
-            --primary-gold:  #C9A961;
-            --gold-dark:     #a07535;
-            --gold-glow:     #f4d589;
-            --dark-brown:    #4A3F35;
-            --cream:         #FAF8F3;
-            --light-beige:   #F5F1E8;
-            --bg-white:      #ffffff;
-            --text-dark:     #2C2420;
-            --text-light:    #6B5B4F;
-            --text-muted:    #8a8177;
-            --border-light:  #e5dcd0;
-            --success:       #2d8a53;
-            --danger:        #d92626;
+            --primary-gold: #C9A961;
+            --dark-brown: #4A3F35;
+            --light-beige: #F5F1E8;
+            --cream: #FAF8F3;
+            --text-dark: #2C2420;
+            --text-light: #6B5B4F;
+            --white: #FFFFFF;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--cream);
             color: var(--text-dark);
+            background-color: var(--cream);
             line-height: 1.6;
         }
 
-        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
 
-        /* ── Navigation ── */
+        /* Navigation */
         nav {
             background: var(--white);
             padding: 1rem 5%;
@@ -182,7 +182,7 @@
         .mobile-menu[aria-expanded="true"] span:nth-child(3) {
             transform: translateY(-7px) rotate(-45deg);
         }
-
+        
         /* ── Page layout ── */
         .page-wrapper {
             max-width: 820px;
@@ -240,6 +240,7 @@
             color: var(--dark-brown);
         }
         .btn-nav {
+            text-decoration: none;
             background: transparent;
             border: 1px solid var(--border-light);
             padding: 0.4rem 1rem;
@@ -370,7 +371,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav>
+        <nav>
         <div class="nav-container">
             <a href="Home.aspx" class="logo" aria-label="Castro Catering Home">
                 <span class="logo-text">
@@ -378,7 +379,7 @@
                     <span class="logo-subtitle">Crafting elegant moments</span>
                 </span>
             </a>
-        
+
             <ul class="nav-links" id="primaryNav">
                 <li><a href="Home.aspx">Home</a></li>
                 <li><a href="Packages.aspx">Packages</a></li>
@@ -391,8 +392,8 @@
             </ul>
 
             <div class="nav-icons">
-                <button class="btn-login" id="btnNavAuth" onclick="window.location='LoginSignup.aspx'">Log In</button>
-                <button class="btn-login" onclick="showAdminLogin()" style="margin-left:0.5rem;">Admin</button>
+                <button class="btn-login" type="button" onclick="logout()">Log Out</button>
+                <button class="btn-login" type="button" onclick="showAdminLogin()" style="margin-left:0.5rem;">Admin</button>
                 <button class="mobile-menu" type="button" aria-label="Open navigation menu" aria-controls="primaryNav" aria-expanded="false">
                     <span></span>
                     <span></span>
@@ -401,6 +402,7 @@
             </div>
         </div>
     </nav>
+
 
     <form id="form1" runat="server">
         <div class="page-wrapper">

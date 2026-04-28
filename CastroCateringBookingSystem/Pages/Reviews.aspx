@@ -36,45 +36,180 @@
         }
 
         /* ── Nav ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gold: #C9A961;
+            --dark-brown: #4A3F35;
+            --light-beige: #F5F1E8;
+            --cream: #FAF8F3;
+            --text-dark: #2C2420;
+            --text-light: #6B5B4F;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--cream);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Navigation */
         nav {
-            background: var(--bg-white);
+            background: var(--white);
             padding: 1rem 5%;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-        .logo { text-decoration: none; display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
-        .logo-text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
-        .logo-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .logo-subtitle { font-size: 0.8rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .nav-links { display: flex; gap: 1.75rem; list-style: none; align-items: center; }
-        .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.9rem; transition: color 0.3s; padding: 0.35rem 0.2rem; position: relative; }
-        .nav-links a:hover, .nav-links a.active { color: var(--primary-gold); }
-        .nav-links a.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px; background: var(--primary-gold); }
-        .nav-icons { display: flex; gap: 1rem; align-items: center; }
-        .btn-login, .btn-nav-action {
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 0;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+            min-width: 0;
+        }
+
+        .logo-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logo-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.75rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            padding: 0.35rem 0.2rem;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-gold);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-gold);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -6px;
+            height: 2px;
+            border-radius: 2px;
+            background: var(--primary-gold);
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-login {
             background: transparent;
             border: 1px solid var(--primary-gold);
-            color: var(--text-dark);
             padding: 0.45rem 1.25rem;
             border-radius: 25px;
             cursor: pointer;
-            font-weight: 500;
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
             transition: all 0.3s;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-dark);
         }
-        .btn-login:hover, .btn-nav-action:hover { background: var(--primary-gold); color: white; }
-        .mobile-menu { display: none; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-white); border-radius: 10px; padding: 0.5rem 0.6rem; line-height: 0; }
-        .mobile-menu span { display: block; width: 22px; height: 2px; background: var(--text-dark); transition: 0.3s; border-radius: 2px; }
-        .mobile-menu span + span { margin-top: 5px; }
-        .mobile-menu[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-        .mobile-menu[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-        .mobile-menu[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .btn-login:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+
+        .mobile-menu {
+            display: none;
+            cursor: pointer;
+            border: 1px solid var(--light-beige);
+            background: var(--white);
+            border-radius: 10px;
+            padding: 0.5rem 0.6rem;
+            line-height: 0;
+        }
+
+        .mobile-menu span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--dark-brown);
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .mobile-menu span + span {
+            margin-top: 5px;
+        }
+
+        .mobile-menu[aria-expanded="true"] span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .mobile-menu[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu[aria-expanded="true"] span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
 
         /* ── Page ── */
         .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 110px 5% 80px; }
@@ -192,7 +327,7 @@
                     <span class="logo-subtitle">Crafting elegant moments</span>
                 </span>
             </a>
-        
+
             <ul class="nav-links" id="primaryNav">
                 <li><a href="Home.aspx">Home</a></li>
                 <li><a href="Packages.aspx">Packages</a></li>
@@ -205,8 +340,8 @@
             </ul>
 
             <div class="nav-icons">
-                <button class="btn-login" id="btnNavAuth" onclick="window.location='LoginSignup.aspx'">Log In</button>
-                <button class="btn-login" onclick="showAdminLogin()" style="margin-left:0.5rem;">Admin</button>
+                <button class="btn-login" type="button" onclick="logout()">Log Out</button>
+                <button class="btn-login" type="button" onclick="showAdminLogin()" style="margin-left:0.5rem;">Admin</button>
                 <button class="mobile-menu" type="button" aria-label="Open navigation menu" aria-controls="primaryNav" aria-expanded="false">
                     <span></span>
                     <span></span>
@@ -215,6 +350,7 @@
             </div>
         </div>
     </nav>
+
 
     <form id="form1" runat="server">
         <div class="page-wrapper">

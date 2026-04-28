@@ -1,13 +1,8 @@
-﻿<!DOCTYPE html>
-<script runat="server">
-
-    Protected Sub Page_Load(sender As Object, e As EventArgs)
-
-    End Sub
-</script>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Packages.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Packages" %>
+<!DOCTYPE html>
 
 <html lang="en">
-<head>
+<head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Packages - Castro Catering</title>

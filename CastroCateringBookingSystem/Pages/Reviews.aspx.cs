@@ -25,10 +25,16 @@ namespace CastroCateringBookingSystem.Pages
         // ─────────────────────────────────────────────────────────────────────
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtName.Text) ||
-                string.IsNullOrWhiteSpace(txtReview.Text))
+            if (string.IsNullOrWhiteSpace(txtReview.Text))
             {
-                lblStatus.Text      = "Please fill in your name and review.";
+                lblStatus.Text      = "Please write your review before submitting.";
+                lblStatus.ForeColor = System.Drawing.Color.Red;
+                return;
+            }
+
+            if (ddlEventType.SelectedValue == "")
+            {
+                lblStatus.Text      = "Please select an event type.";
                 lblStatus.ForeColor = System.Drawing.Color.Red;
                 return;
             }
@@ -47,13 +53,12 @@ namespace CastroCateringBookingSystem.Pages
                         : DBNull.Value;
 
                     const string sql = @"
-                        INSERT INTO Reviews (UserID, [Name], EventType, [Comment], Rating, DatePosted)
-                        VALUES (@UserID, @Name, @EventType, @Comment, @Rating, GETDATE())";
+                        INSERT INTO Reviews (UserID, EventType, Rating, [Comment], DateCreated)
+                        VALUES (@UserID, @EventType, @Rating, @Comment, GETDATE())";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@UserID",    userId);
-                        cmd.Parameters.AddWithValue("@Name",      txtName.Text.Trim());
                         cmd.Parameters.AddWithValue("@EventType", ddlEventType.SelectedValue);
                         cmd.Parameters.AddWithValue("@Comment",   txtReview.Text.Trim());
                         cmd.Parameters.AddWithValue("@Rating",    rating);
@@ -89,9 +94,15 @@ namespace CastroCateringBookingSystem.Pages
                     conn.Open();
 
                     const string sql = @"
-                        SELECT TOP 50 [Name], EventType, [Comment] AS ReviewText, Rating, DatePosted AS [Date]
-                        FROM   Reviews
-                        ORDER  BY DatePosted DESC";
+                        SELECT TOP 50
+                            u.Username  AS [Name],
+                            r.EventType,
+                            r.[Comment] AS ReviewText,
+                            r.Rating,
+                            r.DateCreated AS [Date]
+                        FROM   Reviews r
+                        LEFT JOIN Users u ON r.UserID = u.UserID
+                        ORDER  BY r.DateCreated DESC";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
@@ -162,7 +173,6 @@ namespace CastroCateringBookingSystem.Pages
             {
                 new ReviewData { Name = "Maria Santos",    EventType = "Wedding",   ReviewText = "Castro Catering made our wedding day absolutely perfect. The food was exquisite, the service was seamless, and every guest kept complimenting the spread.", Rating = 5, Date = new DateTime(2026, 3, 15) },
                 new ReviewData { Name = "Jose Reyes",      EventType = "Corporate", ReviewText = "We hired Castro Catering for our annual company dinner and they exceeded every expectation. Professional, punctual, and the food quality was outstanding.", Rating = 5, Date = new DateTime(2026, 2, 28) },
-                new ReviewData { Name = "Ana Villanueva",  EventType = "Birthday",  ReviewText = "My daughter's debut was a dream come true thanks to Castro Catering. The presentation was elegant, the portions were generous, and the staff were so attentive.", Rating = 4, Date = new DateTime(2026, 1, 20) }
             };
         }
     }
