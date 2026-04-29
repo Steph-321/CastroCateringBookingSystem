@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
@@ -11,7 +12,7 @@ namespace CastroCateringBookingSystem.Pages
     public partial class LoginSignup : Page
     {
         private static string ConnStr =>
-            ConfigurationManager.ConnectionStrings["CastroDB"].ConnectionString;
+            ConfigurationManager.ConnectionStrings["CastroCatering_DB"].ConnectionString;
 
         // ─────────────────────────────────────────────────────────────────────
         // PAGE LOAD
