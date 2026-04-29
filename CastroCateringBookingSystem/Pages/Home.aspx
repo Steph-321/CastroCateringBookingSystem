@@ -1139,7 +1139,7 @@
                 // Show greeting in hero
                 var greeting = document.getElementById('heroGreeting');
                 if (greeting) {
-                    greeting.textContent = 'Hello, ' + user.username + '! 👋';
+                    greeting.textContent = 'Hello, ' + user.username + '!';
                     greeting.style.display = 'block';
                 }
             } else {

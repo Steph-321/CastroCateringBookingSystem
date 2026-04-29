@@ -1,8 +1,9 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Booking.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Booking" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Booking.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Booking" ResponseEncoding="UTF-8" %>
 
 <!DOCTYPE html>
 <html lang="en">
 <head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book an Event - Castro Catering</title>
@@ -735,7 +736,7 @@
                                 <asp:DropDownList ID="ddlVenueLocation" runat="server" CssClass="form-input">
                                     <asp:ListItem Text="Select location" Value="" />
                                     <asp:ListItem Text="Yes - within Argao (Free)" Value="within" />
-                                    <asp:ListItem Text="No - outside Argao (+₱2,500)" Value="outside" />
+                                    <asp:ListItem Text="No - outside Argao (+&#8369;2,500)" Value="outside" />
                                 </asp:DropDownList>
                             </div>
                         </div>
@@ -866,11 +867,11 @@
                         <hr class="summary-divider">
 
                         <div class="notice-badge" id="weekendNotice">
-                        📅 You selected a weekend date. A ₱3,000 additional fee will be applied.
+                        📅 You selected a weekend date. A &#8369;3,000 additional fee will be applied.
                         </div>
 
                         <div class="notice-badge" id="rushNotice">
-                        ⚡ Your event is within 7 days. A ₱5,000 rush fee will be added.
+                        ⚡ Your event is within 7 days. A &#8369;5,000 rush fee will be added.
                         </div>
 
 
@@ -1062,7 +1063,7 @@
 
         /* ── HELPERS ── */
         function fmt(n) {
-            return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            return '\u20B1' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
         function fmtDate(dateStr) {
             if (!dateStr) return '—';
@@ -1166,7 +1167,7 @@
             sv(S.guests,    state.guests > 0 ? state.guests + ' guests' : '');
             sv(S.payment,   state.payment);
             sv(S.location,  state.location === 'within' ? 'Within Argao'
-                          : state.location === 'outside' ? 'Outside Argao (+₱2,500)'
+                          : state.location === 'outside' ? 'Outside Argao (+&#8369;2,500)'
                           : '');
             sv(S.service,   state.serviceName);
             sv(S.package,   state.packageName || 'Not selected');
@@ -1308,8 +1309,8 @@
             var hasRush  = document.getElementById('rcptRowRush').style.display !== 'none';
 
             var extra = '';
-            if (hasWk)   extra += '<tr><td>Weekend Premium</td><td>+₱3,000</td></tr>';
-            if (hasRush) extra += '<tr><td>Rush Fee</td><td>+₱5,000</td></tr>';
+            if (hasWk)   extra += '<tr><td>Weekend Premium</td><td>+&#8369;3,000</td></tr>';
+            if (hasRush) extra += '<tr><td>Rush Fee</td><td>+&#8369;5,000</td></tr>';
 
             var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
                 + '<title>Receipt ' + id + '</title>'
@@ -1404,7 +1405,6 @@
         /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
            Validates, writes hidden fields, returns true to allow postback      */
         window.prepareBookingPostback = function() {
-
             var missing = [];
             if (!state.name)        missing.push('Client Name');
             if (!state.phone)       missing.push('Phone Number');
@@ -1416,48 +1416,28 @@
             if (!state.location)    missing.push('Venue Location');
             if (!state.serviceName) missing.push('Service Style');
             if (!state.packageName) missing.push('Package');
-        
             if (missing.length > 0) {
-                alert('Please fill in the following before confirming:\n• ' + missing.join('\n• '));
+                alert('Please fill in the following before confirming:\n\u2022 ' + missing.join('\n\u2022 '));
                 return false;
             }
-        
             var warnings = [];
-        
-            if (state.weekendFee > 0) {
-                warnings.push('📅 Weekend fee: ₱3,000');
+            if (state.weekendFee > 0) warnings.push('Weekend premium: \u20B13,000');
+            if (state.rushFee    > 0) warnings.push('Rush fee: \u20B15,000');
+            if (warnings.length > 0) {
+                if (!confirm('Note: Extra fees apply:\n\u2022 ' + warnings.join('\n\u2022 ') + '\n\nProceed with booking?')) {
+                    return false;
+                }
             }
-        
-            if (state.rushFee > 0) {
-                warnings.push('⚡ Rush fee: ₱5,000');
-            }
-        
-            // 👉 SHOW CUSTOM MODAL INSTEAD OF confirm()
-            if (warnings.length > 0 && !proceedAfterWarning) {
-                showWarningModal(warnings);
-                return false;
-            }
-        
-            proceedAfterWarning = false;
-        
-            // 👉 COMPUTE TOTAL
             var guests   = state.guests;
             var subtotal = state.packagePrice * guests;
             var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
             var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
-        
-            function setHidden(id, val) {
-                var el = document.getElementById(id) || document.querySelector('[id*="' + id + '"]');
-                if (el) el.value = val;
-            }
-
-    setHidden('hfServiceStyle', state.serviceName);
-    setHidden('hfPackageName',  state.packageName);
-    setHidden('hfPackagePrice', state.packagePrice);
-    setHidden('hfTotalAmount',  total);
-
-    return true;
-};
+            document.getElementById('<%= hfServiceStyle.ClientID %>').value = state.serviceName;
+            document.getElementById('<%= hfPackageName.ClientID %>').value  = state.packageName;
+            document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
+            document.getElementById('<%= hfTotalAmount.ClientID %>').value  = total;
+            return true;
+        };
 
 
         function logout() {
