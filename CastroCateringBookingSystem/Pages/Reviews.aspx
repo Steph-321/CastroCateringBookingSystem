@@ -242,8 +242,7 @@
         .review-avatar {
             width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 700; font-size: 1.1rem;
-            background: linear-gradient(135deg, var(--gold-dark), var(--primary-gold));
+            overflow: hidden;
         }
 
         .meta-text-block { flex: 1; }
@@ -368,7 +367,7 @@
                         <ItemTemplate>
                             <div class="review-card">
                                 <div class="card-left-group">
-                                    <div class="review-avatar"><%# Eval("Name").ToString().Substring(0,1).ToUpper() %></div>
+                                    <div class="review-avatar"><%# RenderAvatar(Eval("Name").ToString(), Eval("ProfilePicture").ToString()) %></div>
                                     <div class="meta-text-block">
                                         <span class="client-name"><%# Eval("Name") %></span>
                                         <span class="event-meta"><%# Eval("EventType") %> &bull; <%# Eval("Date", "{0:M/d/yyyy}") %></span>

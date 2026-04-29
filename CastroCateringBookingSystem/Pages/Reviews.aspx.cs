@@ -95,11 +95,12 @@ namespace CastroCateringBookingSystem.Pages
 
                     const string sql = @"
                         SELECT TOP 50
-                            u.Username  AS [Name],
+                            u.Username                        AS [Name],
+                            ISNULL(u.ProfilePicture, '')      AS ProfilePicture,
                             r.EventType,
-                            r.[Comment] AS ReviewText,
+                            r.[Comment]                       AS ReviewText,
                             r.Rating,
-                            r.DateCreated AS [Date]
+                            r.DateCreated                     AS [Date]
                         FROM   Reviews r
                         LEFT JOIN Users u ON r.UserID = u.UserID
                         ORDER  BY r.DateCreated DESC";
@@ -111,11 +112,12 @@ namespace CastroCateringBookingSystem.Pages
                         {
                             reviews.Add(new ReviewData
                             {
-                                Name       = reader["Name"].ToString(),
-                                EventType  = reader["EventType"].ToString(),
-                                ReviewText = reader["ReviewText"].ToString(),
-                                Rating     = Convert.ToInt32(reader["Rating"]),
-                                Date       = Convert.ToDateTime(reader["Date"])
+                                Name           = reader["Name"].ToString(),
+                                ProfilePicture = reader["ProfilePicture"].ToString(),
+                                EventType      = reader["EventType"].ToString(),
+                                ReviewText     = reader["ReviewText"].ToString(),
+                                Rating         = Convert.ToInt32(reader["Rating"]),
+                                Date           = Convert.ToDateTime(reader["Date"])
                             });
                         }
                     }
@@ -152,6 +154,25 @@ namespace CastroCateringBookingSystem.Pages
             return html;
         }
 
+        /// <summary>
+        /// Returns either an img tag (if the user has a profile picture)
+        /// or the initial-letter circle — used in the Repeater ItemTemplate.
+        /// </summary>
+        public string RenderAvatar(string name, string picturePath)
+        {
+            if (!string.IsNullOrEmpty(picturePath))
+            {
+                string url = ResolveUrl(picturePath);
+                return $"<img src='{url}' alt='{System.Web.HttpUtility.HtmlAttributeEncode(name)}' " +
+                       "style='width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;' />";
+            }
+
+            string initial = string.IsNullOrEmpty(name) ? "?" : name.Substring(0, 1).ToUpper();
+            return $"<span style='width:44px;height:44px;border-radius:50%;display:flex;align-items:center;" +
+                   "justify-content:center;font-weight:700;font-size:1.1rem;color:white;" +
+                   "background:linear-gradient(135deg,#a07535,#C9A961);flex-shrink:0;'>{initial}</span>";
+        }
+
         private int GetRating()
         {
             if (int.TryParse(hfRating.Value, out int r) && r >= 1 && r <= 5)
@@ -180,10 +201,11 @@ namespace CastroCateringBookingSystem.Pages
     [Serializable]
     public class ReviewData
     {
-        public string   Name       { get; set; }
-        public string   EventType  { get; set; }
-        public string   ReviewText { get; set; }
-        public int      Rating     { get; set; }
-        public DateTime Date       { get; set; }
+        public string   Name           { get; set; }
+        public string   ProfilePicture { get; set; }
+        public string   EventType      { get; set; }
+        public string   ReviewText     { get; set; }
+        public int      Rating         { get; set; }
+        public DateTime Date           { get; set; }
     }
 }

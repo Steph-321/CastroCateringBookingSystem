@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -12,9 +13,11 @@ namespace CastroCateringBookingSystem.Pages
         private static string ConnStr =>
             ConfigurationManager.ConnectionStrings["CastroDB"].ConnectionString;
 
+        // ─────────────────────────────────────────────────────────────────────
+        // PAGE LOAD
+        // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Redirect to login if not authenticated
             if (Session["UserID"] == null)
             {
                 Response.Redirect("~/Pages/LoginSignup.aspx");
@@ -29,7 +32,7 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // LOAD USER PROFILE FROM DATABASE
+        // LOAD PROFILE FROM DATABASE
         // ─────────────────────────────────────────────────────────────────────
         private void LoadUserProfile()
         {
@@ -42,7 +45,8 @@ namespace CastroCateringBookingSystem.Pages
                     conn.Open();
 
                     const string sql = @"
-                        SELECT Username, Email, PhoneNumber, [Address]
+                        SELECT Username, Email, PhoneNumber, [Address],
+                               ISNULL(ProfilePicture, '') AS ProfilePicture
                         FROM   Users
                         WHERE  UserID = @UserID";
 
@@ -58,15 +62,32 @@ namespace CastroCateringBookingSystem.Pages
                                 string email    = reader["Email"].ToString();
                                 string phone    = reader["PhoneNumber"].ToString();
                                 string address  = reader["Address"].ToString();
+                                string picPath  = reader["ProfilePicture"].ToString();
 
-                                // Populate profile display labels
-                                lblProfileAvatar.Text   = username.Substring(0, 1).ToUpper();
-                                lblProfileName.Text     = username;
-                                lblProfileEmail.Text    = email;
-                                lblInfoUsername.Text    = username;
-                                lblInfoEmail.Text       = email;
-                                lblInfoPhone.Text       = phone;
-                                lblInfoAddress.Text     = address;
+                                // Display labels
+                                lblProfileAvatar.Text  = username.Substring(0, 1).ToUpper();
+                                lblProfileName.Text    = username;
+                                lblProfileEmail.Text   = email;
+                                lblInfoUsername.Text   = username;
+                                lblInfoEmail.Text      = email;
+                                lblInfoPhone.Text      = phone;
+                                lblInfoAddress.Text    = address;
+
+                                // Pre-fill edit form
+                                txtEditUsername.Text = username;
+                                txtEditEmail.Text    = email;
+                                txtEditPhone.Text    = phone;
+                                txtEditAddress.Text  = address;
+
+                                // Profile picture
+                                if (!string.IsNullOrEmpty(picPath))
+                                {
+                                    imgProfilePic.ImageUrl = ResolveUrl(picPath);
+                                    imgProfilePic.Style["display"] = "block";
+                                    // Hide the letter avatar via JS — set a flag
+                                    ClientScript.RegisterStartupScript(GetType(), "showPic",
+                                        "document.getElementById('avatarCircle').style.display='none';", true);
+                                }
                             }
                         }
                     }
@@ -79,7 +100,126 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // LOAD BOOKING HISTORY FROM DATABASE
+        // SAVE PROFILE CHANGES
+        // ─────────────────────────────────────────────────────────────────────
+        protected void btnSaveProfile_Click(object sender, EventArgs e)
+        {
+            int userId = Convert.ToInt32(Session["UserID"]);
+
+            string newUsername = txtEditUsername.Text.Trim();
+            string email       = txtEditEmail.Text.Trim();
+            string phone       = txtEditPhone.Text.Trim();
+            string address     = txtEditAddress.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(newUsername) ||
+                string.IsNullOrWhiteSpace(email)       ||
+                string.IsNullOrWhiteSpace(phone)       ||
+                string.IsNullOrWhiteSpace(address))
+            {
+                lblEditStatus.Text      = "All fields are required.";
+                lblEditStatus.ForeColor = System.Drawing.Color.Red;
+                return;
+            }
+
+            // ── Handle profile picture upload ─────────────────────────────
+            string picturePath = null;
+            if (fuProfilePic.HasFile)
+            {
+                string ext = Path.GetExtension(fuProfilePic.FileName).ToLower();
+                if (ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".gif" && ext != ".webp")
+                {
+                    lblEditStatus.Text      = "Only JPG, PNG, GIF or WEBP images are allowed.";
+                    lblEditStatus.ForeColor = System.Drawing.Color.Red;
+                    return;
+                }
+
+                // Save to ~/Uploads/Profiles/
+                string uploadDir = Server.MapPath("~/Uploads/Profiles/");
+                if (!Directory.Exists(uploadDir))
+                    Directory.CreateDirectory(uploadDir);
+
+                string fileName = "profile_" + userId + ext;
+                string fullPath = Path.Combine(uploadDir, fileName);
+                fuProfilePic.SaveAs(fullPath);
+                picturePath = "~/Uploads/Profiles/" + fileName;
+            }
+
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                {
+                    conn.Open();
+
+                    // Check if new username is already taken by someone else
+                    if (!string.IsNullOrEmpty(newUsername))
+                    {
+                        using (var chk = new SqlCommand(
+                            "SELECT COUNT(1) FROM Users WHERE Username=@U AND UserID<>@ID", conn))
+                        {
+                            chk.Parameters.AddWithValue("@U",  newUsername);
+                            chk.Parameters.AddWithValue("@ID", userId);
+                            if ((int)chk.ExecuteScalar() > 0)
+                            {
+                                lblEditStatus.Text      = "That username is already taken.";
+                                lblEditStatus.ForeColor = System.Drawing.Color.Red;
+                                return;
+                            }
+                        }
+                    }
+
+                    string sql = picturePath != null
+                        ? @"UPDATE Users SET Username=@Username, Email=@Email,
+                                PhoneNumber=@Phone, [Address]=@Address,
+                                ProfilePicture=@Pic
+                            WHERE UserID=@UserID"
+                        : @"UPDATE Users SET Username=@Username, Email=@Email,
+                                PhoneNumber=@Phone, [Address]=@Address
+                            WHERE UserID=@UserID";
+
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Username", newUsername);
+                        cmd.Parameters.AddWithValue("@Email",    email);
+                        cmd.Parameters.AddWithValue("@Phone",    phone);
+                        cmd.Parameters.AddWithValue("@Address",  address);
+                        cmd.Parameters.AddWithValue("@UserID",   userId);
+                        if (picturePath != null)
+                            cmd.Parameters.AddWithValue("@Pic", picturePath);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Update session so nav greeting reflects new username immediately
+                Session["Username"] = newUsername;
+
+                // Also update localStorage via JS so the client-side greeting updates
+                string safeUsername = newUsername.Replace("'", "\\'");
+                ClientScript.RegisterStartupScript(GetType(), "updateUser",
+                    $@"try{{
+                        var u=JSON.parse(localStorage.getItem('castroUser')||'{{}}');
+                        u.username='{safeUsername}';
+                        localStorage.setItem('castroUser',JSON.stringify(u));
+                    }}catch(e){{}}", true);
+
+                // Reload profile display
+                LoadUserProfile();
+                lblEditStatus.Text      = "Profile updated successfully!";
+                lblEditStatus.ForeColor = System.Drawing.Color.Green;
+
+                ClientScript.RegisterStartupScript(GetType(), "closeEdit",
+                    "setTimeout(function(){ toggleEdit(false); }, 1500);", true);
+            }
+            catch (Exception ex)
+            {
+                lblEditStatus.Text      = "Error saving profile: " + ex.Message;
+                lblEditStatus.ForeColor = System.Drawing.Color.Red;
+                System.Diagnostics.Debug.WriteLine("SaveProfile error: " + ex.Message);
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // LOAD BOOKING HISTORY
         // ─────────────────────────────────────────────────────────────────────
         private void LoadBookingHistory()
         {
@@ -138,16 +278,16 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // HELPER — called from Repeater ItemTemplate
+        // HELPER
         // ─────────────────────────────────────────────────────────────────────
         public string GetStatusClass(string status)
         {
             switch (status)
             {
-                case "Upcoming":   return "status-upcoming";
-                case "Completed":  return "status-completed";
-                case "Cancelled":  return "status-cancelled";
-                default:           return "";
+                case "Upcoming":  return "status-upcoming";
+                case "Completed": return "status-completed";
+                case "Cancelled": return "status-cancelled";
+                default:          return "";
             }
         }
     }

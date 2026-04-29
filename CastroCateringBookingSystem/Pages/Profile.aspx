@@ -204,23 +204,74 @@
             padding: 0.5rem 0;
         }
 
-        .btn-edit-profile {
-            width: 100%;
-            background: var(--bg-cream);
-            border: 1px solid var(--border-light);
-            padding: 0.75rem;
-            border-radius: 8px;
+        /* ── Profile picture ── */
+        .profile-pic-wrap {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1rem;
+        }
+        .profile-pic-wrap img,
+        .profile-avatar-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.6);
+        }
+        .profile-avatar-circle {
+            background: var(--bg-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+        }
+        .pic-upload-btn {
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--primary-gold);
+            border: 2px solid #fff;
             cursor: pointer;
-            font-weight: 600;
-            color: var(--text-brown);
-            transition: all 0.3s;
-            margin-top: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            color: #fff;
         }
 
-        .btn-edit-profile:hover {
-            background: var(--bg-beige);
-            border-color: var(--primary-gold);
+        /* ── Edit form ── */
+        .edit-form { display: none; padding: 1.25rem 2rem 1.5rem; border-top: 1px solid var(--border-light); }
+        .edit-form.open { display: block; }
+        .edit-field { margin-bottom: 1rem; }
+        .edit-field label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--text-gray); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.35rem; }
+        .edit-field input {
+            width: 100%; padding: 0.6rem 0.85rem;
+            border: 1px solid var(--border-light); border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem;
+            color: var(--text-dark); background: #fcfbf9; outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s; box-sizing: border-box;
         }
+        .edit-field input:focus { border-color: var(--primary-gold); box-shadow: 0 0 0 3px rgba(194,147,74,0.12); }
+        .edit-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+        .btn-save-profile {
+            flex: 1; padding: 0.65rem;
+            background: var(--primary-gold); border: none; border-radius: 8px;
+            color: var(--text-dark); font-family: 'Inter', sans-serif;
+            font-weight: 700; font-size: 0.88rem; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-save-profile:hover { background: #a07535; color: white; }
+        .btn-cancel-edit {
+            flex: 1; padding: 0.65rem;
+            background: transparent; border: 1px solid var(--border-light); border-radius: 8px;
+            color: var(--text-gray); font-family: 'Inter', sans-serif;
+            font-weight: 600; font-size: 0.88rem; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-cancel-edit:hover { border-color: var(--primary-gold); color: var(--text-dark); }
+        .edit-status { font-size: 0.85rem; margin-top: 0.5rem; text-align: center; }
 
         /* Booking History */
         .booking-card {
@@ -558,11 +609,23 @@
             <!-- Profile Card -->
             <div class="profile-card">
                 <div class="profile-header">
-                    <div class="profile-avatar"><asp:Label ID="lblProfileAvatar" runat="server" Text="?" /></div>
+                    <!-- Profile picture -->
+                    <div class="profile-pic-wrap">
+                        <asp:Image ID="imgProfilePic" runat="server" CssClass="profile-pic-img" style="display:none;" AlternateText="Profile" />
+                        <div class="profile-avatar-circle" id="avatarCircle">
+                            <asp:Label ID="lblProfileAvatar" runat="server" Text="?" />
+                        </div>
+                        <label class="pic-upload-btn" title="Change photo">
+                            ✎
+                            <asp:FileUpload ID="fuProfilePic" runat="server" style="display:none;" accept="image/*" />
+                        </label>
+                    </div>
                     <h2 class="profile-name"><asp:Label ID="lblProfileName" runat="server" Text="—" /></h2>
                     <p class="profile-email"><asp:Label ID="lblProfileEmail" runat="server" Text="—" /></p>
                 </div>
-                <div class="profile-body">
+
+                <!-- View mode -->
+                <div class="profile-body" id="viewMode">
                     <div class="info-group">
                         <div class="info-label">👤 Username</div>
                         <div class="info-value"><asp:Label ID="lblInfoUsername" runat="server" Text="—" /></div>
@@ -579,6 +642,33 @@
                         <div class="info-label">📍 Address</div>
                         <div class="info-value"><asp:Label ID="lblInfoAddress" runat="server" Text="—" /></div>
                     </div>
+                    <button type="button" class="btn-save-profile" style="margin-top:1rem;" onclick="toggleEdit(true)">Edit Profile</button>
+                </div>
+
+                <!-- Edit mode -->
+                <div class="edit-form" id="editMode">
+                    <div class="edit-field">
+                        <label>Username</label>
+                        <asp:TextBox ID="txtEditUsername" runat="server" placeholder="Choose a username" />
+                    </div>
+                    <div class="edit-field">
+                        <label>Email</label>
+                        <asp:TextBox ID="txtEditEmail" runat="server" TextMode="Email" placeholder="your@email.com" />
+                    </div>
+                    <div class="edit-field">
+                        <label>Phone Number</label>
+                        <asp:TextBox ID="txtEditPhone" runat="server" placeholder="09XXXXXXXXX" />
+                    </div>
+                    <div class="edit-field">
+                        <label>Address</label>
+                        <asp:TextBox ID="txtEditAddress" runat="server" placeholder="Street, City, Province" />
+                    </div>
+                    <div class="edit-actions">
+                        <asp:Button ID="btnSaveProfile" runat="server" Text="Save Changes"
+                            CssClass="btn-save-profile" OnClick="btnSaveProfile_Click" />
+                        <button type="button" class="btn-cancel-edit" onclick="toggleEdit(false)">Cancel</button>
+                    </div>
+                    <asp:Label ID="lblEditStatus" runat="server" CssClass="edit-status" />
                 </div>
             </div>
 
@@ -880,6 +970,31 @@
             localStorage.removeItem('currentUser');
             localStorage.removeItem('castroUser');
             window.location.href = 'LoginSignup.aspx';
+        }
+
+        /* ── Toggle edit / view mode ── */
+        function toggleEdit(open) {
+            document.getElementById('viewMode').style.display = open ? 'none' : '';
+            var ef = document.getElementById('editMode');
+            if (open) ef.classList.add('open'); else ef.classList.remove('open');
+        }
+
+        /* ── Profile picture preview before upload ── */
+        var fu = document.querySelector('[id*="fuProfilePic"]');
+        if (fu) {
+            fu.addEventListener('change', function() {
+                if (!this.files || !this.files[0]) return;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.querySelector('[id*="imgProfilePic"]');
+                    var circle = document.getElementById('avatarCircle');
+                    if (img) { img.src = e.target.result; img.style.display = 'block'; }
+                    if (circle) circle.style.display = 'none';
+                };
+                reader.readAsDataURL(this.files[0]);
+                // Auto-submit to upload the picture
+                document.querySelector('[id*="btnSaveProfile"]').click();
+            });
         }
 
         /* ── Admin Login Modal ── */

@@ -8,37 +8,32 @@ namespace CastroCateringBookingSystem.Pages
 {
     public partial class Profile
     {
-        /// <summary>form1 control.</summary>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
-        /// <summary>lblProfileAvatar — first letter of username.</summary>
+        // ── Profile picture ──
+        protected global::System.Web.UI.WebControls.Image imgProfilePic;
+        protected global::System.Web.UI.WebControls.FileUpload fuProfilePic;
+
+        // ── Display labels ──
         protected global::System.Web.UI.WebControls.Label lblProfileAvatar;
-
-        /// <summary>lblProfileName control.</summary>
         protected global::System.Web.UI.WebControls.Label lblProfileName;
-
-        /// <summary>lblProfileEmail control.</summary>
         protected global::System.Web.UI.WebControls.Label lblProfileEmail;
-
-        /// <summary>lblInfoUsername control.</summary>
         protected global::System.Web.UI.WebControls.Label lblInfoUsername;
-
-        /// <summary>lblInfoEmail control.</summary>
         protected global::System.Web.UI.WebControls.Label lblInfoEmail;
-
-        /// <summary>lblInfoPhone control.</summary>
         protected global::System.Web.UI.WebControls.Label lblInfoPhone;
-
-        /// <summary>lblInfoAddress control.</summary>
         protected global::System.Web.UI.WebControls.Label lblInfoAddress;
 
-        /// <summary>lblBookingCount control.</summary>
+        // ── Edit form controls ──
+        protected global::System.Web.UI.WebControls.TextBox txtEditUsername;
+        protected global::System.Web.UI.WebControls.TextBox txtEditEmail;
+        protected global::System.Web.UI.WebControls.TextBox txtEditPhone;
+        protected global::System.Web.UI.WebControls.TextBox txtEditAddress;
+        protected global::System.Web.UI.WebControls.Button btnSaveProfile;
+        protected global::System.Web.UI.WebControls.Label lblEditStatus;
+
+        // ── Booking history ──
         protected global::System.Web.UI.WebControls.Label lblBookingCount;
-
-        /// <summary>rptBookings — booking history repeater.</summary>
         protected global::System.Web.UI.WebControls.Repeater rptBookings;
-
-        /// <summary>phNoBookings — shown when user has no bookings.</summary>
         protected global::System.Web.UI.WebControls.PlaceHolder phNoBookings;
     }
 }
