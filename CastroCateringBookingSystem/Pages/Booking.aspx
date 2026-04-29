@@ -1052,71 +1052,71 @@
     </footer>
 
     <script>
-    (function () {
-        'use strict';
+        (function () {
+            'use strict';
 
-        // ── Auth guard ──
-        var _user = null;
-        try { _user = JSON.parse(localStorage.getItem('castroUser')); } catch(e) {}
-        if (!_user || !_user.username) { window.location.href = 'LoginSignup.aspx'; }
+            // ── Auth guard ──
+            var _user = null;
+            try { _user = JSON.parse(localStorage.getItem('castroUser')); } catch (e) { }
+            if (!_user || !_user.username) { window.location.href = 'LoginSignup.aspx'; }
 
-        /* ── HELPERS ── */
-        function fmt(n) {
-            return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        }
-        function fmtDate(dateStr) {
-            if (!dateStr) return '—';
-            var d = new Date(dateStr + 'T00:00:00');
-            return d.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        }
-        function genBookingId() {
-            return 'BK-' + Math.floor(100000 + Math.random() * 900000);
-        }
-        function isWeekend(dateStr) {
-            if (!dateStr) return false;
-            var d = new Date(dateStr + 'T00:00:00');
-            return d.getDay() === 0 || d.getDay() === 6;
-        }
-        function isRush(dateStr) {
-            if (!dateStr) return false;
-            var today = new Date(); today.setHours(0,0,0,0);
-            var ev = new Date(dateStr + 'T00:00:00');
-            var diff = (ev - today) / (1000 * 60 * 60 * 24);
-            return diff >= 0 && diff <= 7;
-        }
-            
-        /* ── STATE ── */
-        var state = {
-            name: '', phone: '', eventType: '', date: '', venue: '',
-            guests: 0, payment: '', location: '',
-            serviceName: '', serviceFee: 0, serviceFeeType: 'flat',
-            packageName: '', packagePrice: 0,
-            locationFee: 0, weekendFee: 0, rushFee: 0
-        };
-             var proceedAfterWarning = false;
-            
+            /* ── HELPERS ── */
+            function fmt(n) {
+                return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
+            function fmtDate(dateStr) {
+                if (!dateStr) return '—';
+                var d = new Date(dateStr + 'T00:00:00');
+                return d.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+            function genBookingId() {
+                return 'BK-' + Math.floor(100000 + Math.random() * 900000);
+            }
+            function isWeekend(dateStr) {
+                if (!dateStr) return false;
+                var d = new Date(dateStr + 'T00:00:00');
+                return d.getDay() === 0 || d.getDay() === 6;
+            }
+            function isRush(dateStr) {
+                if (!dateStr) return false;
+                var today = new Date(); today.setHours(0, 0, 0, 0);
+                var ev = new Date(dateStr + 'T00:00:00');
+                var diff = (ev - today) / (1000 * 60 * 60 * 24);
+                return diff >= 0 && diff <= 7;
+            }
+
+            /* ── STATE ── */
+            var state = {
+                name: '', phone: '', eventType: '', date: '', venue: '',
+                guests: 0, payment: '', location: '',
+                serviceName: '', serviceFee: 0, serviceFeeType: 'flat',
+                packageName: '', packagePrice: 0,
+                locationFee: 0, weekendFee: 0, rushFee: 0
+            };
+            var proceedAfterWarning = false;
+
             // SHOW WARNING MODAL
             function showWarningModal(warnings) {
                 var list = document.getElementById('warningList');
                 list.innerHTML = '';
-            
-                warnings.forEach(function(w) {
+
+                warnings.forEach(function (w) {
                     var li = document.createElement('li');
                     li.textContent = w;
                     li.style.marginBottom = '0.5rem';
                     list.appendChild(li);
                 });
-            
+
                 document.getElementById('warningOverlay').style.display = 'flex';
                 document.body.style.overflow = 'hidden';
             }
-            
+
             // CLOSE MODAL
             function closeWarningModal() {
                 document.getElementById('warningOverlay').style.display = 'none';
                 document.body.style.overflow = '';
             }
-            
+
             // HANDLE CONTINUE BUTTON
             document.getElementById('btnProceedBooking').addEventListener('click', function () {
                 proceedAfterWarning = true;
@@ -1126,25 +1126,25 @@
 
         /* ── SUMMARY ELEMENT REFS ── */
         var S = {
-            name:       document.getElementById('sumName'),
-            phone:      document.getElementById('sumPhone'),
-            eventType:  document.getElementById('sumEventType'),
-            date:       document.getElementById('sumDate'),
-            venue:      document.getElementById('sumVenue'),
-            guests:     document.getElementById('sumGuests'),
-            payment:    document.getElementById('sumPayment'),
-            location:   document.getElementById('sumLocation'),
-            service:    document.getElementById('sumService'),
-            package:    document.getElementById('sumPackage'),
-            perGuest:   document.getElementById('sumPerGuest'),
-            subtotal:   document.getElementById('costSubtotal'),
-            svcFee:     document.getElementById('costServiceFee'),
-            locFee:     document.getElementById('costLocationFee'),
+            name: document.getElementById('sumName'),
+            phone: document.getElementById('sumPhone'),
+            eventType: document.getElementById('sumEventType'),
+            date: document.getElementById('sumDate'),
+            venue: document.getElementById('sumVenue'),
+            guests: document.getElementById('sumGuests'),
+            payment: document.getElementById('sumPayment'),
+            location: document.getElementById('sumLocation'),
+            service: document.getElementById('sumService'),
+            package: document.getElementById('sumPackage'),
+            perGuest: document.getElementById('sumPerGuest'),
+            subtotal: document.getElementById('costSubtotal'),
+            svcFee: document.getElementById('costServiceFee'),
+            locFee: document.getElementById('costLocationFee'),
             rowWeekend: document.getElementById('rowWeekendFee'),
-            rowRush:    document.getElementById('rowRushFee'),
-            wkNotice:   document.getElementById('weekendNotice'),
+            rowRush: document.getElementById('rowRushFee'),
+            wkNotice: document.getElementById('weekendNotice'),
             rushNotice: document.getElementById('rushNotice'),
-            total:      document.getElementById('totalAmount')
+            total: document.getElementById('totalAmount')
         };
 
         function sv(el, val) {
@@ -1158,27 +1158,27 @@
         }
 
         function updateSummary() {
-            sv(S.name,      state.name);
-            sv(S.phone,     state.phone);
+            sv(S.name, state.name);
+            sv(S.phone, state.phone);
             sv(S.eventType, state.eventType);
-            sv(S.date,      state.date ? fmtDate(state.date) : '');
-            sv(S.venue,     state.venue);
-            sv(S.guests,    state.guests > 0 ? state.guests + ' guests' : '');
-            sv(S.payment,   state.payment);
-            sv(S.location,  state.location === 'within' ? 'Within Argao'
-                          : state.location === 'outside' ? 'Outside Argao (+₱2,500)'
-                          : '');
-            sv(S.service,   state.serviceName);
-            sv(S.package,   state.packageName || 'Not selected');
-            sv(S.perGuest,  state.packagePrice > 0 ? fmt(state.packagePrice) + '/guest' : '');
+            sv(S.date, state.date ? fmtDate(state.date) : '');
+            sv(S.venue, state.venue);
+            sv(S.guests, state.guests > 0 ? state.guests + ' guests' : '');
+            sv(S.payment, state.payment);
+            sv(S.location, state.location === 'within' ? 'Within Argao'
+                : state.location === 'outside' ? 'Outside Argao (+₱2,500)'
+                    : '');
+            sv(S.service, state.serviceName);
+            sv(S.package, state.packageName || 'Not selected');
+            sv(S.perGuest, state.packagePrice > 0 ? fmt(state.packagePrice) + '/guest' : '');
 
-            var guests   = state.guests > 0 ? state.guests : 0;
+            var guests = state.guests > 0 ? state.guests : 0;
             var subtotal = state.packagePrice * guests;
-            var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-            var locFee   = state.locationFee;
-            var wkFee    = state.weekendFee;
-            var rushFee  = state.rushFee;
-            var total    = subtotal + svcFee + locFee + wkFee + rushFee;
+            var svcFee = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
+            var locFee = state.locationFee;
+            var wkFee = state.weekendFee;
+            var rushFee = state.rushFee;
+            var total = subtotal + svcFee + locFee + wkFee + rushFee;
 
             S.subtotal.textContent = fmt(subtotal);
 
@@ -1197,7 +1197,7 @@
                 S.locFee.textContent = 'Free';
                 S.locFee.style.color = 'var(--success)';
             }
-            
+
             S.rowWeekend.classList.toggle('hidden-row', wkFee === 0);
             S.wkNotice.classList.toggle('show', wkFee > 0);
             S.rowRush.classList.toggle('hidden-row', rushFee === 0);
@@ -1211,13 +1211,13 @@
             if (el) el.addEventListener(evt, fn);
         }
 
-        onEl(document.getElementById('<%= txtClientName.ClientID %>'),   'input',  function(){ state.name      = this.value.trim(); updateSummary(); });
-        onEl(document.getElementById('<%= txtPhoneNumber.ClientID %>'),  'input',  function(){ state.phone     = this.value.trim(); updateSummary(); });
-        onEl(document.getElementById('<%= ddlEventType.ClientID %>'),    'change', function(){ state.eventType = this.value;        updateSummary(); });
-        onEl(document.getElementById('<%= txtEventDate.ClientID %>'),    'change', function(){
-            state.date       = this.value;
+        onEl(document.getElementById('<%= txtClientName.ClientID %>'), 'input', function () { state.name = this.value.trim(); updateSummary(); });
+        onEl(document.getElementById('<%= txtPhoneNumber.ClientID %>'), 'input', function () { state.phone = this.value.trim(); updateSummary(); });
+        onEl(document.getElementById('<%= ddlEventType.ClientID %>'), 'change', function () { state.eventType = this.value; updateSummary(); });
+        onEl(document.getElementById('<%= txtEventDate.ClientID %>'), 'change', function () {
+            state.date = this.value;
             state.weekendFee = isWeekend(this.value) ? 3000 : 0;
-            state.rushFee    = isRush(this.value)    ? 5000 : 0;
+            state.rushFee = isRush(this.value) ? 5000 : 0;
             updateSummary();
         });
         onEl(document.getElementById('<%= txtGuestCount.ClientID %>'),   'input',  function(){
@@ -1502,52 +1502,52 @@
         }
 
         /* Called by code-behind via ClientScript.RegisterStartupScript */
-        window.showConfirmationModal = function(d) {
-            document.getElementById('modalBookingId').textContent    = d.bookingRef;
-            document.getElementById('rcptName').textContent          = d.name;
-            document.getElementById('rcptPhone').textContent         = d.phone;
-            document.getElementById('rcptEventType').textContent     = d.eventType;
-            document.getElementById('rcptDate').textContent          = d.date;
-            document.getElementById('rcptVenue').textContent         = d.venue;
-            document.getElementById('rcptGuests').textContent        = d.guests + ' guests';
-            document.getElementById('rcptPackage').textContent       = d.packageName;
+        window.showConfirmationModal = function (d) {
+            document.getElementById('modalBookingId').textContent = d.bookingRef;
+            document.getElementById('rcptName').textContent = d.name;
+            document.getElementById('rcptPhone').textContent = d.phone;
+            document.getElementById('rcptEventType').textContent = d.eventType;
+            document.getElementById('rcptDate').textContent = d.date;
+            document.getElementById('rcptVenue').textContent = d.venue;
+            document.getElementById('rcptGuests').textContent = d.guests + ' guests';
+            document.getElementById('rcptPackage').textContent = d.packageName;
             document.getElementById('rcptPricePerGuest').textContent = d.pricePerGuest;
-            document.getElementById('rcptService').textContent       = d.service;
-            document.getElementById('rcptPayment').textContent       = d.payment;
-            document.getElementById('rcptSubtotal').textContent      = d.total;
-            document.getElementById('rcptServiceFee').textContent    = 'Included';
-            document.getElementById('rcptLocationFee').textContent   = 'Included';
-            document.getElementById('rcptTotal').textContent         = d.total;
-            document.getElementById('rcptRowService').style.display  = '';
+            document.getElementById('rcptService').textContent = d.service;
+            document.getElementById('rcptPayment').textContent = d.payment;
+            document.getElementById('rcptSubtotal').textContent = d.total;
+            document.getElementById('rcptServiceFee').textContent = 'Included';
+            document.getElementById('rcptLocationFee').textContent = 'Included';
+            document.getElementById('rcptTotal').textContent = d.total;
+            document.getElementById('rcptRowService').style.display = '';
             document.getElementById('rcptRowLocation').style.display = '';
-            document.getElementById('rcptRowWeekend').style.display  = 'none';
-            document.getElementById('rcptRowRush').style.display     = 'none';
+            document.getElementById('rcptRowWeekend').style.display = 'none';
+            document.getElementById('rcptRowRush').style.display = 'none';
 
             document.getElementById('modalOverlay').classList.add('open');
             document.body.style.overflow = 'hidden';
         };
 
         /* ── Done button: close modal and reload page to clear the form ── */
-        document.getElementById('btnDone').addEventListener('click', function() {
+        document.getElementById('btnDone').addEventListener('click', function () {
             closeReceiptModal();
             // Reload the page — this clears all ASP.NET server controls back to defaults
             window.location.href = 'Booking.aspx';
         });
 
         /* ── Print button: generate a printable receipt in a new window ── */
-        document.getElementById('btnPrint').addEventListener('click', function() {
-            var id        = document.getElementById('modalBookingId').textContent;
-            var name      = document.getElementById('rcptName').textContent;
-            var phone     = document.getElementById('rcptPhone').textContent;
-            var evtType   = document.getElementById('rcptEventType').textContent;
-            var date      = document.getElementById('rcptDate').textContent;
-            var venue     = document.getElementById('rcptVenue').textContent;
-            var guests    = document.getElementById('rcptGuests').textContent;
-            var pkg       = document.getElementById('rcptPackage').textContent;
-            var ppg       = document.getElementById('rcptPricePerGuest').textContent;
-            var svc       = document.getElementById('rcptService').textContent;
-            var payment   = document.getElementById('rcptPayment').textContent;
-            var total     = document.getElementById('rcptTotal').textContent;
+        document.getElementById('btnPrint').addEventListener('click', function () {
+            var id = document.getElementById('modalBookingId').textContent;
+            var name = document.getElementById('rcptName').textContent;
+            var phone = document.getElementById('rcptPhone').textContent;
+            var evtType = document.getElementById('rcptEventType').textContent;
+            var date = document.getElementById('rcptDate').textContent;
+            var venue = document.getElementById('rcptVenue').textContent;
+            var guests = document.getElementById('rcptGuests').textContent;
+            var pkg = document.getElementById('rcptPackage').textContent;
+            var ppg = document.getElementById('rcptPricePerGuest').textContent;
+            var svc = document.getElementById('rcptService').textContent;
+            var payment = document.getElementById('rcptPayment').textContent;
+            var total = document.getElementById('rcptTotal').textContent;
 
             var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
                 + '<title>Booking Receipt ' + id + '</title>'
@@ -1604,11 +1604,11 @@
             w.document.write(html);
             w.document.close();
             w.focus();
-            setTimeout(function(){ w.print(); }, 500);
+            setTimeout(function () { w.print(); }, 500);
         });
 
         /* Close modal when clicking outside */
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        document.getElementById('modalOverlay').addEventListener('click', function (e) {
             if (e.target === this) closeReceiptModal();
         });
     </script>
