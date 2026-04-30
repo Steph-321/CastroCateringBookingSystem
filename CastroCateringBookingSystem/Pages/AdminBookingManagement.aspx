@@ -37,56 +37,129 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         h1 { font-family: 'Playfair Display', serif; }
 
         /* SIDEBAR */
-        .sidebar {
+                .sidebar {
             width: 260px;
             background: var(--bg-white);
-            position: fixed;
-            height: 100vh;
             border-right: 1px solid var(--border-light);
             display: flex;
             flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         .sidebar-header {
-            padding: 20px;
+            padding: 1.5rem;
             border-bottom: 1px solid var(--border-light);
         }
 
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
         .logo-text {
-            font-size: 18px;
-            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
         }
 
         .logo-subtext {
-            font-size: 12px;
+            font-size: 0.75rem;
             color: var(--text-gray);
+            margin-left: 3.2rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 1rem;
+            flex: 1;
         }
 
         .nav-item {
-            display: block;
-            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
             text-decoration: none;
             color: var(--text-brown);
+            font-weight: 500;
         }
 
         .nav-item:hover {
             background: var(--bg-cream);
         }
 
-        .active {
-            background: #f0ebe4;
-            font-weight: bold;
+        .nav-item.active {
+            background: var(--bg-beige);
+            color: var(--primary-gold);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
         }
 
         .sidebar-footer {
-            margin-top: auto;
-            padding: 20px;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-light);
         }
 
-        .btn-back, .btn-signout {
-            display: block;
-            margin-bottom: 10px;
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-cream);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-brown);
+            transition: all 0.3s;
             text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .btn-back:hover {
+            background: var(--bg-beige);
+        }
+
+        .btn-signout {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #d92626;
+            transition: all 0.3s;
+        }
+
+        .btn-signout:hover {
+            background: #fff3cd;
+            border-radius: 8px;
         }
 
         /* MAIN CONTENT */
