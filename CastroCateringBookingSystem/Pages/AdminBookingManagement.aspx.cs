@@ -39,10 +39,11 @@ namespace CastroCateringBookingSystem.Pages
                         B.EventDate,
                         B.NoOfGuests,
                         B.PackageID,
-                        B.Total,
+                        (P.Price * B.NoOfGuests) AS Total,
                         B.Status
                     FROM Bookings B
                     JOIN Users U ON B.UserID = U.UserID
+                    JOIN Packages P ON B.PackageID = P.PackageID
                     ORDER BY B.EventDate DESC";
 
 
