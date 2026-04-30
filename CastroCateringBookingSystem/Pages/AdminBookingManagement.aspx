@@ -387,7 +387,8 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <asp:GridView ID="gvBookings" runat="server" 
+       
+        <asp:GridView ID="GridViewBookings" runat="server" 
     AutoGenerateColumns="False"
     CssClass="admin-table"
     HeaderStyle-CssClass="admin-header"
