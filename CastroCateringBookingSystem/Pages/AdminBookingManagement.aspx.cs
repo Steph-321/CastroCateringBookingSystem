@@ -58,34 +58,39 @@ namespace CastroCateringBookingSystem.Pages
         {
             int bookingId = Convert.ToInt32(e.CommandArgument);
 
-            string newStatus = "";
+            string newStatus = null;
 
-            if (e.CommandName == "Approve")
+            switch (e.CommandName)
             {
-                newStatus = "Approved";
-            }
-            else if (e.CommandName == "Done")
-            {
-                newStatus = "Done";
+                case "Approve":
+                    newStatus = "Approved";
+                    break;
+
+                case "Done":
+                    newStatus = "Done";
+                    break;
             }
 
-            if (newStatus != "")
+            if (!string.IsNullOrEmpty(newStatus))
             {
                 using (SqlConnection conn = new SqlConnection(ConnStr))
                 {
-                    string query = "UPDATE Bookings SET Status=@Status WHERE BookingID=@ID";
+                    string query = @"UPDATE Bookings 
+                         SET Status = @Status 
+                         WHERE BookingID = @ID";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@Status", newStatus);
+                    cmd.Parameters.AddWithValue("@Status", newStatus.Trim());
                     cmd.Parameters.AddWithValue("@ID", bookingId);
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
 
-                LoadBookings(); // refresh grid
+                LoadBookings();
             }
         }
+
 
         protected void GridViewBookings_RowDeleting(object sender, System.Web.UI.WebControls.GridViewDeleteEventArgs e)
         {
