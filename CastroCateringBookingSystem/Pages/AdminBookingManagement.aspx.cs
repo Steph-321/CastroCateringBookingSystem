@@ -31,10 +31,16 @@ namespace CastroCateringBookingSystem.Pages
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = @"
-            SELECT B.BookingID, U.Username, B.EventType, B.EventDate, B.NoOfGuests
-            FROM Bookings B
-            JOIN Users U ON B.UserID = U.UserID
-            ORDER BY B.EventDate DESC";
+                SELECT 
+                    B.BookingID,
+                    U.Username AS CustomerName,
+                    B.EventType,
+                    B.EventDate,
+                    B.NoOfGuests
+                FROM Bookings B
+                JOIN Users U ON B.UserID = U.UserID
+                ORDER BY B.EventDate DESC";
+
 
 
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
