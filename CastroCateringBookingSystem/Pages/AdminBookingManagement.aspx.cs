@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -47,10 +47,6 @@ namespace CastroCateringBookingSystem.Pages
                     ORDER BY B.EventDate DESC";
 
 
-
-
-
-
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -66,40 +62,60 @@ namespace CastroCateringBookingSystem.Pages
             string cmdName = e.CommandName.Trim();
             string newStatus = null;
 
-            Response.Write("COMMAND: [" + cmdName + "]<br/>");
-
             if (cmdName == "Approve")
-            {
                 newStatus = "Approved";
-            }
             else if (cmdName == "Done")
-            {
                 newStatus = "Done";
-            }
             else if (cmdName == "Pending")
-            {
                 newStatus = "Pending";
-            }
-
-            Response.Write("STATUS: [" + newStatus + "]<br/>");
 
             if (string.IsNullOrWhiteSpace(newStatus))
                 return;
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
-                string query = "UPDATE Bookings SET Status=@Status WHERE BookingID=@ID";
-
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@Status", newStatus.Trim());
-                cmd.Parameters.AddWithValue("@ID", bookingId);
-
                 conn.Open();
+
+                // 1. UPDATE STATUS
+                string updateQuery = "UPDATE Bookings SET Status=@Status WHERE BookingID=@ID";
+                SqlCommand cmd = new SqlCommand(updateQuery, conn);
+                cmd.Parameters.AddWithValue("@Status", newStatus);
+                cmd.Parameters.AddWithValue("@ID", bookingId);
                 cmd.ExecuteNonQuery();
+
+                // 2. GET USERID
+                string getUser = "SELECT UserID FROM Bookings WHERE BookingID=@ID";
+                SqlCommand cmdUser = new SqlCommand(getUser, conn);
+                cmdUser.Parameters.AddWithValue("@ID", bookingId);
+
+                int userId = Convert.ToInt32(cmdUser.ExecuteScalar());
+
+                // 3. MESSAGE
+                string message = "";
+
+                if (newStatus == "Approved")
+                    message = "Your booking has been APPROVED 🎉";
+                else if (newStatus == "Done")
+                    message = "Your booking is COMPLETED ✔";
+                else
+                    message = "Your booking status was updated.";
+
+                // 4. INSERT NOTIFICATION
+                string notifQuery = @"
+            INSERT INTO Notifications (UserID, BookingID, Message)
+            VALUES (@UserID, @BookingID, @Message)";
+
+                SqlCommand cmdNotif = new SqlCommand(notifQuery, conn);
+                cmdNotif.Parameters.AddWithValue("@UserID", userId);
+                cmdNotif.Parameters.AddWithValue("@BookingID", bookingId);
+                cmdNotif.Parameters.AddWithValue("@Message", message);
+
+                cmdNotif.ExecuteNonQuery();
             }
 
             LoadBookings();
         }
+
 
 
 

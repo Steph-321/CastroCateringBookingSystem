@@ -11,42 +11,165 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* ===== YOUR ORIGINAL CSS (KEEPED SHORT HERE FOR CLEAN OUTPUT) ===== */
+                   * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+            :root {
+                --primary-gold: #c2934a;
+                --light-gold: #f4d589;
+                --bg-cream: #f9f6f2;
+                --bg-white: #ffffff;
+                --bg-beige: #f0ebe4;
+                --text-dark: #2e211b;
+                --text-brown: #493a2f;
+                --text-gray: #756e64;
+                --border-light: #e5dcd0;
+                --success: #2d8a53;
+                --warning: #f5af35;
+            }
 
-        :root {
-            --primary-gold: #c2934a;
-            --bg-cream: #f9f6f2;
-            --bg-white: #ffffff;
-            --text-dark: #2e211b;
-            --text-brown: #493a2f;
-            --text-gray: #756e64;
-            --border-light: #e5dcd0;
-            --danger: #d92626;
-        }
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: var(--bg-cream);
+                color: var(--text-dark);
+                display: flex;
+                min-height: 100vh;
+            }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-cream);
-            display: flex;
-        }
-
-        h1 { font-family: 'Playfair Display', serif; }
+            h1, h2, h3 {
+                font-family: 'Playfair Display', serif;
+}
 
         /* SIDEBAR */
-        .sidebar {
+                .sidebar {
             width: 260px;
             background: var(--bg-white);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
             position: fixed;
             height: 100vh;
-            border-right: 1px solid var(--border-light);
+            overflow-y: auto;
         }
 
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .logo-subtext {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            margin-left: 3.2rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 1rem;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text-brown);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-cream);
+        }
+
+        .nav-item.active {
+            background: var(--bg-beige);
+            color: var(--primary-gold);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-cream);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-brown);
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .btn-back:hover {
+            background: var(--bg-beige);
+        }
+
+        .btn-signout {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #d92626;
+            transition: all 0.3s;
+        }
+
+        .btn-signout:hover {
+            background: #fff3cd;
+            border-radius: 8px;
+        }
+
+        /* MAIN CONTENT */
         .main-content {
             margin-left: 260px;
             padding: 2rem;
@@ -95,17 +218,26 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <h2 style="padding:20px;">Castro Admin</h2>
+
+        <div class="sidebar-header">
+            <div class="logo-text">Castro Admin</div>
+            <div class="logo-subtext">Management Panel</div>
+        </div>
+
+        <a href="AdminDashboard.aspx" class="nav-item">📊 Dashboard</a>
+        <a href="AdminBookingManagement.aspx" class="nav-item active">📋 Booking Management</a>
+
+        <div class="sidebar-footer">
+            <a href="Home.aspx" class="btn-back">← Back to User Site</a>
+            <a href="Logout.aspx" class="btn-signout">→ Sign out</a>
+        </div>
+
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="main-content">
+    <div class="main-content">
 
-        <h1>Booking Management</h1>
-
-        <br />
-
-        <!-- GRIDVIEW ONLY -->
+        <!-- GRIDVIEW -->
         <asp:GridView ID="GridViewBookings" runat="server"
             AutoGenerateColumns="False"
             CssClass="data-table"
@@ -161,7 +293,6 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         </asp:GridView>
 
         <br />
-
         <asp:Label ID="lblTotalBookings" runat="server" Font-Bold="true"></asp:Label>
 
         <br /><br />
@@ -169,7 +300,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         <h3>Package Statistics</h3>
         <asp:Label ID="lblPackageStats" runat="server"></asp:Label>
 
-    </main>
+    </div>
 
 </form>
 
