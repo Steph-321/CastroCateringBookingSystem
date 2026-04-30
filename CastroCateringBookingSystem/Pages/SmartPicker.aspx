@@ -693,7 +693,7 @@
             const pkg = JSON.parse(sessionStorage.getItem('recommendedPackage'));
             if (pkg) {
                 // Redirect to booking page with pre-filled data
-                window.location.href = `booking.html?package=${encodeURIComponent(pkg.name)}&guests=${pkg.guests}`;
+                window.location.href = `booking.aspx?package=${encodeURIComponent(pkg.name)}&guests=${pkg.guests}`;
             }
         }
 
