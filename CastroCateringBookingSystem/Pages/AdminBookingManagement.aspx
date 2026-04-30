@@ -495,55 +495,101 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="page-header">
-            <div>
-                <h1>Booking Management</h1>
-                <p>View, edit, and manage all bookings in the system.</p>
-            </div>
-            
-            <div class="header-actions">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Search by client, ID, event..." id="searchInput" onkeyup="searchBookings()">
-                </div>
-                
-                <select class="filter-select" id="statusFilter" onchange="filterBookings()">
-                    <option value="All">All statuses</option>
-                    <option value="Upcoming">Upcoming</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-            </div>
+    <form id="form2" runat="server">
+
+<main class="main-content">
+
+    <div class="page-header">
+        <div>
+            <h1>Booking Management</h1>
+            <p>View, edit, and manage all bookings in the system.</p>
         </div>
 
-        <div class="table-section">
+        <div class="header-actions">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search by client, ID, event..."
+                    id="searchInput" onkeyup="searchBookings()">
+            </div>
 
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>CLIENT</th>
-                        <th>EVENT</th>
-                        <th>DATE</th>
-                        <th>GUESTS</th>
-                        <th>PACKAGE</th>
-                        <th>TOTAL</th>
-                        <th>STATUS</th>
-                        <th>ACTIONS</th>
-                    </tr>
-                </thead>
-              
-                <tbody id="bookingsTable" runat="server">
-                 </tbody>
-            </table>
+            <select class="filter-select" id="statusFilter" onchange="filterBookings()">
+                <option value="All">All statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Done">Done</option>
+            </select>
+        </div>
+    </div>
 
-         <div style="margin-top:20px;">
-        <h3>Package Statistics</h3>
-        <asp:Label ID="lblPackageStats" runat="server"></asp:Label>
+    <div class="table-section">
+
+        <!-- GRIDVIEW ONLY (NO HTML TABLE) -->
+        <asp:GridView ID="GridView1" runat="server"
+            AutoGenerateColumns="False"
+            CssClass="data-table"
+            GridLines="None"
+            DataKeyNames="BookingID"
+            OnRowDeleting="GridViewBookings_RowDeleting"
+            OnRowCommand="GridViewBookings_RowCommand">
+
+            <Columns>
+
+                <asp:BoundField DataField="BookingID" HeaderText="ID" />
+                <asp:BoundField DataField="CustomerName" HeaderText="CLIENT" />
+                <asp:BoundField DataField="EventType" HeaderText="EVENT" />
+                <asp:BoundField DataField="EventDate" HeaderText="DATE" />
+                <asp:BoundField DataField="NoOfGuests" HeaderText="GUESTS" />
+                <asp:BoundField DataField="PackageID" HeaderText="PACKAGE" />
+                <asp:BoundField DataField="Total" HeaderText="TOTAL" />
+
+                <asp:TemplateField HeaderText="STATUS">
+                    <ItemTemplate>
+                        <span class='<%# Eval("Status") %>'>
+                            <%# Eval("Status") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+
+                <asp:TemplateField HeaderText="ACTIONS">
+                    <ItemTemplate>
+
+                        <asp:Button ID="btnApprove" runat="server"
+                            Text="Approve"
+                            CommandName="Approve"
+                            CommandArgument='<%# Eval("BookingID") %>'
+                            CssClass="btn-edit" />
+
+                        <asp:Button ID="btnDone" runat="server"
+                            Text="Done"
+                            CommandName="Done"
+                            CommandArgument='<%# Eval("BookingID") %>'
+                            CssClass="btn-view" />
+
+                        <asp:Button ID="btnDelete" runat="server"
+                            Text="Delete"
+                            CommandName="Delete"
+                            CommandArgument='<%# Eval("BookingID") %>'
+                            CssClass="btn-delete" />
+
+                    </ItemTemplate>
+                </asp:TemplateField>
+
+            </Columns>
+
+        </asp:GridView>
+
+        <!-- PACKAGE STATS -->
+        <div style="margin-top:20px;">
+            <h3>Package Statistics</h3>
+            <asp:Label ID="lblPackageStats" runat="server"></asp:Label>
+        </div>
+
     </div>
-    </div>
-    </main>
+
+</main>
+
+</form>
+
 
     <script>
         function searchBookings() {

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Configuration;
-using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -58,38 +59,46 @@ namespace CastroCateringBookingSystem.Pages
         {
             int bookingId = Convert.ToInt32(e.CommandArgument);
 
+            string cmdName = e.CommandName.Trim();
             string newStatus = null;
 
-            switch (e.CommandName)
-            {
-                case "Approve":
-                    newStatus = "Approved";
-                    break;
+            Response.Write("COMMAND: [" + cmdName + "]<br/>");
 
-                case "Done":
-                    newStatus = "Done";
-                    break;
+            if (cmdName == "Approve")
+            {
+                newStatus = "Approved";
+            }
+            else if (cmdName == "Done")
+            {
+                newStatus = "Done";
+            }
+            else if (cmdName == "Pending")
+            {
+                newStatus = "Pending";
             }
 
-            if (!string.IsNullOrEmpty(newStatus))
+            Response.Write("STATUS: [" + newStatus + "]<br/>");
+
+            if (string.IsNullOrWhiteSpace(newStatus))
+                return;
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
             {
-                using (SqlConnection conn = new SqlConnection(ConnStr))
-                {
-                    string query = @"UPDATE Bookings 
-                         SET Status = @Status 
-                         WHERE BookingID = @ID";
+                string query = "UPDATE Bookings SET Status=@Status WHERE BookingID=@ID";
 
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@Status", newStatus.Trim());
-                    cmd.Parameters.AddWithValue("@ID", bookingId);
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Status", newStatus.Trim());
+                cmd.Parameters.AddWithValue("@ID", bookingId);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
-
-                LoadBookings();
+                conn.Open();
+                cmd.ExecuteNonQuery();
             }
+
+            LoadBookings();
         }
+
+
+
 
 
         protected void GridViewBookings_RowDeleting(object sender, System.Web.UI.WebControls.GridViewDeleteEventArgs e)
