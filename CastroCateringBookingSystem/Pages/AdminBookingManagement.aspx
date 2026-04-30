@@ -11,8 +11,6 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* ===== YOUR ORIGINAL CSS (KEEPED SHORT HERE FOR CLEAN OUTPUT) ===== */
-
         * {
             margin: 0;
             padding: 0;
@@ -45,8 +43,53 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             position: fixed;
             height: 100vh;
             border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
         }
 
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-subtext {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-brown);
+        }
+
+        .nav-item:hover {
+            background: var(--bg-cream);
+        }
+
+        .active {
+            background: #f0ebe4;
+            font-weight: bold;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px;
+        }
+
+        .btn-back, .btn-signout {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+        }
+
+        /* MAIN CONTENT */
         .main-content {
             margin-left: 260px;
             padding: 2rem;
@@ -95,17 +138,26 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <h2 style="padding:20px;">Castro Admin</h2>
+
+        <div class="sidebar-header">
+            <div class="logo-text">Castro Admin</div>
+            <div class="logo-subtext">Management Panel</div>
+        </div>
+
+        <a href="AdminDashboard.aspx" class="nav-item">📊 Dashboard</a>
+        <a href="AdminBookingManagement.aspx" class="nav-item active">📋 Booking Management</a>
+
+        <div class="sidebar-footer">
+            <a href="Home.aspx" class="btn-back">← Back to User Site</a>
+            <a href="Logout.aspx" class="btn-signout">→ Sign out</a>
+        </div>
+
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="main-content">
+    <div class="main-content">
 
-        <h1>Booking Management</h1>
-
-        <br />
-
-        <!-- GRIDVIEW ONLY -->
+        <!-- GRIDVIEW -->
         <asp:GridView ID="GridViewBookings" runat="server"
             AutoGenerateColumns="False"
             CssClass="data-table"
@@ -161,7 +213,6 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         </asp:GridView>
 
         <br />
-
         <asp:Label ID="lblTotalBookings" runat="server" Font-Bold="true"></asp:Label>
 
         <br /><br />
@@ -169,7 +220,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         <h3>Package Statistics</h3>
         <asp:Label ID="lblPackageStats" runat="server"></asp:Label>
 
-    </main>
+    </div>
 
 </form>
 
