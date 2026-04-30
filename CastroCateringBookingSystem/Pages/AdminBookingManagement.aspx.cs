@@ -36,10 +36,13 @@ namespace CastroCateringBookingSystem.Pages
                     U.Username AS CustomerName,
                     B.EventType,
                     B.EventDate,
-                    B.NoOfGuests
+                    B.NoOfGuests,
+                    B.Status
                 FROM Bookings B
                 JOIN Users U ON B.UserID = U.UserID
                 ORDER BY B.EventDate DESC";
+
+
 
 
 
@@ -51,6 +54,39 @@ namespace CastroCateringBookingSystem.Pages
                 GridViewBookings.DataBind();
             }
         }
+        protected void GridViewBookings_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            int bookingId = Convert.ToInt32(e.CommandArgument);
+
+            string newStatus = "";
+
+            if (e.CommandName == "Approve")
+            {
+                newStatus = "Approved";
+            }
+            else if (e.CommandName == "Done")
+            {
+                newStatus = "Done";
+            }
+
+            if (newStatus != "")
+            {
+                using (SqlConnection conn = new SqlConnection(ConnStr))
+                {
+                    string query = "UPDATE Bookings SET Status=@Status WHERE BookingID=@ID";
+
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@Status", newStatus);
+                    cmd.Parameters.AddWithValue("@ID", bookingId);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
+                LoadBookings(); // refresh grid
+            }
+        }
+
         protected void GridViewBookings_RowDeleting(object sender, System.Web.UI.WebControls.GridViewDeleteEventArgs e)
         {
             int id = Convert.ToInt32(GridViewBookings.DataKeys[e.RowIndex].Value);

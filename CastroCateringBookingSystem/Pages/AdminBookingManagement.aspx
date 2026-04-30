@@ -373,39 +373,93 @@
                 padding: 0.75rem 0.5rem;
             }
         }
+                .status-Pending {
+            background: #fff3cd;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-Approved {
+            background: #d4edda;
+            color: #155724;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-Done {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
 
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
        
-        <asp:GridView ID="GridViewBookings" runat="server" 
+       <asp:GridView ID="GridViewBookings" runat="server"
     AutoGenerateColumns="False"
     CssClass="admin-table"
-    HeaderStyle-CssClass="admin-header"
-    RowStyle-CssClass="admin-row"
-    AlternatingRowStyle-CssClass="admin-alt-row"
     GridLines="None"
-    Width="100%">
+    DataKeyNames="BookingID"
+    OnRowDeleting="GridViewBookings_RowDeleting"
+    OnRowCommand="GridViewBookings_RowCommand">
 
     <Columns>
 
         <asp:BoundField DataField="BookingID" HeaderText="ID" />
         <asp:BoundField DataField="CustomerName" HeaderText="Customer" />
-        <asp:BoundField DataField="EventDate" HeaderText="Event Date" DataFormatString="{0:yyyy-MM-dd}" />
-        <asp:BoundField DataField="Status" HeaderText="Status" />
+        <asp:BoundField DataField="EventType" HeaderText="Event" />
+        <asp:BoundField DataField="EventDate" HeaderText="Date" />
+        <asp:BoundField DataField="NoOfGuests" HeaderText="Guests" />
 
+        <!-- STATUS (UI ONLY) -->
+        <asp:TemplateField HeaderText="Status">
+            <ItemTemplate>
+                <span class='<%# Eval("Status") %>'>
+                    <%# Eval("Status") %>
+                </span>
+            </ItemTemplate>
+        </asp:TemplateField>
+
+        <!-- ACTIONS -->
         <asp:TemplateField HeaderText="Actions">
             <ItemTemplate>
-                <asp:Button ID="btnView" runat="server" Text="View" CssClass="btn-view" />
-                <asp:Button ID="btnEdit" runat="server" Text="Edit" CssClass="btn-edit" />
-                <asp:Button ID="btnDelete" runat="server" Text="Delete" CssClass="btn-delete" />
+
+                <asp:Button ID="btnApprove" runat="server"
+                    Text="Approve"
+                    CommandName="Approve"
+                    CommandArgument='<%# Eval("BookingID") %>'
+                    CssClass="btn-edit" />
+
+                <asp:Button ID="btnDone" runat="server"
+                    Text="Done"
+                    CommandName="Done"
+                    CommandArgument='<%# Eval("BookingID") %>'
+                    CssClass="btn-view" />
+
+                <asp:Button ID="btnDelete" runat="server"
+                    Text="Delete"
+                    CommandName="Delete"
+                    CommandArgument='<%# Eval("BookingID") %>'
+                    CssClass="btn-delete" />
+
             </ItemTemplate>
         </asp:TemplateField>
 
     </Columns>
 
 </asp:GridView>
+
 
 
 <br />
