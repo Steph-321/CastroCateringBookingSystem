@@ -41,8 +41,6 @@
         h1, h2, h3 {
             font-family: 'Playfair Display', serif;
         }
-
-        /* Sidebar */
         .sidebar {
             width: 260px;
             background: var(--bg-white);
@@ -168,7 +166,6 @@
             border-radius: 8px;
         }
 
-        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 260px;
@@ -206,7 +203,6 @@
             padding: 0.75rem 1rem 0.75rem 2.5rem;
             border: 1px solid var(--border-light);
             border-radius: 8px;
-            font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             background: var(--bg-white);
             width: 300px;
@@ -229,7 +225,6 @@
             padding: 0.75rem 2.5rem 0.75rem 1rem;
             border: 1px solid var(--border-light);
             border-radius: 8px;
-            font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             background: var(--bg-white);
             cursor: pointer;
@@ -239,7 +234,6 @@
             background-position: right 1rem center;
         }
 
-        /* Table Section */
         .table-section {
             background: var(--bg-white);
             border-radius: 12px;
@@ -272,81 +266,81 @@
             padding: 1rem;
             border-bottom: 1px solid var(--border-light);
             font-size: 0.9rem;
-            vertical-align: middle;
         }
 
         .data-table tbody tr:hover {
             background: var(--bg-cream);
         }
 
-        .booking-id {
-            font-family: monospace;
-            color: var(--text-gray);
-            font-size: 0.85rem;
-            font-weight: 600;
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-white);
+            border-radius: 12px;
+            overflow: hidden;
         }
 
-        .client-name {
+        .admin-header th {
+            padding: 0.875rem 1rem;
+            text-align: left;
             font-weight: 600;
-            color: var(--text-dark);
+            color: var(--text-brown);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-cream);
+            border-bottom: 2px solid var(--border-light);
         }
 
-        .status-badge {
-            display: inline-block;
+        .admin-row td,
+        .admin-alt-row td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+        }
+
+        .admin-row:hover,
+        .admin-alt-row:hover {
+            background: var(--bg-cream);
+        }
+
+        .status-upcoming {
+            background: #fff3cd;
+            color: #856404;
             padding: 0.35rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
         }
 
-        .status-upcoming {
-            background: #fff3cd;
-            color: #856404;
-        }
-
         .status-completed {
             background: #d4edda;
             color: #155724;
-        }
-
-        .amount {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--primary-gold);
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-action {
-            width: 32px;
-            height: 32px;
+        .btn-view,
+        .btn-edit,
+        .btn-delete {
+            padding: 6px 10px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            font-size: 1rem;
+            font-size: 12px;
+            margin-right: 4px;
+            transition: 0.3s;
         }
 
-        .btn-view {
-            background: var(--bg-beige);
-            color: var(--primary-gold);
-        }
-
-        .btn-view:hover {
-            background: var(--primary-gold);
-            color: white;
-        }
-
+        .btn-view,
         .btn-edit {
             background: var(--bg-beige);
             color: var(--primary-gold);
         }
 
+        .btn-view:hover,
         .btn-edit:hover {
             background: var(--primary-gold);
             color: white;
@@ -374,15 +368,12 @@
         }
 
         @media (max-width: 1200px) {
-            .data-table {
-                font-size: 0.85rem;
-            }
-
             .data-table th,
             .data-table td {
                 padding: 0.75rem 0.5rem;
             }
         }
+
     </style>
 </head>
 <body>
