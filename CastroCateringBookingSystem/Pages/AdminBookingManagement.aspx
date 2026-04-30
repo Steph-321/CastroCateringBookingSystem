@@ -422,7 +422,6 @@
         <asp:BoundField DataField="EventDate" HeaderText="Date" />
         <asp:BoundField DataField="NoOfGuests" HeaderText="Guests" />
 
-        <!-- STATUS (UI ONLY) -->
         <asp:TemplateField HeaderText="Status">
             <ItemTemplate>
                 <span class='<%# Eval("Status") %>'>
@@ -431,7 +430,6 @@
             </ItemTemplate>
         </asp:TemplateField>
 
-        <!-- ACTIONS -->
         <asp:TemplateField HeaderText="Actions">
             <ItemTemplate>
 
