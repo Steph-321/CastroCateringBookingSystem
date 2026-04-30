@@ -452,6 +452,7 @@
         </div>
 
         <div class="table-section">
+
             <table class="data-table">
                 <thead>
                     <tr>
@@ -466,95 +467,15 @@
                         <th>ACTIONS</th>
                     </tr>
                 </thead>
-                <tbody id="bookingsTable">
-                    <tr>
-                        <td class="booking-id">#b-1001</td>
-                        <td class="client-name">Olivia Mendez</td>
-                        <td>Wedding</td>
-                        <td>5/3/2026</td>
-                        <td>120</td>
-                        <td>Grand Wedding Feast</td>
-                        <td class="amount">₱144,000</td>
-                        <td><span class="status-badge status-upcoming">Upcoming</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" onclick="viewBooking('b-1001')" title="View">👁️</button>
-                                <button class="btn-action btn-edit" onclick="editBooking('b-1001')" title="Edit">✏️</button>
-                                <button class="btn-action btn-delete" onclick="deleteBooking('b-1001')" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="booking-id">#b-1002</td>
-                        <td class="client-name">TechNova Inc.</td>
-                        <td>Corporate</td>
-                        <td>4/27/2026</td>
-                        <td>60</td>
-                        <td>Corporate Essentials</td>
-                        <td class="amount">₱39,000</td>
-                        <td><span class="status-badge status-upcoming">Upcoming</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" onclick="viewBooking('b-1002')" title="View">👁️</button>
-                                <button class="btn-action btn-edit" onclick="editBooking('b-1002')" title="Edit">✏️</button>
-                                <button class="btn-action btn-delete" onclick="deleteBooking('b-1002')" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="booking-id">#b-1003</td>
-                        <td class="client-name">Liam Garcia</td>
-                        <td>Birthday</td>
-                        <td>4/11/2026</td>
-                        <td>40</td>
-                        <td>Birthday Bliss</td>
-                        <td class="amount">₱19,200</td>
-                        <td><span class="status-badge status-completed">Completed</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" onclick="viewBooking('b-1003')" title="View">👁️</button>
-                                <button class="btn-action btn-edit" onclick="editBooking('b-1003')" title="Edit">✏️</button>
-                                <button class="btn-action btn-delete" onclick="deleteBooking('b-1003')" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="booking-id">#b-1004</td>
-                        <td class="client-name">Sofia Lim</td>
-                        <td>Anniversary</td>
-                        <td>3/24/2026</td>
-                        <td>18</td>
-                        <td>Intimate Private Dining</td>
-                        <td class="amount">₱32,400</td>
-                        <td><span class="status-badge status-completed">Completed</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" onclick="viewBooking('b-1004')" title="View">👁️</button>
-                                <button class="btn-action btn-edit" onclick="editBooking('b-1004')" title="Edit">✏️</button>
-                                <button class="btn-action btn-delete" onclick="deleteBooking('b-1004')" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="booking-id">#b-1005</td>
-                        <td class="client-name">Noah Tan</td>
-                        <td>Wedding</td>
-                        <td>5/15/2026</td>
-                        <td>200</td>
-                        <td>Grand Wedding Feast</td>
-                        <td class="amount">₱240,000</td>
-                        <td><span class="status-badge status-upcoming">Upcoming</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-view" onclick="viewBooking('b-1005')" title="View">👁️</button>
-                                <button class="btn-action btn-edit" onclick="editBooking('b-1005')" title="Edit">✏️</button>
-                                <button class="btn-action btn-delete" onclick="deleteBooking('b-1005')" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
+              
+                <tbody id="bookingsTable" runat="server">
+                 </tbody>
             </table>
-        </div>
+
+         <div style="margin-top:20px;">
+        <h3>Package Statistics</h3>
+        <asp:Label ID="lblPackageStats" runat="server"></asp:Label>
+    </div>
     </main>
 
     <script>

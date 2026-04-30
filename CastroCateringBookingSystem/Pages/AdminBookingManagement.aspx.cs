@@ -22,6 +22,7 @@ namespace CastroCateringBookingSystem.Pages
             {
                 LoadBookings();
                 LoadCount();
+                LoadPackageStats();
             }
         }
 
@@ -30,10 +31,10 @@ namespace CastroCateringBookingSystem.Pages
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = @"
-                SELECT B.BookingID, U.Username, B.EventType, B.EventDate, B.NoOfGuests
-                FROM Bookings B
-                JOIN Users U ON B.UserID = U.UserID
-                ORDER BY B.EventDate DESC";
+            SELECT B.BookingID, U.Username, B.EventType, B.EventDate, B.NoOfGuests
+            FROM Bookings B
+            JOIN Users U ON B.UserID = U.UserID
+            ORDER BY B.EventDate DESC";
 
 
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
@@ -75,6 +76,32 @@ namespace CastroCateringBookingSystem.Pages
                 lblTotalBookings.Text = "Total Bookings: " + total;
             }
         }
+        void LoadPackageStats()
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            {
+                string query = @"
+        SELECT PackageID, COUNT(*) AS TotalBookings
+        FROM Bookings
+        GROUP BY PackageID";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                string result = "";
+
+                while (reader.Read())
+                {
+                    result += "Package " + reader["PackageID"] +
+                              " = " + reader["TotalBookings"] + " bookings<br/>";
+                }
+
+                lblPackageStats.Text = result;
+            }
+        }
+
 
 
     }
