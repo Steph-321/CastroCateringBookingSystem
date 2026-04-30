@@ -476,6 +476,7 @@
         <h3>Package Statistics</h3>
         <asp:Label ID="lblPackageStats" runat="server"></asp:Label>
     </div>
+    </div>
     </main>
 
     <script>
