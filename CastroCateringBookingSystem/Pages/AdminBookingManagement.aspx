@@ -11,30 +11,37 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+                   * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        :root {
-            --primary-gold: #c2934a;
-            --bg-cream: #f9f6f2;
-            --bg-white: #ffffff;
-            --text-dark: #2e211b;
-            --text-brown: #493a2f;
-            --text-gray: #756e64;
-            --border-light: #e5dcd0;
-            --danger: #d92626;
-        }
+            :root {
+                --primary-gold: #c2934a;
+                --light-gold: #f4d589;
+                --bg-cream: #f9f6f2;
+                --bg-white: #ffffff;
+                --bg-beige: #f0ebe4;
+                --text-dark: #2e211b;
+                --text-brown: #493a2f;
+                --text-gray: #756e64;
+                --border-light: #e5dcd0;
+                --success: #2d8a53;
+                --warning: #f5af35;
+            }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-cream);
-            display: flex;
-        }
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: var(--bg-cream);
+                color: var(--text-dark);
+                display: flex;
+                min-height: 100vh;
+            }
 
-        h1 { font-family: 'Playfair Display', serif; }
+            h1, h2, h3 {
+                font-family: 'Playfair Display', serif;
+}
 
         /* SIDEBAR */
                 .sidebar {
