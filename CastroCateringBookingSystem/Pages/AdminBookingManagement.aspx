@@ -385,6 +385,7 @@
     </style>
 </head>
 <body>
+    <form id="form1" runat="server">
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -591,5 +592,6 @@
             window.location.href = 'LoginSignup.aspx';
         }
     </script>
+</form>
 </body>
 </html>
