@@ -10,12 +10,8 @@ namespace CastroCateringBookingSystem.Pages
         private static string ConnStr =>
             ConfigurationManager.ConnectionStrings["CastroCatering_DB"].ConnectionString;
 
-        // ─────────────────────────────────────────────────────────────────────
-        // PAGE LOAD
-        // ─────────────────────────────────────────────────────────────────────
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Redirect to login if not authenticated
             if (Session["UserID"] == null)
             {
                 Response.Redirect("~/Pages/LoginSignup.aspx");
@@ -23,12 +19,8 @@ namespace CastroCateringBookingSystem.Pages
             }
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // CONFIRM BOOKING — triggered by asp:Button btnConfirm
-        // ─────────────────────────────────────────────────────────────────────
         protected void btnConfirm_Click(object sender, EventArgs e)
         {
-            // ── Read ASP.NET server controls ──────────────────────────────────
             string clientName    = txtClientName.Text.Trim();
             string phoneNumber   = txtPhoneNumber.Text.Trim();
             string eventType     = ddlEventType.SelectedValue;
@@ -37,22 +29,19 @@ namespace CastroCateringBookingSystem.Pages
             string paymentMode   = ddlPaymentMode.SelectedValue;
             string venue         = txtVenue.Text.Trim();
             string venueLocation = ddlVenueLocation.SelectedValue;
-
-            // ── Read hidden fields (set by JavaScript) ────────────────────────
             string serviceStyle  = hfServiceStyle.Value.Trim();
             string packageName   = hfPackageName.Value.Trim();
             string totalAmtStr   = hfTotalAmount.Value.Trim();
 
-            // ── Server-side validation ────────────────────────────────────────
-            if (string.IsNullOrWhiteSpace(clientName)   ||
-                string.IsNullOrWhiteSpace(phoneNumber)  ||
-                string.IsNullOrWhiteSpace(eventType)    ||
-                string.IsNullOrWhiteSpace(eventDateStr) ||
-                string.IsNullOrWhiteSpace(guestCountStr)||
-                string.IsNullOrWhiteSpace(paymentMode)  ||
-                string.IsNullOrWhiteSpace(venue)        ||
-                string.IsNullOrWhiteSpace(venueLocation)||
-                string.IsNullOrWhiteSpace(serviceStyle) ||
+            if (string.IsNullOrWhiteSpace(clientName)    ||
+                string.IsNullOrWhiteSpace(phoneNumber)   ||
+                string.IsNullOrWhiteSpace(eventType)     ||
+                string.IsNullOrWhiteSpace(eventDateStr)  ||
+                string.IsNullOrWhiteSpace(guestCountStr) ||
+                string.IsNullOrWhiteSpace(paymentMode)   ||
+                string.IsNullOrWhiteSpace(venue)         ||
+                string.IsNullOrWhiteSpace(venueLocation) ||
+                string.IsNullOrWhiteSpace(serviceStyle)  ||
                 string.IsNullOrWhiteSpace(packageName))
             {
                 ShowError("Please fill in all required fields.");
@@ -86,17 +75,15 @@ namespace CastroCateringBookingSystem.Pages
                 {
                     conn.Open();
 
-                    // Look up PackageID by name
                     int packageId = 0;
                     using (var pkgCmd = new SqlCommand(
                         "SELECT PackageID FROM Packages WHERE PackageName = @Name", conn))
                     {
                         pkgCmd.Parameters.AddWithValue("@Name", packageName);
-                        object result = pkgCmd.ExecuteScalar();
-                        if (result != null) packageId = Convert.ToInt32(result);
+                        object r = pkgCmd.ExecuteScalar();
+                        if (r != null) packageId = Convert.ToInt32(r);
                     }
 
-                    // Insert booking
                     const string sql = @"
                         INSERT INTO Bookings
                             (UserID, PackageID, ClientName, EventType, EventDate,
@@ -123,43 +110,27 @@ namespace CastroCateringBookingSystem.Pages
                         cmd.Parameters.AddWithValue("@ModeOfPayment", paymentMode);
                         cmd.Parameters.AddWithValue("@TotalAmount",   totalAmount);
                         cmd.Parameters.AddWithValue("@PhoneNumber",   phoneNumber);
-
                         newBookingId = Convert.ToInt32(cmd.ExecuteScalar());
                     }
 
-                    // Pass booking ID and all receipt data to JS to show in the confirmation modal
-                    string bookingRef      = "BK-" + newBookingId.ToString("D6");
-                    string withinArgaoText = withinArgao ? "Yes - Within Argao" : "No - Outside Argao (+P2,500)";
-                    string script = string.Format(@"
-                        showConfirmationModal({{
-                            bookingRef:    '{0}',
-                            name:          {1},
-                            phone:         {2},
-                            eventType:     {3},
-                            date:          {4},
-                            venue:         {5},
-                            guests:        {6},
-                            packageName:   {7},
-                            pricePerGuest: {8},
-                            service:       {9},
-                            payment:       {10},
-                            total:         {11}
-                        }});
-                    ",
-                        bookingRef,
-                        J(clientName),
-                        J(phoneNumber),
-                        J(eventType),
-                        J(eventDate.ToString("MMMM dd, yyyy")),
-                        J(venue + " (" + withinArgaoText + ")"),
-                        noOfGuests,
-                        J(packageName),
-                        J("\u20B1" + (totalAmount / noOfGuests).ToString("N0") + "/guest"),
-                        J(serviceStyle),
-                        J(paymentMode),
-                        J("\u20B1" + totalAmount.ToString("N0"))
-                    );
-                    ClientScript.RegisterStartupScript(GetType(), "showModal", script, true);
+                    // ── Store receipt data in hidden server labels so JS can read them ──
+                    string bookingRef = "BK-" + newBookingId.ToString("D6");
+                    string argaoText  = withinArgao ? "Within Argao" : "Outside Argao (+\u20B12,500)";
+                    decimal ppg       = noOfGuests > 0 ? totalAmount / noOfGuests : 0;
+
+                    hfReceiptRef.Value     = bookingRef;
+                    hfReceiptName.Value    = clientName;
+                    hfReceiptPhone.Value   = phoneNumber;
+                    hfReceiptEvent.Value   = eventType;
+                    hfReceiptDate.Value    = eventDate.ToString("MMMM dd, yyyy");
+                    hfReceiptVenue.Value   = venue + " (" + argaoText + ")";
+                    hfReceiptGuests.Value  = noOfGuests.ToString();
+                    hfReceiptPkg.Value     = packageName;
+                    hfReceiptPPG.Value     = "\u20B1" + ppg.ToString("N0") + "/guest";
+                    hfReceiptService.Value = serviceStyle;
+                    hfReceiptPayment.Value = paymentMode;
+                    hfReceiptTotal.Value   = "\u20B1" + totalAmount.ToString("N0");
+                    hfShowReceipt.Value    = "1";   // ← signal JS to open modal
                 }
             }
             catch (Exception ex)
@@ -169,23 +140,10 @@ namespace CastroCateringBookingSystem.Pages
             }
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // HELPERS
-        // ─────────────────────────────────────────────────────────────────────
         private void ShowError(string message)
         {
             lblBookingError.Text    = message;
             lblBookingError.Visible = true;
-        }
-
-        /// <summary>Wraps a C# string as a safe JavaScript string literal.</summary>
-        private static string J(string s)
-        {
-            if (s == null) return "\"\"";
-            return "\"" + s.Replace("\\", "\\\\")
-                           .Replace("\"", "\\\"")
-                           .Replace("\n", "\\n")
-                           .Replace("\r", "\\r") + "\"";
         }
     }
 }

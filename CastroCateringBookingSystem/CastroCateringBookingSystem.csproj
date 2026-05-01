@@ -69,6 +69,7 @@
   <ItemGroup>
     <Content Include="Assests\alyssa.jpg" />
     <Content Include="Assests\anniversaryElegance.jpg" />
+    <Content Include="Assests\stephanie.jpg" />
     <Content Include="Assests\birthdayBliss.jpg" />
     <Content Include="Assests\bunyag.jpg" />
     <Content Include="Assests\classicWedding.jpg" />
@@ -87,7 +88,6 @@
     <Content Include="Assests\initmatePrivateDining.jpg" />
     <Content Include="Assests\KidsBirthdayFiesta.jpg" />
     <Content Include="Assests\logo.png" />
-    <Content Include="Assests\stephanie.jpeg" />
     <Content Include="Pages\AboutUs.aspx" />
     <Content Include="Pages\AdminBookingManagement.aspx" />
     <Content Include="Pages\AdminDashboard.aspx" />
