@@ -407,17 +407,20 @@
         }
 
         /* ── MODAL ── */
-        .modal-overlay {
+       .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(46,33,27,0.55);
-            z-index: 2000;
+            z-index: 99999; /* IMPORTANT FIX */
             align-items: center;
             justify-content: center;
-            padding: 1rem;
         }
-        .modal-overlay.open { display: flex; }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
         .modal-box {
             background: var(--bg-white);
             border-radius: 20px;
@@ -667,6 +670,45 @@
         }
     </style>
 </head>
+    <!-- WARNING MODAL -->
+<div class="modal-overlay warning-modal" id="warningModal">
+    <div class="modal-box">
+
+        <div class="modal-top warning-top">
+            <div class="modal-check warning-icon">⚠</div>
+            <h2>Additional Charges Warning</h2>
+            <div class="booking-id">Please review before continuing</div>
+        </div>
+
+        <div class="modal-body">
+            <p class="warning-text">
+                Your booking may include additional charges:
+            </p>
+
+            <ul class="warning-list">
+                <li>Weekend surcharge</li>
+                <li>Rush booking fee</li>
+                <li>Extra service customization</li>
+            </ul>
+
+            <p class="warning-note">
+                Do you want to continue with this booking?
+            </p>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn-print" onclick="closeWarningModal()">
+                Cancel
+            </button>
+
+            <button type="button" class="btn-done" onclick="confirmBooking()">
+                Yes, Continue
+            </button>
+        </div>
+
+    </div>
+</div>
+
 <body>
 
     <!-- NAV -->
@@ -1584,6 +1626,28 @@
                 Sign In to Admin
             </button>
         </div>
+        <script>
+            function showWarningModal() {
+                document.getElementById("warningModal").classList.add("open");
+            }
+
+            function closeWarningModal() {
+                document.getElementById("warningModal").classList.remove("open");
+            }
+
+            function confirmBooking() {
+                closeWarningModal();
+
+                // call your actual booking submit button here
+                document.getElementById("<%= btnConfirm.ClientID %>").click();
+            }
+
+            // safety: close modal on page load
+            window.onload = function () {
+                closeWarningModal();
+            };
+        </script>
+
     </div>
 </body>
 </html>
