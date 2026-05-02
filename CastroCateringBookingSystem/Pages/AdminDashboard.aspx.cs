@@ -2,12 +2,13 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Web.UI;
 
 namespace CastroCateringBookingSystem.Pages
 {
     public partial class AdminDashboard : System.Web.UI.Page
     {
-        string ConnStr = ConfigurationManager.ConnectionStrings["CastroCatering_DB"].ConnectionString;
+        string ConnStr = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -17,50 +18,37 @@ namespace CastroCateringBookingSystem.Pages
             }
         }
 
-        // REAL-TIME TIMER
+        // ✅ MASTER LOADER (replaces LoadDashboard error)
+        void LoadDashboard()
+        {
+            LoadBookings();
+            LoadCount();
+            LoadPackageStats();
+        }
+
+        // ✅ TIMER FIX (THIS FIXES YOUR ERROR)
         protected void Timer1_Tick(object sender, EventArgs e)
         {
             LoadDashboard();
         }
 
-        // MAIN REFRESH METHOD
-        void LoadDashboard()
+        // ===================== BOOKINGS GRID =====================
+        void LoadBookings()
         {
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
-                conn.Open();
-
-                // TOTAL BOOKINGS
-                SqlCommand cmd1 = new SqlCommand("SELECT COUNT(*) FROM Bookings", conn);
-                lblTotalBookings.Text = cmd1.ExecuteScalar().ToString();
-
-                // UPCOMING (Pending)
-                SqlCommand cmd2 = new SqlCommand(
-                    "SELECT COUNT(*) FROM Bookings WHERE Status='Pending'", conn);
-                lblUpcoming.Text = cmd2.ExecuteScalar().ToString();
-
-                // COMPLETED
-                SqlCommand cmd3 = new SqlCommand(
-                    "SELECT COUNT(*) FROM Bookings WHERE Status='Completed'", conn);
-                lblCompleted.Text = cmd3.ExecuteScalar().ToString();
-
-                // TOTAL GUESTS
-                SqlCommand cmd4 = new SqlCommand(
-                    "SELECT ISNULL(SUM(NoOfGuests),0) FROM Bookings", conn);
-                lblGuests.Text = cmd4.ExecuteScalar().ToString();
-
-                // RECENT BOOKINGS
                 string query = @"
-                    SELECT TOP 6
+                    SELECT TOP 10
                         B.BookingID,
-                        U.Username AS CustomerName,
+                        ISNULL(U.Username, 'Unknown') AS CustomerName,
                         B.EventType,
                         B.EventDate,
                         B.PackageID,
-                        (B.NoOfGuests * 1000) AS Total,
+                        (ISNULL(P.RatePerGuest,0) * B.NoOfGuests) AS Total,
                         B.Status
                     FROM Bookings B
                     LEFT JOIN Users U ON B.UserID = U.UserID
+                    LEFT JOIN Packages P ON B.PackageID = P.PackageID
                     ORDER BY B.BookingID DESC";
 
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
@@ -69,6 +57,49 @@ namespace CastroCateringBookingSystem.Pages
 
                 GridViewRecent.DataSource = dt;
                 GridViewRecent.DataBind();
+            }
+        }
+
+        // ===================== TOTAL BOOKINGS =====================
+        void LoadCount()
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            {
+                string query = "SELECT COUNT(*) FROM Bookings";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+
+                int total = Convert.ToInt32(cmd.ExecuteScalar());
+
+                lblTotalBookings.Text = total.ToString();
+            }
+        }
+
+        // ===================== PACKAGE STATS =====================
+        void LoadPackageStats()
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            {
+                string query = @"
+                    SELECT PackageID, COUNT(*) AS TotalBookings
+                    FROM Bookings
+                    GROUP BY PackageID";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                string result = "";
+
+                while (reader.Read())
+                {
+                    result += "Package " + reader["PackageID"] +
+                              " = " + reader["TotalBookings"] + " bookings<br/>";
+                }
+
+                lblPackageStats.Text = result;
             }
         }
     }

@@ -13,7 +13,7 @@ namespace CastroCateringBookingSystem.Pages
 {
     public partial class AdminBookingManagement : System.Web.UI.Page
     {
-        string ConnStr = ConfigurationManager.ConnectionStrings["CastroCatering_DB"].ConnectionString;
+        string ConnStr = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
         
 
         protected void Page_Load(object sender, EventArgs e)

@@ -407,14 +407,14 @@
         }
 
         /* ── MODAL ── */
-       .modal-overlay {
+         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 99999;
-            align-items: center;
+            background: rgba(0,0,0,0.5);
             justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
 
         .modal-overlay.open {
@@ -544,6 +544,16 @@
             background: var(--warning);
             font-size: 1.4rem;
         }
+        #warningOverlay {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #warningOverlay.open {
+            display: flex;
+        }
+
 
         .warning-text {
             font-size: 0.9rem;
@@ -565,95 +575,6 @@
         }
 
         .btn-done:hover { background: #a87a38; }
-        /* ── WARNING MODAL BASE ── */
-        .warning-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 99999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .warning-overlay.open {
-            display: flex;
-        }
-
-        .warning-modal {
-            background: var(--bg-white);
-            border-radius: 20px;
-            max-width: 520px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-            overflow: hidden;
-            animation: modalIn 0.25s ease;
-        }
-
-        /* reuse your animation */
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.95) translateY(15px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .warning-top {
-            background: linear-gradient(135deg, #b07d2a, var(--primary-gold));
-            color: #fff;
-            padding: 2rem 1.5rem 1.5rem;
-            text-align: center;
-        }
-
-        .warning-icon {
-            width: 52px;
-            height: 52px;
-            margin: 0 auto 1rem;
-            border-radius: 50%;
-            background: var(--warning);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-        }
-
-        .warning-body {
-            padding: 1.5rem 2rem;
-        }
-
-        .warning-list {
-            margin: 0.8rem 0;
-            padding-left: 1.2rem;
-            color: var(--text-dark);
-            font-size: 0.92rem;
-            line-height: 1.8;
-        }
-
-        .warning-actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1.5rem;
-        }
-
-        .btn-cancel {
-            flex: 1;
-            padding: 0.8rem;
-            border-radius: 10px;
-            border: 1px solid var(--border-light);
-            background: var(--bg-beige);
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-continue {
-            flex: 1;
-            padding: 0.8rem;
-            border-radius: 10px;
-            border: none;
-            background: var(--primary-gold);
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
 
         /* ── FOOTER ── */
         footer {
@@ -760,7 +681,46 @@
         }
     </style>
 </head>
- 
+    <!-- WARNING MODAL -->
+<div class="modal-overlay" id="warningOverlay">
+    <div class="modal-box">
+
+        <div class="modal-top warning-top">
+            <div class="modal-check warning-icon">⚠</div>
+            <h2>Additional Charges Warning</h2>
+            <div class="booking-id">Please review before continuing</div>
+        </div>
+
+        <div class="modal-body">
+            <p class="warning-text">
+                Your booking may include additional charges:
+            </p>
+
+            <ul class="warning-list">
+                <li>Weekend surcharge</li>
+                <li>Rush booking fee</li>
+                <li>Extra service customization</li>
+            </ul>
+
+            <p class="warning-note">
+                Do you want to continue with this booking?
+            </p>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn-print" onclick="closeWarningModal()">
+                Cancel
+            </button>
+
+           <button type="button" id="btnProceedBooking">
+            Yes, Continue
+        </button>
+
+        </div>
+
+    </div>
+</div>
+
 
 
 <body>
@@ -1028,11 +988,10 @@
                         </div>
                        
 
-                      <asp:Button ID="btnConfirm" runat="server"
+                       <asp:Button ID="btnConfirm" runat="server"
                         Text="Confirm Booking"
                         CssClass="btn-confirm"
-                        OnClientClick="return openWarningModal();" />
-
+                        OnClientClick="return startBookingFlow();" />
 
 
 
@@ -1046,35 +1005,23 @@
 
    <!-- WARNING MODAL (weekend/rush fees) -->
 <!-- WARNING MODAL -->
-<div id="warningOverlay" class="modal-overlay">
-    <div class="modal-box">
+<div class="modal-overlay" id="warningOverlay">
+    <div class="modal-box warning-modal">
 
-        <div class="modal-header">
-            <div class="icon">⚠️</div>
-            <h2>Additional Charges Apply</h2>
-            <p>Please review before confirming</p>
-        </div>
+        <h2>Additional Charges Apply</h2>
 
-        <div class="modal-body">
-            <p>Your selected date includes extra fees:</p>
-            <ul id="warningList"></ul>
-            <p class="note">These will be added to your total.</p>
-        </div>
+        <ul id="warningList"></ul>
 
-        <div class="modal-footer">
-            <button type="button" onclick="closeWarningModal()" class="btn-cancel">
-                Cancel
-            </button>
+        <div class="modal-actions">
+            <button type="button" onclick="closeWarningModal()">Cancel</button>
 
-            <button type="button" id="btnProceedBooking" class="btn-confirm">
+            <button type="button" id="btnProceedBooking">
                 Yes, Continue
             </button>
         </div>
 
     </div>
 </div>
-
-
 
 
 
@@ -1202,7 +1149,14 @@
                 var diff = (ev - today) / (1000 * 60 * 60 * 24);
                 return diff >= 0 && diff <= 7;
             }
-           
+            function byName(name) {
+                return document.querySelector('[name$="' + name + '"]')
+                    || document.getElementById(name);
+            }
+
+            function on(el, evt, fn) {
+                if (el) el.addEventListener(evt, fn);
+            }
 
             /* ── STATE ── */
             var state = {
@@ -1214,222 +1168,169 @@
             };
             var proceedAfterWarning = false;
 
-            // SHOW WARNING MODAL
-            /* ── WARNING MODAL CONTROL (FIXED) ── */
 
+
+            /* ── SUMMARY ELEMENT REFS ── */
+            var S = {
+                name: document.getElementById('sumName'),
+                phone: document.getElementById('sumPhone'),
+                eventType: document.getElementById('sumEventType'),
+                date: document.getElementById('sumDate'),
+                venue: document.getElementById('sumVenue'),
+                guests: document.getElementById('sumGuests'),
+                payment: document.getElementById('sumPayment'),
+                location: document.getElementById('sumLocation'),
+                service: document.getElementById('sumService'),
+                package: document.getElementById('sumPackage'),
+                perGuest: document.getElementById('sumPerGuest'),
+                subtotal: document.getElementById('costSubtotal'),
+                svcFee: document.getElementById('costServiceFee'),
+                locFee: document.getElementById('costLocationFee'),
+                rowWeekend: document.getElementById('rowWeekendFee'),
+                rowRush: document.getElementById('rowRushFee'),
+                wkNotice: document.getElementById('weekendNotice'),
+                rushNotice: document.getElementById('rushNotice'),
+                total: document.getElementById('totalAmount')
+            };
+
+            function sv(el, val) {
+                if (!el) return;
+                el.textContent = val || '—';
+                if (!val || val === '—' || val === 'Not selected') {
+                    el.classList.add('placeholder');
+                } else {
+                    el.classList.remove('placeholder');
+                }
+            }
+
+            function updateSummary() {
+                sv(S.name, state.name);
+                sv(S.phone, state.phone);
+                sv(S.eventType, state.eventType);
+                sv(S.date, state.date ? fmtDate(state.date) : '');
+                sv(S.venue, state.venue);
+                sv(S.guests, state.guests > 0 ? state.guests + ' guests' : '');
+                sv(S.payment, state.payment);
+                sv(S.location, state.location === 'within' ? 'Within Argao'
+                    : state.location === 'outside' ? 'Outside Argao (+₱2,500)'
+                        : '');
+                sv(S.service, state.serviceName);
+                sv(S.package, state.packageName || 'Not selected');
+                sv(S.perGuest, state.packagePrice > 0 ? fmt(state.packagePrice) + '/guest' : '');
+
+                var guests = state.guests > 0 ? state.guests : 0;
+                var subtotal = state.packagePrice * guests;
+                var svcFee = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
+                var locFee = state.locationFee;
+                var wkFee = state.weekendFee;
+                var rushFee = state.rushFee;
+                var total = subtotal + svcFee + locFee + wkFee + rushFee;
+
+                S.subtotal.textContent = fmt(subtotal);
+
+                if (svcFee > 0) {
+                    S.svcFee.textContent = '+' + fmt(svcFee);
+                    S.svcFee.style.color = 'var(--warning)';
+                } else {
+                    S.svcFee.textContent = 'Free';
+                    S.svcFee.style.color = 'var(--success)';
+                }
+
+                if (locFee > 0) {
+                    S.locFee.textContent = '+' + fmt(locFee);
+                    S.locFee.style.color = 'var(--warning)';
+                } else {
+                    S.locFee.textContent = 'Free';
+                    S.locFee.style.color = 'var(--success)';
+                }
+
+                S.rowWeekend.classList.toggle('hidden-row', wkFee === 0);
+                S.wkNotice.classList.toggle('show', wkFee > 0);
+                S.rowRush.classList.toggle('hidden-row', rushFee === 0);
+                S.rushNotice.classList.toggle('show', rushFee > 0);
+
+                S.total.textContent = fmt(total);
+            }
+
+            /* ── FORM LISTENERS — use name selectors (reliable for ASP.NET controls) ── */
+            function onEl(el, evt, fn) {
+                if (el) el.addEventListener(evt, fn);
+            }
+            function byName(name) {
+                return document.querySelector('[name$="' + name + '"]') ||
+                    document.getElementById(name);
+            }
+
+            onEl(byName('txtClientName'), 'input', function () { state.name = this.value.trim(); updateSummary(); });
+            onEl(byName('txtPhoneNumber'), 'input', function () { state.phone = this.value.trim(); updateSummary(); });
+            onEl(byName('ddlEventType'), 'change', function () { state.eventType = this.value; updateSummary(); });
+            onEl(byName('txtEventDate'), 'change', function () {
+                state.date = this.value;
+                state.weekendFee = isWeekend(this.value) ? 3000 : 0;
+                state.rushFee = isRush(this.value) ? 5000 : 0;
+                updateSummary();
+            });
+            onEl(byName('txtGuestCount'), 'input', function () {
+                var v = parseInt(this.value, 10);
+                state.guests = isNaN(v) || v < 0 ? 0 : v;
+                updateSummary();
+            });
+            onEl(byName('ddlPaymentMode'), 'change', function () { state.payment = this.value; updateSummary(); });
+            onEl(byName('txtVenue'), 'input', function () { state.venue = this.value.trim(); updateSummary(); });
+            onEl(byName('ddlVenueLocation'), 'change', function () {
+                state.location = this.value;
+                state.locationFee = this.value === 'outside' ? 2500 : 0;
+                updateSummary();
+            });
+
+            /* ── Set min date on the date field ── */
+            var dateInput = byName('txtEventDate');
+            if (dateInput) {
+                var today = new Date();
+                dateInput.min = today.getFullYear() + '-'
+                    + String(today.getMonth() + 1).padStart(2, '0') + '-'
+                    + String(today.getDate()).padStart(2, '0');
+            }
+
+            /* ── SERVICE CARD CLICK ── */
+            var serviceLabels = document.querySelectorAll('#serviceCards .service-label');
+            serviceLabels.forEach(function (lbl) {
+                lbl.addEventListener('click', function () {
+                    serviceLabels.forEach(function (l) { l.classList.remove('selected'); });
+                    lbl.classList.add('selected');
+                    state.serviceName = lbl.dataset.service;
+                    state.serviceFee = parseFloat(lbl.dataset.fee) || 0;
+                    state.serviceFeeType = lbl.dataset.feeType;
+                    updateSummary();
+                });
+            });
+
+            /* ── PACKAGE CARD CLICK ── */
+            var pkgLabels = document.querySelectorAll('#packageCards .pkg-label');
+            pkgLabels.forEach(function (lbl) {
+                lbl.addEventListener('click', function () {
+                    pkgLabels.forEach(function (l) { l.classList.remove('selected'); });
+                    lbl.classList.add('selected');
+                    state.packageName = lbl.dataset.pkg;
+                    state.packagePrice = parseFloat(lbl.dataset.price) || 0;
+                    updateSummary();
+                });
+            });
+            /* ── MODAL CLOSE ── */
+            function closeModal() {
+                document.getElementById('modalOverlay').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            /* ── WARNING MODAL ── */
             function openWarningModal(warnings) {
-                var overlay = document.getElementById('warningOverlay');
                 var list = document.getElementById('warningList');
-
                 list.innerHTML = '';
 
                 warnings.forEach(function (w) {
                     var li = document.createElement('li');
                     li.textContent = w;
-                    list.appendChild(li);
-                });
-
-                overlay.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeWarningModal() {
-                var overlay = document.getElementById('warningOverlay');
-                overlay.classList.remove('open');
-                document.body.style.overflow = '';
-            }
-
-
-            // HANDLE CONTINUE BUTTON
-            document.getElementById('btnProceedBooking').addEventListener('click', function () {
-
-                closeWarningModal();
-
-                var guests = state.guests;
-                var subtotal = state.packagePrice * guests;
-                var svcFee = state.serviceFeeType === 'per-guest'
-                    ? state.serviceFee * guests
-                    : 0;
-
-                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
-
-                byName('hfServiceStyle').value = state.serviceName;
-                byName('hfPackageName').value = state.packageName;
-                byName('hfPackagePrice').value = state.packagePrice;
-                byName('hfTotalAmount').value = total;
-
-                document.getElementById('<%= btnConfirm.ClientID %>').click();
-           });
-
-
-
-        /* ── SUMMARY ELEMENT REFS ── */
-        var S = {
-            name: document.getElementById('sumName'),
-            phone: document.getElementById('sumPhone'),
-            eventType: document.getElementById('sumEventType'),
-            date: document.getElementById('sumDate'),
-            venue: document.getElementById('sumVenue'),
-            guests: document.getElementById('sumGuests'),
-            payment: document.getElementById('sumPayment'),
-            location: document.getElementById('sumLocation'),
-            service: document.getElementById('sumService'),
-            package: document.getElementById('sumPackage'),
-            perGuest: document.getElementById('sumPerGuest'),
-            subtotal: document.getElementById('costSubtotal'),
-            svcFee: document.getElementById('costServiceFee'),
-            locFee: document.getElementById('costLocationFee'),
-            rowWeekend: document.getElementById('rowWeekendFee'),
-            rowRush: document.getElementById('rowRushFee'),
-            wkNotice: document.getElementById('weekendNotice'),
-            rushNotice: document.getElementById('rushNotice'),
-            total: document.getElementById('totalAmount')
-        };
-
-        function sv(el, val) {
-            if (!el) return;
-            el.textContent = val || '—';
-            if (!val || val === '—' || val === 'Not selected') {
-                el.classList.add('placeholder');
-            } else {
-                el.classList.remove('placeholder');
-            }
-        }
-
-        function updateSummary() {
-            sv(S.name, state.name);
-            sv(S.phone, state.phone);
-            sv(S.eventType, state.eventType);
-            sv(S.date, state.date ? fmtDate(state.date) : '');
-            sv(S.venue, state.venue);
-            sv(S.guests, state.guests > 0 ? state.guests + ' guests' : '');
-            sv(S.payment, state.payment);
-            sv(S.location, state.location === 'within' ? 'Within Argao'
-                : state.location === 'outside' ? 'Outside Argao (+₱2,500)'
-                    : '');
-            sv(S.service, state.serviceName);
-            sv(S.package, state.packageName || 'Not selected');
-            sv(S.perGuest, state.packagePrice > 0 ? fmt(state.packagePrice) + '/guest' : '');
-
-            var guests = state.guests > 0 ? state.guests : 0;
-            var subtotal = state.packagePrice * guests;
-            var svcFee = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-            var locFee = state.locationFee;
-            var wkFee = state.weekendFee;
-            var rushFee = state.rushFee;
-            var total = subtotal + svcFee + locFee + wkFee + rushFee;
-
-            S.subtotal.textContent = fmt(subtotal);
-
-            if (svcFee > 0) {
-                S.svcFee.textContent = '+' + fmt(svcFee);
-                S.svcFee.style.color = 'var(--warning)';
-            } else {
-                S.svcFee.textContent = 'Free';
-                S.svcFee.style.color = 'var(--success)';
-            }
-
-            if (locFee > 0) {
-                S.locFee.textContent = '+' + fmt(locFee);
-                S.locFee.style.color = 'var(--warning)';
-            } else {
-                S.locFee.textContent = 'Free';
-                S.locFee.style.color = 'var(--success)';
-            }
-
-            S.rowWeekend.classList.toggle('hidden-row', wkFee === 0);
-            S.wkNotice.classList.toggle('show', wkFee > 0);
-            S.rowRush.classList.toggle('hidden-row', rushFee === 0);
-            S.rushNotice.classList.toggle('show', rushFee > 0);
-
-            S.total.textContent = fmt(total);
-        }
-
-        /* ── FORM LISTENERS — use name selectors (reliable for ASP.NET controls) ── */
-        function onEl(el, evt, fn) {
-            if (el) el.addEventListener(evt, fn);
-        }
-        function byName(name) {
-            return document.querySelector('[name$="' + name + '"]') ||
-                   document.getElementById(name);
-        }
-
-        onEl(byName('txtClientName'),    'input',  function(){ state.name      = this.value.trim(); updateSummary(); });
-        onEl(byName('txtPhoneNumber'),   'input',  function(){ state.phone     = this.value.trim(); updateSummary(); });
-        onEl(byName('ddlEventType'),     'change', function(){ state.eventType = this.value;        updateSummary(); });
-        onEl(byName('txtEventDate'),     'change', function(){
-            state.date       = this.value;
-            state.weekendFee = isWeekend(this.value) ? 3000 : 0;
-            state.rushFee    = isRush(this.value)    ? 5000 : 0;
-            updateSummary();
-        });
-        onEl(byName('txtGuestCount'),    'input',  function(){
-            var v = parseInt(this.value, 10);
-            state.guests = isNaN(v) || v < 0 ? 0 : v;
-            updateSummary();
-        });
-        onEl(byName('ddlPaymentMode'),   'change', function(){ state.payment  = this.value; updateSummary(); });
-        onEl(byName('txtVenue'),         'input',  function(){ state.venue    = this.value.trim(); updateSummary(); });
-        onEl(byName('ddlVenueLocation'), 'change', function(){
-            state.location    = this.value;
-            state.locationFee = this.value === 'outside' ? 2500 : 0;
-            updateSummary();
-        });
-
-        /* ── Set min date on the date field ── */
-        var dateInput = byName('txtEventDate');
-        if (dateInput) {
-            var today = new Date();
-            dateInput.min = today.getFullYear() + '-'
-                + String(today.getMonth() + 1).padStart(2,'0') + '-'
-                + String(today.getDate()).padStart(2,'0');
-        }
-
-        /* ── SERVICE CARD CLICK ── */
-        var serviceLabels = document.querySelectorAll('#serviceCards .service-label');
-        serviceLabels.forEach(function(lbl) {
-            lbl.addEventListener('click', function() {
-                serviceLabels.forEach(function(l){ l.classList.remove('selected'); });
-                lbl.classList.add('selected');
-                state.serviceName    = lbl.dataset.service;
-                state.serviceFee     = parseFloat(lbl.dataset.fee) || 0;
-                state.serviceFeeType = lbl.dataset.feeType;
-                updateSummary();
-            });
-        });
-
-        /* ── PACKAGE CARD CLICK ── */
-        var pkgLabels = document.querySelectorAll('#packageCards .pkg-label');
-        pkgLabels.forEach(function(lbl) {
-            lbl.addEventListener('click', function() {
-                pkgLabels.forEach(function(l){ l.classList.remove('selected'); });
-                lbl.classList.add('selected');
-                state.packageName  = lbl.dataset.pkg;
-                state.packagePrice = parseFloat(lbl.dataset.price) || 0;
-                updateSummary();
-            });
-        });
-
-        /* ── MODAL CLOSE ── */
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        /* btnDone and btnPrint are handled in the outer script block
-           (outside this IIFE) so showConfirmationModal can reach them
-           after a server postback. */
-
-        /* btnPrint is handled in the outer script block */
-
-        /* ── WARNING MODAL (weekend/rush fees) ── */
-            function openWarningModal(warnings) {
-                var list = document.getElementById('warningList');
-                list.innerHTML = '';
-
-                warnings.forEach(w => {
-                    var li = document.createElement('li');
-                    li.textContent = w;
+                    li.style.marginBottom = '0.5rem';
                     list.appendChild(li);
                 });
 
@@ -1443,24 +1344,31 @@
             }
 
 
-        // When user clicks "Yes, Continue" in the warning modal:
-        // write hidden fields and submit the ASP.NET form directly
-        document.getElementById('btnProceedBooking').addEventListener('click', function() {
-            closeWarningModal();
+            // When user clicks "Yes, Continue" in the warning modal:
+            // write hidden fields and submit the ASP.NET form directly
+            document.getElementById('btnProceedBooking').addEventListener('click', function () {
 
-            var guests   = state.guests;
-            var subtotal = state.packagePrice * guests;
-            var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-            var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+                closeWarningModal();
 
-            byName('hfServiceStyle').value = state.serviceName;
-            byName('hfPackageName').value  = state.packageName;
-            byName('hfPackagePrice').value = state.packagePrice;
-            byName('hfTotalAmount').value  = total;
+                var guests = state.guests;
+                var subtotal = state.packagePrice * guests;
+                var svcFee = state.serviceFeeType === 'per-guest'
+                    ? state.serviceFee * guests
+                    : 0;
 
-            // Trigger the ASP.NET button postback directly
-            document.getElementById('<%= btnConfirm.ClientID %>').click();
-        });
+                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+
+                // set hidden fields (ONLY HERE)
+                byName('hfServiceStyle').value = state.serviceName;
+                byName('hfPackageName').value = state.packageName;
+                byName('hfPackagePrice').value = state.packagePrice;
+                byName('hfTotalAmount').value = total;
+
+                // single postback trigger
+                document.getElementById('<%= btnConfirm.ClientID %>').click();
+            });
+
+
             function proceedBooking() {
                 closeWarningModal();
 
@@ -1470,128 +1378,141 @@
                 var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
 
                 document.getElementById('<%= hfServiceStyle.ClientID %>').value = state.serviceName;
-            document.getElementById('<%= hfPackageName.ClientID %>').value = state.packageName;
-            document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
-    document.getElementById('<%= hfTotalAmount.ClientID %>').value  = total;
+                document.getElementById('<%= hfPackageName.ClientID %>').value = state.packageName;
+                document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
+                document.getElementById('<%= hfTotalAmount.ClientID %>').value = total;
 
-    // SAFE POSTBACK
+                // SAFE POSTBACK
                 document.getElementById('<%= btnConfirm.ClientID %>').click();
             }
 
 
-        /* ── MOBILE NAV ── */
-        var mobileBtn  = document.getElementById('mobileMenuBtn');
-        var primaryNav = document.getElementById('primaryNav');
-        if (mobileBtn) {
-            mobileBtn.addEventListener('click', function() {
-                var expanded = this.getAttribute('aria-expanded') === 'true';
-                this.setAttribute('aria-expanded', String(!expanded));
-                primaryNav.classList.toggle('open');
-            });
-        }
+            /* ── MOBILE NAV ── */
+            var mobileBtn = document.getElementById('mobileMenuBtn');
+            var primaryNav = document.getElementById('primaryNav');
+            if (mobileBtn) {
+                mobileBtn.addEventListener('click', function () {
+                    var expanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', String(!expanded));
+                    primaryNav.classList.toggle('open');
+                });
+            }
 
-        /* ── LOGOUT ── */
-        window.logout = function() {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('castroUser');
-            window.location.href = 'LoginSignup.aspx';
-        };
+            /* ── LOGOUT ── */
+            window.logout = function () {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('castroUser');
+                window.location.href = 'LoginSignup.aspx';
+            };
 
-        /* initial render */
-        updateSummary();
+            /* initial render */
+            updateSummary();
 
-        /* ── AUTO-SELECT PACKAGE FROM URL (?package=Name) ── */
-        (function() {
-            var params = new URLSearchParams(window.location.search);
-            var pkg = params.get('package');
-            if (!pkg) return;
-            var found = false;
-            pkgLabels.forEach(function(lbl) {
-                if (lbl.dataset.pkg === pkg) {
-                    lbl.click();
-                    found = true;
-                    setTimeout(function() {
-                        lbl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 300);
+            /* ── AUTO-SELECT PACKAGE FROM URL (?package=Name) ── */
+            (function () {
+                var params = new URLSearchParams(window.location.search);
+                var pkg = params.get('package');
+                if (!pkg) return;
+                var found = false;
+                pkgLabels.forEach(function (lbl) {
+                    if (lbl.dataset.pkg === pkg) {
+                        lbl.click();
+                        found = true;
+                        setTimeout(function () {
+                            lbl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300);
+                    }
+                });
+            })();
+
+            /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
+               Validates, writes hidden fields, returns true to allow postback      */
+            window.prepareBookingPostback = function () {
+
+                var missing = [];
+
+                if (!state.name) missing.push('Client Name');
+                if (!state.phone) missing.push('Phone Number');
+                if (!state.eventType) missing.push('Event Type');
+                if (!state.date) missing.push('Event Date');
+                if (!state.guests) missing.push('Number of Guests');
+                if (!state.payment) missing.push('Mode of Payment');
+                if (!state.venue) missing.push('Venue');
+                if (!state.location) missing.push('Venue Location');
+                if (!state.serviceName) missing.push('Service Style');
+                if (!state.packageName) missing.push('Package');
+
+                if (missing.length > 0) {
+                    alert('Please fill in:\n• ' + missing.join('\n• '));
+                    return false;
                 }
+
+                var warnings = [];
+
+                if (state.weekendFee > 0) warnings.push('Weekend premium: ₱3,000');
+                if (state.rushFee > 0) warnings.push('Rush fee: ₱5,000');
+
+                if (warnings.length > 0) {
+                    openWarningModal(warnings);
+                    return false;
+                }
+
+                // no warnings → auto submit
+                var guests = state.guests;
+                var subtotal = state.packagePrice * guests;
+                var svcFee = state.serviceFeeType === 'per-guest'
+                    ? state.serviceFee * guests
+                    : 0;
+
+                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+
+                byName('hfServiceStyle').value = state.serviceName;
+                byName('hfPackageName').value = state.packageName;
+                byName('hfPackagePrice').value = state.packagePrice;
+                byName('hfTotalAmount').value = total;
+
+                return true;
+            };
+
+
+
+            function logout() {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'LoginSignup.aspx';
+            }
+
+            /* ── Admin Login Modal ── */
+            function showAdminLogin() {
+                document.getElementById('adminLoginOverlay').style.display = 'flex';
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminError').style.display = 'none';
+                setTimeout(function () { document.getElementById('adminUsername').focus(); }, 100);
+            }
+            function closeAdminLogin() {
+                document.getElementById('adminLoginOverlay').style.display = 'none';
+            }
+            function submitAdminLogin() {
+                var u = document.getElementById('adminUsername').value.trim();
+                var p = document.getElementById('adminPassword').value;
+                if (u === 'admin' && p === 'admin123') {
+                    closeAdminLogin();
+                    window.location.href = 'AdminDashboard.aspx';
+                } else {
+                    document.getElementById('adminError').style.display = 'block';
+                }
+            }
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeAdminLogin();
             });
+
         })();
-
-        /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
-           Validates, writes hidden fields, returns true to allow postback      */
-        window.prepareBookingPostback = function() {
-            var missing = [];
-            if (!state.name)        missing.push('Client Name');
-            if (!state.phone)       missing.push('Phone Number');
-            if (!state.eventType)   missing.push('Event Type');
-            if (!state.date)        missing.push('Event Date');
-            if (!state.guests)      missing.push('Number of Guests');
-            if (!state.payment)     missing.push('Mode of Payment');
-            if (!state.venue)       missing.push('Venue');
-            if (!state.location)    missing.push('Venue Location');
-            if (!state.serviceName) missing.push('Service Style');
-            if (!state.packageName) missing.push('Package');
-            if (missing.length > 0) {
-                alert('Please fill in the following before confirming:\n\u2022 ' + missing.join('\n\u2022 '));
-                return false;
-            }
-            var warnings = [];
-            if (state.weekendFee > 0) warnings.push('Weekend premium: \u20B13,000');
-            if (state.rushFee    > 0) warnings.push('Rush fee: \u20B15,000');
-            if (warnings.length > 0) {
-                // Show the warning modal — it will trigger the postback via btnProceedBooking
-                showWarningModal(warnings);
-                return false;
-            }
-            var guests   = state.guests;
-            var subtotal = state.packagePrice * guests;
-            var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-            var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
-            byName('hfServiceStyle').value = state.serviceName;
-            byName('hfPackageName').value  = state.packageName;
-            byName('hfPackagePrice').value = state.packagePrice;
-            byName('hfTotalAmount').value  = total;
-            return true;
-        };
-
-
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'LoginSignup.aspx';
-        }
-
-        /* ── Admin Login Modal ── */
-        function showAdminLogin() {
-            document.getElementById('adminLoginOverlay').style.display = 'flex';
-            document.getElementById('adminUsername').value = '';
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('adminError').style.display = 'none';
-            setTimeout(function(){ document.getElementById('adminUsername').focus(); }, 100);
-        }
-        function closeAdminLogin() {
-            document.getElementById('adminLoginOverlay').style.display = 'none';
-        }
-        function submitAdminLogin() {
-            var u = document.getElementById('adminUsername').value.trim();
-            var p = document.getElementById('adminPassword').value;
-            if (u === 'admin' && p === 'admin123') {
-                closeAdminLogin();
-                window.location.href = 'AdminDashboard.aspx';
-            } else {
-                document.getElementById('adminError').style.display = 'block';
-            }
-        }
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeAdminLogin();
-        });
-
-    })();
     </script>
 
 
     <script>
         /* ── On page load: check if server set hfShowReceipt=1 and open modal ── */
-        (function() {
+        (function () {
             var showFlag = document.getElementById('<%= hfShowReceipt.ClientID %>');
             if (!showFlag || showFlag.value !== '1') return;
 
@@ -1601,16 +1522,16 @@
                 return el ? el.value : '';
             }
 
-            document.getElementById('modalBookingId').textContent    = hv('<%= hfReceiptRef.ClientID %>');
-            document.getElementById('rcptName').textContent          = hv('<%= hfReceiptName.ClientID %>');
-            document.getElementById('rcptPhone').textContent         = hv('<%= hfReceiptPhone.ClientID %>');
-            document.getElementById('rcptEventType').textContent     = hv('<%= hfReceiptEvent.ClientID %>');
-            document.getElementById('rcptDate').textContent          = hv('<%= hfReceiptDate.ClientID %>');
-            document.getElementById('rcptVenue').textContent         = hv('<%= hfReceiptVenue.ClientID %>');
-            document.getElementById('rcptGuests').textContent        = hv('<%= hfReceiptGuests.ClientID %>') + ' guests';
-            document.getElementById('rcptPackage').textContent       = hv('<%= hfReceiptPkg.ClientID %>');
+            document.getElementById('modalBookingId').textContent = hv('<%= hfReceiptRef.ClientID %>');
+            document.getElementById('rcptName').textContent = hv('<%= hfReceiptName.ClientID %>');
+            document.getElementById('rcptPhone').textContent = hv('<%= hfReceiptPhone.ClientID %>');
+            document.getElementById('rcptEventType').textContent = hv('<%= hfReceiptEvent.ClientID %>');
+            document.getElementById('rcptDate').textContent = hv('<%= hfReceiptDate.ClientID %>');
+            document.getElementById('rcptVenue').textContent = hv('<%= hfReceiptVenue.ClientID %>');
+            document.getElementById('rcptGuests').textContent = hv('<%= hfReceiptGuests.ClientID %>') + ' guests';
+            document.getElementById('rcptPackage').textContent = hv('<%= hfReceiptPkg.ClientID %>');
             document.getElementById('rcptPricePerGuest').textContent = hv('<%= hfReceiptPPG.ClientID %>');
-            document.getElementById('rcptService').textContent       = hv('<%= hfReceiptService.ClientID %>');
+            document.getElementById('rcptService').textContent = hv('<%= hfReceiptService.ClientID %>');
             document.getElementById('rcptPayment').textContent       = hv('<%= hfReceiptPayment.ClientID %>');
             document.getElementById('rcptSubtotal').textContent      = hv('<%= hfReceiptTotal.ClientID %>');
             document.getElementById('rcptServiceFee').textContent    = 'Included';
@@ -1692,41 +1613,33 @@
             w.document.write(html);
             w.document.close();
             w.focus();
-            setTimeout(function() { w.print(); }, 500);
+            setTimeout(function () { w.print(); }, 500);
         });
 
         /* Close modal when clicking outside */
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        document.getElementById('modalOverlay').addEventListener('click', function (e) {
             if (e.target === this) closeReceiptModal();
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('btnProceedBooking');
 
-<!-- GLOBAL MODAL FUNCTIONS (IMPORTANT) -->
-<script>
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    confirmBooking();
+                });
+            }
+            var btnProceed = document.getElementById('btnProceedBooking');
+            if (btnProceed) {
+                btnProceed.addEventListener('click', function () {
+                    confirmBooking();
+                });
+            }
 
-    function openWarningModal(list) {
-        var ul = document.getElementById("warningList");
-        ul.innerHTML = "";
-
-        list.forEach(w => {
-            var li = document.createElement("li");
-            li.textContent = w;
-            ul.appendChild(li);
         });
+    </script>
 
-        document.getElementById("warningOverlay").classList.add("open");
-    }
-
-    function closeWarningModal() {
-        document.getElementById("warningOverlay").classList.remove("open");
-    }
-
-    function proceedBooking() {
-        closeWarningModal();
-        document.getElementById('<%= btnConfirm.ClientID %>').click();
-    }
-
-</script>
     <!-- Admin Login Modal -->
     <div id="adminLoginOverlay" style="display:none;position:fixed;inset:0;background:rgba(33,28,24,0.65);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeAdminLogin()">
         <div style="background:#fff;border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;font-family:'Inter',sans-serif;">
