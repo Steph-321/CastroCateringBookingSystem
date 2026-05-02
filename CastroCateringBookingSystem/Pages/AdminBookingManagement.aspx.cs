@@ -32,19 +32,20 @@ namespace CastroCateringBookingSystem.Pages
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = @"
-                    SELECT 
-                        B.BookingID,
-                        U.Username AS CustomerName,
-                        B.EventType,
-                        B.EventDate,
-                        B.NoOfGuests,
-                        B.PackageID,
-                        (P.RatePerGuest  * B.NoOfGuests) AS Total,
-                        B.Status
-                    FROM Bookings B
-                    JOIN Users U ON B.UserID = U.UserID
-                    JOIN Packages P ON B.PackageID = P.PackageID
-                    ORDER BY B.EventDate DESC";
+                SELECT 
+                    B.BookingID,
+                    U.Username AS CustomerName,
+                    B.EventType,
+                    B.EventDate,
+                    B.NoOfGuests,
+                    B.PackageID,
+                    (ISNULL(P.RatePerGuest,0) * B.NoOfGuests) AS Total,
+                    B.Status
+                FROM Bookings B
+                LEFT JOIN Users U ON B.UserID = U.UserID
+                LEFT JOIN Packages P ON B.PackageID = P.PackageID
+                ORDER BY B.EventDate DESC";
+
 
 
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
@@ -65,7 +66,7 @@ namespace CastroCateringBookingSystem.Pages
             if (cmdName == "Approve")
                 newStatus = "Approved";
             else if (cmdName == "Done")
-                newStatus = "Done";
+                newStatus = "Completed";
             else if (cmdName == "Pending")
                 newStatus = "Pending";
 
@@ -76,52 +77,55 @@ namespace CastroCateringBookingSystem.Pages
             {
                 conn.Open();
 
-                // 1. UPDATE STATUS
+                // UPDATE STATUS
                 string updateQuery = "UPDATE Bookings SET Status=@Status WHERE BookingID=@ID";
                 SqlCommand cmd = new SqlCommand(updateQuery, conn);
                 cmd.Parameters.AddWithValue("@Status", newStatus);
                 cmd.Parameters.AddWithValue("@ID", bookingId);
                 cmd.ExecuteNonQuery();
 
-                // 2. GET USERID
+                // GET USERID
                 string getUser = "SELECT UserID FROM Bookings WHERE BookingID=@ID";
                 SqlCommand cmdUser = new SqlCommand(getUser, conn);
                 cmdUser.Parameters.AddWithValue("@ID", bookingId);
 
-                int userId = Convert.ToInt32(cmdUser.ExecuteScalar());
+                object resultUser = cmdUser.ExecuteScalar();
+                if (resultUser == null) return;
 
-                // 3. MESSAGE
+                int userId = Convert.ToInt32(resultUser);
+
+                // MESSAGE
                 string message = "";
 
                 if (newStatus == "Approved")
                     message = "Your booking has been APPROVED 🎉";
-                else if (newStatus == "Done")
+                else if (newStatus == "Completed")
                     message = "Your booking is COMPLETED ✔";
                 else
                     message = "Your booking status was updated.";
 
-                // 4. INSERT NOTIFICATION
+                // INSERT NOTIFICATION
                 string notifQuery = @"
-            INSERT INTO Notifications (UserID, BookingID, Message)
-            VALUES (@UserID, @BookingID, @Message)";
+                INSERT INTO Notifications (UserID, Message)
+                VALUES (@UserID, @Message)";
 
                 SqlCommand cmdNotif = new SqlCommand(notifQuery, conn);
                 cmdNotif.Parameters.AddWithValue("@UserID", userId);
-                cmdNotif.Parameters.AddWithValue("@BookingID", bookingId);
                 cmdNotif.Parameters.AddWithValue("@Message", message);
 
                 cmdNotif.ExecuteNonQuery();
-            }
 
-            LoadBookings();
+
+                LoadBookings();
+                LoadCount();
+                LoadPackageStats();
+            }
         }
 
 
 
 
-
-
-        protected void GridViewBookings_RowDeleting(object sender, System.Web.UI.WebControls.GridViewDeleteEventArgs e)
+        protected void GridViewBookings_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             int id = Convert.ToInt32(GridViewBookings.DataKeys[e.RowIndex].Value);
 
@@ -136,8 +140,13 @@ namespace CastroCateringBookingSystem.Pages
                 cmd.ExecuteNonQuery();
             }
 
+            // 🔥 REFRESH UI AFTER DELETE
             LoadBookings();
+            LoadCount();
+            LoadPackageStats();
         }
+
+
         void LoadCount()
         {
             using (SqlConnection conn = new SqlConnection(ConnStr))
@@ -150,6 +159,8 @@ namespace CastroCateringBookingSystem.Pages
                 int total = (int)cmd.ExecuteScalar();
 
                 lblTotalBookings.Text = "Total Bookings: " + total;
+
+
             }
         }
         void LoadPackageStats()
@@ -175,9 +186,11 @@ namespace CastroCateringBookingSystem.Pages
                 }
 
                 lblPackageStats.Text = result;
+
             }
         }
 
+           
 
 
     }
