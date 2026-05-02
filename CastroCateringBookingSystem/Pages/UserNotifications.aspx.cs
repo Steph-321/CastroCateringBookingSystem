@@ -19,7 +19,7 @@ namespace CastroCateringBookingSystem.Pages
 
         void LoadNotifications()
         {
-            int userId = Convert.ToInt32(Session["UserID"]); // must be logged in user
+            int userId = Convert.ToInt32(Session["UserID"]);
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
@@ -38,6 +38,17 @@ namespace CastroCateringBookingSystem.Pages
 
                 gvNotifications.DataSource = dt;
                 gvNotifications.DataBind();
+
+                // OPTIONAL: show latest notification popup
+                if (dt.Rows.Count > 0)
+                {
+                    string latest = dt.Rows[0]["Message"].ToString();
+
+                    ClientScript.RegisterStartupScript(this.GetType(),
+                        "popup",
+                        $"showNotification('{latest}');",
+                        true);
+                }
             }
         }
     }
