@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Booking.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Booking" ResponseEncoding="UTF-8" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Booking.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Booking" ResponseEncoding="UTF-8" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +46,10 @@
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.06);
             box-sizing: border-box;
+
+            height: 70px; 
         }
+
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -135,8 +138,9 @@
         .page-wrapper {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 6.5rem 5% 4rem;
+            padding: 8rem 5% 4rem; 
         }
+
         .page-header { margin-bottom: 2.5rem; }
         .page-header h1 { font-size: 2.4rem; color: var(--text-brown); margin-bottom: 0.4rem; }
         .page-header p { color: var(--text-gray); font-size: 1rem; }
@@ -407,7 +411,7 @@
         }
 
         /* ── MODAL ── */
-        .modal-overlay {
+               .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
@@ -416,8 +420,15 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+
+            pointer-events: none; 
         }
-        .modal-overlay.open { display: flex; }
+
+        .modal-overlay.open {
+            display: flex;
+            pointer-events: auto; 
+        }
+
         .modal-box {
             background: var(--bg-white);
             border-radius: 20px;
@@ -603,6 +614,11 @@
             color: #9e9189;
             font-size: 0.82rem;
         }
+        .admin-btn {
+            position: relative;
+            z-index: 1500;
+        }
+
 
         /* ── RESPONSIVE ── */
         @media (max-width: 1100px) {
