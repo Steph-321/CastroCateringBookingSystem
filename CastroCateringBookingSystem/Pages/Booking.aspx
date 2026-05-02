@@ -531,6 +531,35 @@
             cursor: pointer;
             transition: background 0.2s;
         }
+                /* WARNING MODAL STYLE */
+        .warning-modal .warning-top {
+            background: linear-gradient(135deg, #b07d2a, var(--primary-gold));
+        }
+
+        .warning-icon {
+            background: var(--warning);
+            font-size: 1.4rem;
+        }
+
+        .warning-text {
+            font-size: 0.9rem;
+            color: var(--text-brown);
+            margin-bottom: 1rem;
+        }
+
+        .warning-list {
+            font-size: 0.92rem;
+            color: var(--text-dark);
+            padding-left: 1.2rem;
+            line-height: 2;
+        }
+
+        .warning-note {
+            font-size: 0.82rem;
+            color: var(--text-gray);
+            margin-top: 1rem;
+        }
+
         .btn-done:hover { background: #a87a38; }
 
         /* ── FOOTER ── */
@@ -913,24 +942,36 @@
     </div><!-- end page-wrapper -->
     </form>
 
-    <!-- WARNING MODAL (weekend/rush fees) -->
-    <div class="modal-overlay" id="warningOverlay" style="display:none;z-index:10001;">
-        <div class="modal-box" style="max-width:420px;">
-            <div class="modal-top" style="background:linear-gradient(135deg,#b07d2a,#c2934a);">
-                <div class="modal-check" style="background:#f5af35;font-size:1.4rem;">&#9888;</div>
-                <h2>Additional Charges Apply</h2>
-                <p style="font-size:0.82rem;opacity:0.85;margin-top:0.25rem;">Please review before confirming</p>
-            </div>
-            <div class="modal-body">
-                <p style="font-size:0.9rem;color:#6b5c4f;margin-bottom:1rem;">Your selected date includes the following extra fees:</p>
-                <ul id="warningList" style="font-size:0.92rem;color:#2e211b;padding-left:1.2rem;line-height:2;"></ul>
-                <p style="font-size:0.82rem;color:#9e9189;margin-top:1rem;">These will be added to your total. Do you wish to continue?</p>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-print" onclick="closeWarningModal()">Cancel</button>
-                <button class="btn-done" id="btnProceedBooking">Yes, Continue</button>
-            </div>
+   <!-- WARNING MODAL (weekend/rush fees) -->
+<div class="modal-overlay" id="warningOverlay">
+    <div class="modal-box warning-modal">
+
+        <div class="modal-top warning-top">
+            <div class="modal-check warning-icon">⚠</div>
+            <h2>Additional Charges Apply</h2>
+            <p>Please review before confirming</p>
         </div>
+
+        <div class="modal-body">
+            <p class="warning-text">
+                Your selected date includes the following extra fees:
+            </p>
+
+            <ul id="warningList" class="warning-list"></ul>
+
+            <p class="warning-note">
+                These will be added to your total. Do you wish to continue?
+            </p>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-print" onclick="closeWarningModal()">Cancel</button>
+            <button class="btn-done" id="btnProceedBooking">Yes, Continue</button>
+        </div>
+
+    </div>
+</div>
+
     </div>
 
     <!-- RECEIPT MODAL -->
