@@ -6,90 +6,100 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Booking Management</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Management — Castro Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
     <style>
-                   * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-            :root {
-                --primary-gold: #c2934a;
-                --light-gold: #f4d589;
-                --bg-cream: #f9f6f2;
-                --bg-white: #ffffff;
-                --bg-beige: #f0ebe4;
-                --text-dark: #2e211b;
-                --text-brown: #493a2f;
-                --text-gray: #756e64;
-                --border-light: #e5dcd0;
-                --success: #2d8a53;
-                --warning: #f5af35;
-            }
+        :root {
+            --gold:        #C9A961;
+            --gold-light:  #e8c97a;
+            --dark-brown:  #4A3F35;
+            --cream:       #FAF8F3;
+            --beige:       #F5F1E8;
+            --white:       #FFFFFF;
+            --text-dark:   #2C2420;
+            --text-light:  #6B5B4F;
+            --border:      #E8E0D5;
+            --success-bg:  #EDF7F1;
+            --success-txt: #1E6B3E;
+            --warn-bg:     #FFF8E1;
+            --warn-txt:    #8A6200;
+            --info-bg:     #EBF4FD;
+            --info-txt:    #1558A0;
+            --danger-bg:   #FDE8E8;
+            --danger-txt:  #9B1C1C;
+            --sidebar-w:   260px;
+        }
 
-            body {
-                font-family: 'Inter', sans-serif;
-                background-color: var(--bg-cream);
-                color: var(--text-dark);
-                display: flex;
-                min-height: 100vh;
-            }
+        html, body { height: 100%; }
 
-            h1, h2, h3 {
-                font-family: 'Playfair Display', serif;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
 
-        /* SIDEBAR */
-                .sidebar {
-            width: 260px;
-            background: var(--bg-white);
-            border-right: 1px solid var(--border-light);
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* ── LAYOUT SHELL ── */
+        #form1 {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-width: var(--sidebar-w);
+            background: var(--white);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             position: fixed;
+            top: 0; left: 0;
             height: 100vh;
             overflow-y: auto;
+            z-index: 100;
         }
 
         .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-light);
+            padding: 1.75rem 1.5rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        .sidebar-logo {
+        .brand {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            margin-bottom: 0.5rem;
+            text-decoration: none;
         }
 
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-gold);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .logo-text {
-            font-family: 'Playfair Display', serif;
+        .brand-icon {
+            width: 40px; height: 40px;
+            background: var(--gold);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
             font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-dark);
+            flex-shrink: 0;
+            color: var(--white);
         }
 
-        .logo-subtext {
-            font-size: 0.75rem;
-            color: var(--text-gray);
-            margin-left: 3.2rem;
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            line-height: 1.2;
+        }
+
+        .brand-sub {
+            font-size: 0.68rem;
+            color: var(--text-light);
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
         }
 
         .sidebar-nav {
@@ -97,212 +107,369 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             flex: 1;
         }
 
-        .nav-item {
+        .nav-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 0 0.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .nav-link {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+            padding: 0.7rem 0.875rem;
+            margin-bottom: 0.15rem;
+            border-radius: 10px;
             text-decoration: none;
-            color: var(--text-brown);
+            color: var(--text-light);
+            font-size: 0.875rem;
             font-weight: 500;
+            transition: background 0.2s, color 0.2s;
         }
 
-        .nav-item:hover {
-            background: var(--bg-cream);
-        }
-
-        .nav-item.active {
-            background: var(--bg-beige);
-            color: var(--primary-gold);
-        }
-
-        .nav-icon {
-            font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-        }
+        .nav-link .icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-link:hover { background: var(--beige); color: var(--dark-brown); }
+        .nav-link.active { background: var(--beige); color: var(--gold); font-weight: 600; }
 
         .sidebar-footer {
-            padding: 1.5rem;
-            border-top: 1px solid var(--border-light);
+            padding: 1.25rem 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
         }
 
         .btn-back {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            background: var(--bg-cream);
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--text-brown);
-            transition: all 0.3s;
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 0.875rem;
+            background: var(--beige);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             text-decoration: none;
-            margin-bottom: 1rem;
+            color: var(--text-dark);
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: background 0.2s;
         }
-
-        .btn-back:hover {
-            background: var(--bg-beige);
-        }
+        .btn-back:hover { background: #ede6db; }
 
         .btn-signout {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 0.875rem;
             background: transparent;
             border: none;
-            cursor: pointer;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #b83232;
+            font-size: 0.82rem;
             font-weight: 500;
-            color: #d92626;
-            transition: all 0.3s;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-signout:hover { background: #fff0f0; }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 2.5rem 2.5rem 3rem;
+            min-width: 0;
         }
 
-        .btn-signout:hover {
-            background: #fff3cd;
-            border-radius: 8px;
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        /* MAIN CONTENT */
-        .main-content {
-            margin-left: 260px;
-            padding: 2rem;
-            width: 100%;
+        .page-header h1 {
+            font-size: 1.9rem;
+            color: var(--dark-brown);
+            line-height: 1.15;
         }
 
-        /* TABLE */
+        .page-sub {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        .count-pill {
+            display: inline-flex;
+            align-items: center;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            padding: 0.35rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark-brown);
+            white-space: nowrap;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-head h2 { font-size: 1rem; color: var(--dark-brown); }
+
+        /* ── TABLE ── */
+        .tbl-wrap { overflow-x: auto; }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            background: var(--bg-white);
-            border-radius: 12px;
+        }
+
+        .data-table thead th {
+            background: var(--beige);
+            padding: 0.85rem 1.25rem;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+        }
+
+        .data-table tbody td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover td { background: var(--cream); }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-Pending   { background: var(--warn-bg);    color: var(--warn-txt);    border: 1px solid #FFD54F; }
+        .badge-Approved  { background: var(--success-bg); color: var(--success-txt); border: 1px solid #A5D6B7; }
+        .badge-Completed { background: var(--info-bg);    color: var(--info-txt);    border: 1px solid #90CAF9; }
+        .badge-Cancelled { background: var(--danger-bg);  color: var(--danger-txt);  border: 1px solid #F5A0A0; }
+
+        /* ── ACTION BUTTONS ── */
+        .actions { display: flex; gap: 0.4rem; }
+
+        .btn-act {
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: opacity 0.2s, transform 0.15s;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-act:hover { opacity: 0.8; transform: translateY(-1px); }
+        .btn-act:active { transform: translateY(0); }
+
+        .btn-approve { background: var(--success-bg); color: var(--success-txt); border-color: #A5D6B7; }
+        .btn-done    { background: var(--info-bg);    color: var(--info-txt);    border-color: #90CAF9; }
+        .btn-delete  { background: var(--danger-bg);  color: var(--danger-txt);  border-color: #F5A0A0; }
+
+        /* ── PACKAGE BARS ── */
+        .pkg-list { padding: 0.75rem 1.5rem 1.5rem; }
+
+        .pkg-row {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pkg-row:last-child { border-bottom: none; }
+
+        .pkg-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--dark-brown);
+            min-width: 120px;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--beige);
+            border-radius: 99px;
             overflow: hidden;
         }
 
-        .data-table th {
-            background: var(--bg-cream);
-            padding: 12px;
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            border-radius: 99px;
         }
 
-        .data-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-light);
+        .pkg-count {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        /* ── EMPTY ── */
+        .empty {
             text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-light);
         }
 
-        .data-table tr:hover {
-            background: var(--bg-cream);
-        }
-
-        /* STATUS */
-        .Pending { background: #fff3cd; padding:5px 10px; border-radius:20px; }
-        .Approved { background: #d4edda; padding:5px 10px; border-radius:20px; }
-        .Done { background: #d1ecf1; padding:5px 10px; border-radius:20px; }
-
-        /* BUTTONS */
-        .btn-edit { background: #f4d589; padding:5px 10px; border:none; cursor:pointer; }
-        .btn-view { background: #c2934a; color:white; padding:5px 10px; border:none; cursor:pointer; }
-        .btn-delete { background: #d92626; color:white; padding:5px 10px; border:none; cursor:pointer; }
+        .empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty p { font-size: 0.875rem; }
     </style>
 </head>
 
 <body>
-
 <form id="form1" runat="server">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-
         <div class="sidebar-header">
-            <div class="logo-text">Castro Admin</div>
-            <div class="logo-subtext">Management Panel</div>
+            <a href="Home.aspx" class="brand">
+                <div class="brand-icon">✦</div>
+                <div>
+                    <div class="brand-name">Castro Catering</div>
+                    <div class="brand-sub">Admin Panel</div>
+                </div>
+            </a>
         </div>
 
-        <a href="AdminDashboard.aspx" class="nav-item">📊 Dashboard</a>
-        <a href="AdminBookingManagement.aspx" class="nav-item active">📋 Booking Management</a>
+        <nav class="sidebar-nav">
+            <span class="nav-label">Menu</span>
+            <a href="AdminDashboard.aspx" class="nav-link">
+                <span class="icon">📊</span> Dashboard
+            </a>
+            <a href="AdminBookingManagement.aspx" class="nav-link active">
+                <span class="icon">📋</span> Booking Management
+            </a>
+        </nav>
 
         <div class="sidebar-footer">
-            <a href="Home.aspx" class="btn-back">← Back to User Site</a>
-            <a href="Logout.aspx" class="btn-signout">→ Sign out</a>
+            <a href="Home.aspx" class="btn-back">← Back to Site</a>
+            <a href="LoginSignup.aspx" class="btn-signout">⎋ Sign Out</a>
         </div>
-
     </aside>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
+    <!-- MAIN -->
+    <div class="main">
 
-        <!-- GRIDVIEW -->
-        <asp:GridView ID="GridViewBookings" runat="server"
-            AutoGenerateColumns="False"
-            CssClass="data-table"
-            GridLines="None"
-            DataKeyNames="BookingID"
-            OnRowDeleting="GridViewBookings_RowDeleting"
-            OnRowCommand="GridViewBookings_RowCommand">
+        <div class="page-header">
+            <div>
+                <h1>Booking Management</h1>
+                <p class="page-sub">Review, approve, and manage all customer bookings</p>
+            </div>
+            <asp:Label ID="lblTotalBookings" runat="server" CssClass="count-pill" />
+        </div>
 
-            <Columns>
+        <!-- Bookings Table -->
+        <div class="card">
+            <div class="card-head">
+                <h2>All Bookings</h2>
+            </div>
+            <div class="tbl-wrap">
+                <asp:GridView ID="GridViewBookings" runat="server"
+                    AutoGenerateColumns="False"
+                    CssClass="data-table"
+                    GridLines="None"
+                    DataKeyNames="BookingID"
+                    OnRowDeleting="GridViewBookings_RowDeleting"
+                    OnRowCommand="GridViewBookings_RowCommand">
+                    <EmptyDataTemplate>
+                        <div class="empty">
+                            <div class="empty-icon">📭</div>
+                            <p>No bookings found.</p>
+                        </div>
+                    </EmptyDataTemplate>
+                    <Columns>
+                        <asp:BoundField DataField="BookingID"    HeaderText="ID" />
+                        <asp:BoundField DataField="CustomerName" HeaderText="Client" />
+                        <asp:BoundField DataField="EventType"    HeaderText="Event" />
+                        <asp:BoundField DataField="EventDate"    HeaderText="Date"
+                            DataFormatString="{0:MMM dd, yyyy}" HtmlEncode="false" />
+                        <asp:BoundField DataField="NoOfGuests"   HeaderText="Guests" />
+                        <asp:BoundField DataField="PackageID"    HeaderText="Package" />
+                        <asp:BoundField DataField="Total"        HeaderText="Total"
+                            DataFormatString="₱{0:N0}" HtmlEncode="false" />
+                        <asp:TemplateField HeaderText="Status">
+                            <ItemTemplate>
+                                <span class='badge badge-<%# Eval("Status") %>'><%# Eval("Status") %></span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Actions">
+                            <ItemTemplate>
+                                <div class="actions">
+                                    <asp:Button runat="server" Text="Approve"
+                                        CommandName="Approve"
+                                        CommandArgument='<%# Eval("BookingID") %>'
+                                        CssClass="btn-act btn-approve" />
+                                    <asp:Button runat="server" Text="Done"
+                                        CommandName="Done"
+                                        CommandArgument='<%# Eval("BookingID") %>'
+                                        CssClass="btn-act btn-done" />
+                                    <asp:Button runat="server" Text="Delete"
+                                        CommandName="Delete"
+                                        CommandArgument='<%# Eval("BookingID") %>'
+                                        CssClass="btn-act btn-delete"
+                                        OnClientClick="return confirm('Delete this booking? This cannot be undone.');" />
+                                </div>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
 
-                <asp:BoundField DataField="BookingID" HeaderText="ID" />
-                <asp:BoundField DataField="CustomerName" HeaderText="CLIENT" />
-                <asp:BoundField DataField="EventType" HeaderText="EVENT" />
-                <asp:BoundField DataField="EventDate" HeaderText="DATE" />
-                <asp:BoundField DataField="NoOfGuests" HeaderText="GUESTS" />
-                <asp:BoundField DataField="PackageID" HeaderText="PACKAGE" />
-                <asp:BoundField DataField="Total" HeaderText="TOTAL" />
-
-                <asp:TemplateField HeaderText="STATUS">
-                    <ItemTemplate>
-                        <span class='<%# Eval("Status") %>'>
-                            <%# Eval("Status") %>
-                        </span>
-                    </ItemTemplate>
-                </asp:TemplateField>
-
-                <asp:TemplateField HeaderText="ACTIONS">
-                    <ItemTemplate>
-
-                        <asp:Button runat="server"
-                            Text="Approve"
-                            CommandName="Approve"
-                            CommandArgument='<%# Eval("BookingID") %>'
-                            CssClass="btn-edit" />
-
-                        <asp:Button runat="server"
-                            Text="Done"
-                            CommandName="Done"
-                            CommandArgument='<%# Eval("BookingID") %>'
-                            CssClass="btn-view" />
-
-                        <asp:Button runat="server"
-                            Text="Delete"
-                            CommandName="Delete"
-                            CommandArgument='<%# Eval("BookingID") %>'
-                            CssClass="btn-delete" />
-
-                    </ItemTemplate>
-                </asp:TemplateField>
-
-            </Columns>
-
-        </asp:GridView>
-
-        <br />
-        <asp:Label ID="lblTotalBookings" runat="server" Font-Bold="true"></asp:Label>
-
-        <br /><br />
-
-        <h3>Package Statistics</h3>
-        <asp:Label ID="lblPackageStats" runat="server"></asp:Label>
+        <!-- Package Statistics -->
+        <div class="card">
+            <div class="card-head">
+                <h2>Package Statistics</h2>
+            </div>
+            <div class="pkg-list">
+                <asp:Label ID="lblPackageStats" runat="server" />
+            </div>
+        </div>
 
     </div>
 
 </form>
-
 </body>
 </html>

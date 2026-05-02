@@ -98,9 +98,9 @@ namespace CastroCateringBookingSystem.Pages
                 string message = "";
 
                 if (newStatus == "Approved")
-                    message = "Your booking has been APPROVED 🎉";
+                    message = "Your booking has been APPROVED";
                 else if (newStatus == "Completed")
-                    message = "Your booking is COMPLETED ✔";
+                    message = "Your booking is COMPLETED";
                 else
                     message = "Your booking status was updated.";
 
@@ -152,41 +152,58 @@ namespace CastroCateringBookingSystem.Pages
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = "SELECT COUNT(*) FROM Bookings";
-
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
-
                 int total = (int)cmd.ExecuteScalar();
-
-                lblTotalBookings.Text = "Total Bookings: " + total;
-
-
+                lblTotalBookings.Text = "📅 " + total + " Total Booking" + (total == 1 ? "" : "s");
             }
         }
+
         void LoadPackageStats()
         {
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = @"
-        SELECT PackageID, COUNT(*) AS TotalBookings
-        FROM Bookings
-        GROUP BY PackageID";
+                    SELECT PackageID, COUNT(*) AS TotalBookings
+                    FROM Bookings
+                    GROUP BY PackageID
+                    ORDER BY TotalBookings DESC";
 
-                SqlCommand cmd = new SqlCommand(query, conn);
-                conn.Open();
+                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
 
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                string result = "";
-
-                while (reader.Read())
+                if (dt.Rows.Count == 0)
                 {
-                    result += "Package " + reader["PackageID"] +
-                              " = " + reader["TotalBookings"] + " bookings<br/>";
+                    lblPackageStats.Text = "<p style='color:#756e64;font-size:0.875rem;'>No package data yet.</p>";
+                    return;
                 }
 
-                lblPackageStats.Text = result;
+                int max = 1;
+                foreach (DataRow row in dt.Rows)
+                {
+                    int val = Convert.ToInt32(row["TotalBookings"]);
+                    if (val > max) max = val;
+                }
 
+                string html = "";
+                foreach (DataRow row in dt.Rows)
+                {
+                    int count = Convert.ToInt32(row["TotalBookings"]);
+                    int pct   = (int)Math.Round((double)count / max * 100);
+                    string pkg = "Package " + row["PackageID"];
+
+                    html += $@"
+                    <div class='pkg-stat-row'>
+                        <span class='pkg-name'>{pkg}</span>
+                        <div class='pkg-bar-wrap'>
+                            <div class='pkg-bar' style='width:{pct}%'></div>
+                        </div>
+                        <span class='pkg-count'>{count} booking{(count == 1 ? "" : "s")}</span>
+                    </div>";
+                }
+
+                lblPackageStats.Text = html;
             }
         }
 

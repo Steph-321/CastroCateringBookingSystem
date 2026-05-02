@@ -1,6 +1,7 @@
-﻿<!DOCTYPE html>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="CastroCateringBookingSystem.Home" %>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+<head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Castro Catering - Crafting Elegant Moments</title>
@@ -820,7 +821,7 @@
                 <div class="stat-label">Events Catered</div>
             </div>
             <div class="stat-box">
-                <div class="stat-number">4.9 / 5</div>
+                <div class="stat-number"><%= GetAverageRating() %> / 5</div>
                 <div class="stat-label">Average Rating</div>
             </div>
             <div class="stat-box">

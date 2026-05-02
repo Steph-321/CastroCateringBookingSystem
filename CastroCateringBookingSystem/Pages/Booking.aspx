@@ -991,7 +991,8 @@
                        <asp:Button ID="btnConfirm" runat="server"
                         Text="Confirm Booking"
                         CssClass="btn-confirm"
-                        OnClientClick="return startBookingFlow();" />
+                        OnClick="btnConfirm_Click"
+                        OnClientClick="return prepareBookingPostback();" />
 
 
 
@@ -1326,14 +1327,12 @@
             function openWarningModal(warnings) {
                 var list = document.getElementById('warningList');
                 list.innerHTML = '';
-
                 warnings.forEach(function (w) {
                     var li = document.createElement('li');
                     li.textContent = w;
                     li.style.marginBottom = '0.5rem';
                     list.appendChild(li);
                 });
-
                 document.getElementById('warningOverlay').classList.add('open');
                 document.body.style.overflow = 'hidden';
             }
@@ -1343,48 +1342,30 @@
                 document.body.style.overflow = '';
             }
 
+            // Flag: set to true when user has acknowledged the warning
+            var _warningAcknowledged = false;
 
-            // When user clicks "Yes, Continue" in the warning modal:
-            // write hidden fields and submit the ASP.NET form directly
+            // "Yes, Continue" in the warning modal
             document.getElementById('btnProceedBooking').addEventListener('click', function () {
-
                 closeWarningModal();
 
-                var guests = state.guests;
+                var guests   = state.guests;
                 var subtotal = state.packagePrice * guests;
-                var svcFee = state.serviceFeeType === 'per-guest'
-                    ? state.serviceFee * guests
-                    : 0;
+                var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
+                var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
 
-                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+                // Write hidden fields
+                document.getElementById('<%= hfServiceStyle.ClientID %>').value  = state.serviceName;
+                document.getElementById('<%= hfPackageName.ClientID %>').value   = state.packageName;
+                document.getElementById('<%= hfPackagePrice.ClientID %>').value  = state.packagePrice;
+                document.getElementById('<%= hfTotalAmount.ClientID %>').value   = total;
 
-                // set hidden fields (ONLY HERE)
-                byName('hfServiceStyle').value = state.serviceName;
-                byName('hfPackageName').value = state.packageName;
-                byName('hfPackagePrice').value = state.packagePrice;
-                byName('hfTotalAmount').value = total;
+                // Bypass the warning check on the next OnClientClick call
+                _warningAcknowledged = true;
 
-                // single postback trigger
+                // Trigger the ASP.NET postback
                 document.getElementById('<%= btnConfirm.ClientID %>').click();
             });
-
-
-            function proceedBooking() {
-                closeWarningModal();
-
-                var guests = state.guests;
-                var subtotal = state.packagePrice * guests;
-                var svcFee = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
-
-                document.getElementById('<%= hfServiceStyle.ClientID %>').value = state.serviceName;
-                document.getElementById('<%= hfPackageName.ClientID %>').value = state.packageName;
-                document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
-                document.getElementById('<%= hfTotalAmount.ClientID %>').value = total;
-
-                // SAFE POSTBACK
-                document.getElementById('<%= btnConfirm.ClientID %>').click();
-            }
 
 
             /* ── MOBILE NAV ── */
@@ -1429,16 +1410,22 @@
                Validates, writes hidden fields, returns true to allow postback      */
             window.prepareBookingPostback = function () {
 
+                // If user already acknowledged the warning, let the postback through
+                if (_warningAcknowledged) {
+                    _warningAcknowledged = false; // reset for next booking
+                    return true;
+                }
+
                 var missing = [];
 
-                if (!state.name) missing.push('Client Name');
-                if (!state.phone) missing.push('Phone Number');
-                if (!state.eventType) missing.push('Event Type');
-                if (!state.date) missing.push('Event Date');
-                if (!state.guests) missing.push('Number of Guests');
-                if (!state.payment) missing.push('Mode of Payment');
-                if (!state.venue) missing.push('Venue');
-                if (!state.location) missing.push('Venue Location');
+                if (!state.name)        missing.push('Client Name');
+                if (!state.phone)       missing.push('Phone Number');
+                if (!state.eventType)   missing.push('Event Type');
+                if (!state.date)        missing.push('Event Date');
+                if (!state.guests)      missing.push('Number of Guests');
+                if (!state.payment)     missing.push('Mode of Payment');
+                if (!state.venue)       missing.push('Venue');
+                if (!state.location)    missing.push('Venue Location');
                 if (!state.serviceName) missing.push('Service Style');
                 if (!state.packageName) missing.push('Package');
 
@@ -1448,28 +1435,24 @@
                 }
 
                 var warnings = [];
-
                 if (state.weekendFee > 0) warnings.push('Weekend premium: ₱3,000');
-                if (state.rushFee > 0) warnings.push('Rush fee: ₱5,000');
+                if (state.rushFee    > 0) warnings.push('Rush fee: ₱5,000');
 
                 if (warnings.length > 0) {
                     openWarningModal(warnings);
-                    return false;
+                    return false; // stop postback; user must click "Yes, Continue"
                 }
 
-                // no warnings → auto submit
-                var guests = state.guests;
+                // No warnings — write hidden fields and allow postback directly
+                var guests   = state.guests;
                 var subtotal = state.packagePrice * guests;
-                var svcFee = state.serviceFeeType === 'per-guest'
-                    ? state.serviceFee * guests
-                    : 0;
+                var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
+                var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
 
-                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
-
-                byName('hfServiceStyle').value = state.serviceName;
-                byName('hfPackageName').value = state.packageName;
-                byName('hfPackagePrice').value = state.packagePrice;
-                byName('hfTotalAmount').value = total;
+                document.getElementById('<%= hfServiceStyle.ClientID %>').value  = state.serviceName;
+                document.getElementById('<%= hfPackageName.ClientID %>').value   = state.packageName;
+                document.getElementById('<%= hfPackagePrice.ClientID %>').value  = state.packagePrice;
+                document.getElementById('<%= hfTotalAmount.ClientID %>').value   = total;
 
                 return true;
             };

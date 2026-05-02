@@ -13,6 +13,7 @@ namespace CastroCateringBookingSystem.Pages
         // ── Profile picture ──
         protected global::System.Web.UI.WebControls.Image imgProfilePic;
         protected global::System.Web.UI.WebControls.FileUpload fuProfilePic;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl avatarCircle;
 
         // ── Display labels ──
         protected global::System.Web.UI.WebControls.Label lblProfileAvatar;
@@ -35,5 +36,15 @@ namespace CastroCateringBookingSystem.Pages
         protected global::System.Web.UI.WebControls.Label lblBookingCount;
         protected global::System.Web.UI.WebControls.Repeater rptBookings;
         protected global::System.Web.UI.WebControls.PlaceHolder phNoBookings;
+
+        // ── Cancel booking ──
+        protected global::System.Web.UI.WebControls.HiddenField hfCancelBookingID;
+        protected global::System.Web.UI.WebControls.Button btnConfirmCancel;
+
+        // ── Notifications ──
+        protected global::System.Web.UI.WebControls.Label lblNotifCount;
+        protected global::System.Web.UI.WebControls.Label lblNotifBadge;
+        protected global::System.Web.UI.WebControls.Repeater rptNotifications;
+        protected global::System.Web.UI.WebControls.PlaceHolder phNoNotifs;
     }
 }

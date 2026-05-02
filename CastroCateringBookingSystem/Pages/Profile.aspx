@@ -561,6 +561,264 @@
                 display: none;
             }
         }
+
+        /* ── Cancel booking button ── */
+        .btn-cancel-booking {
+            background: transparent;
+            border: 1px solid #e5a0a0;
+            color: #b83232;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancel-booking:hover {
+            background: #fde8e8;
+            border-color: #b83232;
+        }
+
+        /* ── Cancel confirmation modal ── */
+        .cancel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(33, 28, 24, 0.55);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+        .cancel-overlay.open { display: flex; }
+
+        .cancel-modal {
+            background: var(--bg-white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+            overflow: hidden;
+            animation: slideDown 0.2s ease;
+        }
+
+        .cancel-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .cancel-modal-head h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .cancel-modal-body {
+            padding: 2rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+        .cancel-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .cancel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        .cancel-sub {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        .cancel-policy {
+            font-size: 0.78rem;
+            color: var(--text-gray);
+            background: var(--bg-cream);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+        }
+
+        .cancel-modal-foot {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+        .btn-cancel-no {
+            flex: 1;
+            padding: 0.7rem;
+            background: var(--bg-beige);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-cancel-no:hover { background: #ede6db; }
+
+        .btn-cancel-yes {
+            flex: 1;
+            padding: 0.7rem;
+            background: #b83232;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-cancel-yes:hover { background: #9b1c1c; }
+
+        /* ── Notification bell ── */
+        .btn-notif {
+            position: relative;
+            background: transparent;
+            border: 1px solid var(--border-light);
+            border-radius: 50%;
+            width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: var(--text-dark);
+            transition: background 0.2s, border-color 0.2s;
+            flex-shrink: 0;
+        }
+        .btn-notif:hover {
+            background: var(--bg-beige);
+            border-color: var(--primary-gold);
+            color: var(--primary-gold);
+        }
+        .notif-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            min-width: 18px; height: 18px;
+            padding: 0 4px;
+            background: var(--primary-gold);
+            color: #fff;
+            border-radius: 99px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #fff;
+            line-height: 1;
+        }
+
+        /* ── Notification modal ── */
+        .notif-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(33, 28, 24, 0.55);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+        .notif-overlay.open { display: flex; }
+
+        .notif-modal {
+            background: var(--bg-white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 90px);
+            overflow: hidden;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .notif-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .notif-modal-head h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+        .notif-close {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-gray);
+            line-height: 1;
+            padding: 0 0.25rem;
+            transition: color 0.2s;
+        }
+        .notif-close:hover { color: var(--text-dark); }
+
+        .notif-modal-body {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.875rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            transition: background 0.15s;
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item:hover { background: var(--bg-cream); }
+
+        .notif-icon-wrap {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: #fff8e8;
+            border: 1px solid #f4d589;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .notif-message {
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            font-weight: 500;
+            line-height: 1.5;
+            margin: 0 0 0.25rem;
+        }
+        .notif-meta {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        .notif-empty {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+
+        .notif-modal-foot {
+            padding: 0.75rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+            font-size: 0.78rem;
+            color: var(--text-gray);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -586,6 +844,14 @@
             </ul>
 
             <div class="nav-icons">
+                <!-- Bell notification icon -->
+                <button class="btn-notif" type="button" onclick="openNotifModal()" title="Notifications" aria-label="Notifications">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <asp:Label ID="lblNotifBadge" runat="server" CssClass="notif-badge" Visible="false" />
+                </button>
                 <button class="btn-login" type="button" onclick="logout()">Log Out</button>
                 <button class="btn-login" type="button" onclick="showAdminLogin()" style="margin-left:0.5rem;">Admin</button>
                 <button class="mobile-menu" type="button" aria-label="Open navigation menu" aria-controls="primaryNav" aria-expanded="false">
@@ -612,7 +878,7 @@
                     <!-- Profile picture -->
                     <div class="profile-pic-wrap">
                         <asp:Image ID="imgProfilePic" runat="server" CssClass="profile-pic-img" style="display:none;" AlternateText="Profile" />
-                        <div class="profile-avatar-circle" id="avatarCircle">
+                        <div class="profile-avatar-circle" id="avatarCircle" runat="server">
                             <asp:Label ID="lblProfileAvatar" runat="server" Text="?" />
                         </div>
                         <label class="pic-upload-btn" title="Change photo">
@@ -704,6 +970,9 @@
                                     <div class="detail-item"><%# Eval("NoOfGuests") %> guests</div>
                                     <div class="detail-item"><%# Eval("Payment") %></div>
                                 </div>
+                                <%# (Eval("Status").ToString() != "Cancelled" && Eval("Status").ToString() != "Completed")
+                                    ? "<div class='booking-actions'><button type='button' class='btn-cancel-booking' onclick='openCancelModal(" + Eval("BookingID") + ")'>Cancel Booking</button></div>"
+                                    : "" %>
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>
@@ -717,6 +986,67 @@
                 <div class="policy-note">
                     Cancellation policy: contact us within <strong>12 hours</strong> of booking to cancel.
                 </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CANCEL BOOKING MODAL -->
+    <div id="cancelModalOverlay" class="cancel-overlay" onclick="if(event.target===this)closeCancelModal()">
+        <div class="cancel-modal">
+            <div class="cancel-modal-head">
+                <h3>Cancel Booking</h3>
+                <button class="notif-close" onclick="closeCancelModal()" aria-label="Close">&times;</button>
+            </div>
+            <div class="cancel-modal-body">
+                <div class="cancel-icon">⚠️</div>
+                <p class="cancel-title">Are you sure you want to cancel?</p>
+                <p class="cancel-sub">This action cannot be undone. Your booking will be marked as <strong>Cancelled</strong>.</p>
+                <p class="cancel-policy">Reminder: cancellations must be made within <strong>12 hours</strong> of booking.</p>
+            </div>
+            <div class="cancel-modal-foot">
+                <button type="button" class="btn-cancel-no" onclick="closeCancelModal()">Keep Booking</button>
+                <asp:Button ID="btnConfirmCancel" runat="server"
+                    Text="Yes, Cancel It"
+                    CssClass="btn-cancel-yes"
+                    OnClick="btnConfirmCancel_Click" />
+            </div>
+        </div>
+    </div>
+    <asp:HiddenField ID="hfCancelBookingID" runat="server" Value="0" />
+
+    <!-- NOTIFICATIONS MODAL -->
+    <div id="notifModalOverlay" class="notif-overlay" onclick="if(event.target===this)closeNotifModal()">
+        <div class="notif-modal">
+            <div class="notif-modal-head">
+                <h3>Notifications</h3>
+                <button class="notif-close" onclick="closeNotifModal()" aria-label="Close">&times;</button>
+            </div>
+            <div class="notif-modal-body">
+                <asp:Repeater ID="rptNotifications" runat="server">
+                    <ItemTemplate>
+                        <div class="notif-item">
+                            <div class="notif-icon-wrap">🔔</div>
+                            <div class="notif-text">
+                                <p class="notif-message"><%# Eval("Message") %></p>
+                                <span class="notif-meta">
+                                    <%# Eval("DateCreated", "{0:MMM d, yyyy · h:mm tt}") %>
+                                    <%# !string.IsNullOrEmpty(Eval("EventType").ToString()) ? " &bull; " + Eval("EventType") : "" %>
+                                </span>
+                            </div>
+                        </div>
+                    </ItemTemplate>
+                </asp:Repeater>
+                <asp:PlaceHolder ID="phNoNotifs" runat="server" Visible="false">
+                    <div class="notif-empty">
+                        <div style="font-size:2rem;margin-bottom:0.5rem;">🔕</div>
+                        <p>No notifications yet.</p>
+                        <p style="font-size:0.8rem;margin-top:0.25rem;">You'll be notified when your booking status changes.</p>
+                    </div>
+                </asp:PlaceHolder>
+            </div>
+            <div class="notif-modal-foot">
+                <asp:Label ID="lblNotifCount" runat="server" Text="0" /> notification(s)
             </div>
         </div>
     </div>
@@ -965,6 +1295,26 @@
 
         if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileNav);
         document.querySelectorAll('#primaryNav a').forEach(a => a.addEventListener('click', closeMobileNav));
+
+        /* ── Cancel booking modal ── */
+        function openCancelModal(bookingId) {
+            document.getElementById('<%= hfCancelBookingID.ClientID %>').value = bookingId;
+            document.getElementById('cancelModalOverlay').classList.add('open');
+        }
+        function closeCancelModal() {
+            document.getElementById('cancelModalOverlay').classList.remove('open');
+        }
+
+        /* ── Notification modal ── */
+        function openNotifModal() {
+            document.getElementById('notifModalOverlay').classList.add('open');
+        }
+        function closeNotifModal() {
+            document.getElementById('notifModalOverlay').classList.remove('open');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { closeNotifModal(); closeCancelModal(); }
+        });
 
         function logout() {
             localStorage.removeItem('currentUser');
