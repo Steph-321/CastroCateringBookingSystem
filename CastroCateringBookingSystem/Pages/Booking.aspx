@@ -412,7 +412,7 @@
             position: fixed;
             inset: 0;
             background: rgba(46,33,27,0.55);
-            z-index: 99999; /* IMPORTANT FIX */
+            z-index: 99999; 
             align-items: center;
             justify-content: center;
         }
@@ -971,11 +971,15 @@
                             <span class="total-label">Total</span>
                             <span class="total-amount" id="totalAmount">&#8369;0</span>
                         </div>
+                       
 
-                        <asp:Label ID="lblBookingError" runat="server" CssClass="booking-error" Visible="false" />
-                        <asp:Button ID="btnConfirm" runat="server" Text="Confirm Booking"
-                            CssClass="btn-confirm" OnClick="btnConfirm_Click"
-                            OnClientClick="return prepareBookingPostback();" />
+
+
+                       <asp:Button ID="btnConfirm" runat="server"
+                        Text="Confirm Booking"
+                        CssClass="btn-confirm"
+                        OnClientClick="openWarningModal(); return false;" />
+
                     </div>
                 </div>
             </div><!-- end summary-sidebar -->
@@ -1007,8 +1011,14 @@
         </div>
 
         <div class="modal-actions">
-            <button class="btn-print" onclick="closeWarningModal()">Cancel</button>
-            <button class="btn-done" id="btnProceedBooking">Yes, Continue</button>
+           <button type="button" class="btn-print" onclick="closeWarningModal()">
+                Cancel
+            </button>
+
+           <button type="button" class="btn-done" onclick="confirmBooking()">
+            Yes, Continue
+        </button>
+
         </div>
 
     </div>
@@ -1481,6 +1491,24 @@
 
     })();
     </script>
+    <script>
+        function openWarningModal() {
+            document.getElementById("warningModal").classList.add("open");
+        }
+
+        function closeWarningModal() {
+            document.getElementById("warningModal").classList.remove("open");
+        }
+
+        function confirmBooking() {
+            closeWarningModal();
+
+            // triggers ASP.NET postback manually
+            document.getElementById('<%= btnConfirm.ClientID %>').onclick = null;
+        document.getElementById('<%= btnConfirm.ClientID %>').click();
+        }
+    </script>
+
 
     <script>
         /* ── On page load: check if server set hfShowReceipt=1 and open modal ── */
@@ -1626,28 +1654,10 @@
                 Sign In to Admin
             </button>
         </div>
-        <script>
-            function showWarningModal() {
-                document.getElementById("warningModal").classList.add("open");
-            }
-
-            function closeWarningModal() {
-                document.getElementById("warningModal").classList.remove("open");
-            }
-
-            function confirmBooking() {
-                closeWarningModal();
-
-                // call your actual booking submit button here
-                document.getElementById("<%= btnConfirm.ClientID %>").click();
-            }
-
-            // safety: close modal on page load
-            window.onload = function () {
-                closeWarningModal();
-            };
-        </script>
+       
 
     </div>
+    
+
 </body>
 </html>
