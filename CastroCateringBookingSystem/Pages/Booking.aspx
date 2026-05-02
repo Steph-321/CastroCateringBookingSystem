@@ -411,8 +411,8 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(46,33,27,0.55);
-            z-index: 99999; 
+            background: rgba(0,0,0,0.55);
+            z-index: 99999;
             align-items: center;
             justify-content: center;
         }
@@ -420,6 +420,7 @@
         .modal-overlay.open {
             display: flex;
         }
+
 
         .modal-box {
             background: var(--bg-white);
@@ -564,6 +565,95 @@
         }
 
         .btn-done:hover { background: #a87a38; }
+        /* ── WARNING MODAL BASE ── */
+        .warning-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .warning-overlay.open {
+            display: flex;
+        }
+
+        .warning-modal {
+            background: var(--bg-white);
+            border-radius: 20px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+            animation: modalIn 0.25s ease;
+        }
+
+        /* reuse your animation */
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(15px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .warning-top {
+            background: linear-gradient(135deg, #b07d2a, var(--primary-gold));
+            color: #fff;
+            padding: 2rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+
+        .warning-icon {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: var(--warning);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .warning-body {
+            padding: 1.5rem 2rem;
+        }
+
+        .warning-list {
+            margin: 0.8rem 0;
+            padding-left: 1.2rem;
+            color: var(--text-dark);
+            font-size: 0.92rem;
+            line-height: 1.8;
+        }
+
+        .warning-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-beige);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-continue {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary-gold);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
 
         /* ── FOOTER ── */
         footer {
@@ -670,44 +760,8 @@
         }
     </style>
 </head>
-    <!-- WARNING MODAL -->
-<div class="modal-overlay warning-modal" id="warningModal">
-    <div class="modal-box">
+ 
 
-        <div class="modal-top warning-top">
-            <div class="modal-check warning-icon">⚠</div>
-            <h2>Additional Charges Warning</h2>
-            <div class="booking-id">Please review before continuing</div>
-        </div>
-
-        <div class="modal-body">
-            <p class="warning-text">
-                Your booking may include additional charges:
-            </p>
-
-            <ul class="warning-list">
-                <li>Weekend surcharge</li>
-                <li>Rush booking fee</li>
-                <li>Extra service customization</li>
-            </ul>
-
-            <p class="warning-note">
-                Do you want to continue with this booking?
-            </p>
-        </div>
-
-        <div class="modal-actions">
-            <button type="button" class="btn-print" onclick="closeWarningModal()">
-                Cancel
-            </button>
-
-            <button type="button" class="btn-done" onclick="confirmBooking()">
-                Yes, Continue
-            </button>
-        </div>
-
-    </div>
-</div>
 
 <body>
 
@@ -742,6 +796,7 @@
 
     <!-- PAGE -->
     <form id="bookingForm" runat="server">
+    <asp:Label ID="lblBookingError" runat="server" ForeColor="Red" Visible="false" />
     <div class="page-wrapper">
         <div class="page-header">
             <h1>Book an Event</h1>
@@ -973,12 +1028,13 @@
                         </div>
                        
 
-
-
-                       <asp:Button ID="btnConfirm" runat="server"
+                      <asp:Button ID="btnConfirm" runat="server"
                         Text="Confirm Booking"
                         CssClass="btn-confirm"
-                        OnClientClick="openWarningModal(); return false;" />
+                        OnClientClick="return openWarningModal();" />
+
+
+
 
                     </div>
                 </div>
@@ -989,42 +1045,41 @@
     </form>
 
    <!-- WARNING MODAL (weekend/rush fees) -->
-<div class="modal-overlay" id="warningOverlay">
-    <div class="modal-box warning-modal">
+<!-- WARNING MODAL -->
+<div id="warningOverlay" class="modal-overlay">
+    <div class="modal-box">
 
-        <div class="modal-top warning-top">
-            <div class="modal-check warning-icon">⚠</div>
+        <div class="modal-header">
+            <div class="icon">⚠️</div>
             <h2>Additional Charges Apply</h2>
             <p>Please review before confirming</p>
         </div>
 
         <div class="modal-body">
-            <p class="warning-text">
-                Your selected date includes the following extra fees:
-            </p>
-
-            <ul id="warningList" class="warning-list"></ul>
-
-            <p class="warning-note">
-                These will be added to your total. Do you wish to continue?
-            </p>
+            <p>Your selected date includes extra fees:</p>
+            <ul id="warningList"></ul>
+            <p class="note">These will be added to your total.</p>
         </div>
 
-        <div class="modal-actions">
-           <button type="button" class="btn-print" onclick="closeWarningModal()">
+        <div class="modal-footer">
+            <button type="button" onclick="closeWarningModal()" class="btn-cancel">
                 Cancel
             </button>
 
-           <button type="button" class="btn-done" onclick="confirmBooking()">
-            Yes, Continue
-        </button>
-
+            <button type="button" id="btnProceedBooking" class="btn-confirm">
+                Yes, Continue
+            </button>
         </div>
 
     </div>
 </div>
 
-    </div>
+
+
+
+
+
+
 
     <!-- RECEIPT MODAL -->
     <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -1147,6 +1202,7 @@
                 var diff = (ev - today) / (1000 * 60 * 60 * 24);
                 return diff >= 0 && diff <= 7;
             }
+           
 
             /* ── STATE ── */
             var state = {
@@ -1159,33 +1215,53 @@
             var proceedAfterWarning = false;
 
             // SHOW WARNING MODAL
-            function showWarningModal(warnings) {
+            /* ── WARNING MODAL CONTROL (FIXED) ── */
+
+            function openWarningModal(warnings) {
+                var overlay = document.getElementById('warningOverlay');
                 var list = document.getElementById('warningList');
+
                 list.innerHTML = '';
 
                 warnings.forEach(function (w) {
                     var li = document.createElement('li');
                     li.textContent = w;
-                    li.style.marginBottom = '0.5rem';
                     list.appendChild(li);
                 });
 
-                document.getElementById('warningOverlay').style.display = 'flex';
+                overlay.classList.add('open');
                 document.body.style.overflow = 'hidden';
             }
 
-            // CLOSE MODAL
             function closeWarningModal() {
-                document.getElementById('warningOverlay').style.display = 'none';
+                var overlay = document.getElementById('warningOverlay');
+                overlay.classList.remove('open');
                 document.body.style.overflow = '';
             }
 
+
             // HANDLE CONTINUE BUTTON
             document.getElementById('btnProceedBooking').addEventListener('click', function () {
-                proceedAfterWarning = true;
+
                 closeWarningModal();
+
+                var guests = state.guests;
+                var subtotal = state.packagePrice * guests;
+                var svcFee = state.serviceFeeType === 'per-guest'
+                    ? state.serviceFee * guests
+                    : 0;
+
+                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+
+                byName('hfServiceStyle').value = state.serviceName;
+                byName('hfPackageName').value = state.packageName;
+                byName('hfPackagePrice').value = state.packagePrice;
+                byName('hfTotalAmount').value = total;
+
                 document.getElementById('<%= btnConfirm.ClientID %>').click();
-            });
+           });
+
+
 
         /* ── SUMMARY ELEMENT REFS ── */
         var S = {
@@ -1347,22 +1423,25 @@
         /* btnPrint is handled in the outer script block */
 
         /* ── WARNING MODAL (weekend/rush fees) ── */
-        function showWarningModal(warnings) {
-            var list = document.getElementById('warningList');
-            list.innerHTML = '';
-            warnings.forEach(function(w) {
-                var li = document.createElement('li');
-                li.textContent = w;
-                list.appendChild(li);
-            });
-            document.getElementById('warningOverlay').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+            function openWarningModal(warnings) {
+                var list = document.getElementById('warningList');
+                list.innerHTML = '';
 
-        function closeWarningModal() {
-            document.getElementById('warningOverlay').style.display = 'none';
-            document.body.style.overflow = '';
-        }
+                warnings.forEach(w => {
+                    var li = document.createElement('li');
+                    li.textContent = w;
+                    list.appendChild(li);
+                });
+
+                document.getElementById('warningOverlay').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeWarningModal() {
+                document.getElementById('warningOverlay').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
 
         // When user clicks "Yes, Continue" in the warning modal:
         // write hidden fields and submit the ASP.NET form directly
@@ -1382,6 +1461,23 @@
             // Trigger the ASP.NET button postback directly
             document.getElementById('<%= btnConfirm.ClientID %>').click();
         });
+            function proceedBooking() {
+                closeWarningModal();
+
+                var guests = state.guests;
+                var subtotal = state.packagePrice * guests;
+                var svcFee = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
+                var total = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
+
+                document.getElementById('<%= hfServiceStyle.ClientID %>').value = state.serviceName;
+            document.getElementById('<%= hfPackageName.ClientID %>').value = state.packageName;
+            document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
+    document.getElementById('<%= hfTotalAmount.ClientID %>').value  = total;
+
+    // SAFE POSTBACK
+                document.getElementById('<%= btnConfirm.ClientID %>').click();
+            }
+
 
         /* ── MOBILE NAV ── */
         var mobileBtn  = document.getElementById('mobileMenuBtn');
@@ -1490,23 +1586,6 @@
         });
 
     })();
-    </script>
-    <script>
-        function openWarningModal() {
-            document.getElementById("warningModal").classList.add("open");
-        }
-
-        function closeWarningModal() {
-            document.getElementById("warningModal").classList.remove("open");
-        }
-
-        function confirmBooking() {
-            closeWarningModal();
-
-            // triggers ASP.NET postback manually
-            document.getElementById('<%= btnConfirm.ClientID %>').onclick = null;
-        document.getElementById('<%= btnConfirm.ClientID %>').click();
-        }
     </script>
 
 
@@ -1621,6 +1700,33 @@
             if (e.target === this) closeReceiptModal();
         });
     </script>
+
+<!-- GLOBAL MODAL FUNCTIONS (IMPORTANT) -->
+<script>
+
+    function openWarningModal(list) {
+        var ul = document.getElementById("warningList");
+        ul.innerHTML = "";
+
+        list.forEach(w => {
+            var li = document.createElement("li");
+            li.textContent = w;
+            ul.appendChild(li);
+        });
+
+        document.getElementById("warningOverlay").classList.add("open");
+    }
+
+    function closeWarningModal() {
+        document.getElementById("warningOverlay").classList.remove("open");
+    }
+
+    function proceedBooking() {
+        closeWarningModal();
+        document.getElementById('<%= btnConfirm.ClientID %>').click();
+    }
+
+</script>
     <!-- Admin Login Modal -->
     <div id="adminLoginOverlay" style="display:none;position:fixed;inset:0;background:rgba(33,28,24,0.65);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeAdminLogin()">
         <div style="background:#fff;border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;font-family:'Inter',sans-serif;">

@@ -8,7 +8,7 @@ namespace CastroCateringBookingSystem.Pages
     public partial class Booking : Page
     {
         private static string ConnStr =>
-            ConfigurationManager.ConnectionStrings["CastroCatering_DB"].ConnectionString;
+            ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
