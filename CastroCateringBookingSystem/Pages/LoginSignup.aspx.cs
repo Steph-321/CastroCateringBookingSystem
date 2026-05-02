@@ -12,7 +12,8 @@ namespace CastroCateringBookingSystem.Pages
     public partial class LoginSignup : Page
     {
         private static string ConnStr => 
-            ConfigurationManager.ConnectionStrings["CastroCatering_DB"].ConnectionString;
+           ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
+
 
         // ─────────────────────────────────────────────────────────────────────
         // PAGE LOAD
@@ -82,9 +83,9 @@ namespace CastroCateringBookingSystem.Pages
             }
             catch (Exception ex)
             {
-                SetStatus(lblLoginStatus, "A database error occurred. Please try again.", false);
-                System.Diagnostics.Debug.WriteLine("Login error: " + ex.Message);
+                lblLoginStatus.Text = ex.ToString();
             }
+
         }
 
         // ─────────────────────────────────────────────────────────────────────
