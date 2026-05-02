@@ -1,4 +1,5 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="UserNotifications.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.UserNotifications" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="UserNotifications.aspx.cs"
+    Inherits="CastroCateringBookingSystem.Pages.UserNotifications" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -6,14 +7,29 @@
     <title>User Notifications</title>
 
     <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+        }
+
         .data-table {
-            width: 100%;
+            width: 80%;
+            margin: 30px auto;
             border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         .data-table th, .data-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: #c2934a;
+            color: white;
         }
 
         /* MODAL BACKDROP */
@@ -36,14 +52,19 @@
             width: 350px;
             border-radius: 10px;
             position: relative;
+            text-align: center;
         }
 
         .close {
             position: absolute;
-            right: 10px;
-            top: 5px;
+            right: 12px;
+            top: 8px;
             font-size: 22px;
             cursor: pointer;
+        }
+
+        h3 {
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -66,7 +87,8 @@
     <!-- MODAL -->
     <div id="notifModal" class="modal">
         <div class="modal-content">
-            <span onclick="closeModal()" class="close">&times;</span>
+            <span class="close" onclick="closeModal()">&times;</span>
+
             <h3>New Notification</h3>
             <p id="notifText"></p>
         </div>
@@ -82,6 +104,14 @@
 
     function closeModal() {
         document.getElementById("notifModal").style.display = "none";
+    }
+
+    // click outside modal closes it
+    window.onclick = function (event) {
+        var modal = document.getElementById("notifModal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
     }
 </script>
 
