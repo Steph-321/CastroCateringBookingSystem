@@ -137,9 +137,10 @@ namespace CastroCateringBookingSystem.Pages
 
                     // Insert new user and get the new UserID
                     const string insertSql = @"
-                        INSERT INTO Users (Username, Email, [Password], PhoneNumber, [Address])
-                        VALUES (@Username, @Email, @Password, @Phone, @Address);
-                        SELECT SCOPE_IDENTITY();";
+                    INSERT INTO Users (Username, Email, [Password], PhoneNumber, [Address], DateCreated)
+                    VALUES (@Username, @Email, @Password, @Phone, @Address, GETDATE());
+                    SELECT SCOPE_IDENTITY();";
+
 
                     using (var insertCmd = new SqlCommand(insertSql, conn))
                     {
