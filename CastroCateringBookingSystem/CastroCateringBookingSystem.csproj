@@ -67,7 +67,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assests\alyssa.jpg" />
     <Content Include="Assests\anniversaryElegance.jpg" />
+    <Content Include="Assests\stephanie.jpg" />
     <Content Include="Assests\birthdayBliss.jpg" />
     <Content Include="Assests\bunyag.jpg" />
     <Content Include="Assests\classicWedding.jpg" />
@@ -77,6 +79,7 @@
     <Content Include="Assests\cover1.jpg" />
     <Content Include="Assests\cover2.jpg" />
     <Content Include="Assests\debut1.jpg" />
+    <Content Include="Assests\erilyn.jpg" />
     <Content Include="Assests\family gathering.jpg" />
     <Content Include="Assests\glimpse1.jpg" />
     <Content Include="Assests\glimpse2.jpg" />

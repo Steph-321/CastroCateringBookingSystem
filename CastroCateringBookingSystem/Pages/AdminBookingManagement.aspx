@@ -254,7 +254,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
                 <asp:BoundField DataField="EventDate" HeaderText="DATE" />
                 <asp:BoundField DataField="NoOfGuests" HeaderText="GUESTS" />
                 <asp:BoundField DataField="PackageID" HeaderText="PACKAGE" />
-                <asp:BoundField DataField="Total" HeaderText="TOTAL" />
+                <asp:BoundField DataField="Amount" HeaderText="TOTAL" />
 
                 <asp:TemplateField HeaderText="STATUS">
                     <ItemTemplate>

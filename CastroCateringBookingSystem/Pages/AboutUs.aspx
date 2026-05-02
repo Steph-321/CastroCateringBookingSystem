@@ -283,7 +283,73 @@
         .value-card h3 { font-size: 0.95rem; color: var(--dark-brown); margin-bottom: 0.4rem; }
         .value-card p { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; }
 
-        /* ── CTA ── */
+        /* ── Developers ── */
+        .dev-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .dev-section h2 {
+            font-size: 1.75rem;
+            color: var(--dark-brown);
+            margin-bottom: 0.5rem;
+        }
+        .dev-section .section-sub {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+        }
+        .dev-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        @media (max-width: 640px) { .dev-grid { grid-template-columns: 1fr; } }
+        .dev-card {
+            background: var(--bg-white);
+            border: 1.5px solid var(--border-light);
+            border-top: 4px solid var(--primary-gold);
+            border-radius: 16px;
+            padding: 2rem 1.5rem 1.5rem;
+            text-align: center;
+            transition: box-shadow 0.25s, transform 0.25s;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        .dev-card:hover {
+            box-shadow: 0 12px 32px rgba(201,169,97,0.18);
+            transform: translateY(-4px);
+            border-top-color: var(--dark-brown);
+        }
+        .dev-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            display: block;
+            border: 4px solid var(--primary-gold);
+            outline: 3px solid var(--light-beige);
+            background: var(--light-beige);
+        }
+        .dev-photo-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--primary-gold), var(--light-gold));
+            border: 4px solid var(--primary-gold);
+            outline: 3px solid var(--light-beige);
+            color: white;
+            font-weight: 700;
+        }
+        .dev-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--dark-brown); margin-bottom: 0.25rem; }
+        .dev-role { font-size: 0.8rem; color: var(--primary-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 0.6rem; }
+        .dev-desc { font-size: 0.83rem; color: var(--text-light); line-height: 1.6; }
         .cta-section {
             background: linear-gradient(135deg, var(--primary-gold), var(--light-gold));
             border-radius: 16px;
@@ -428,6 +494,38 @@
             <h2>Ready to create something special?</h2>
             <p>Let's talk about your event and build the perfect experience together.</p>
             <a href="Booking.aspx" class="btn-cta">Book an Event</a>
+        </div>
+
+        <!-- ── Meet the Developers ── -->
+        <div class="dev-section">
+            <h2>Meet the Developers</h2>
+            <div class="gold-divider"></div>
+            <p class="section-sub">The team behind the Castro Catering Booking System</p>
+
+            <div class="dev-grid">
+
+                <div class="dev-card">
+                    <img src="../Assests/stephanie.jpg" alt="stephanie" class="dev-photo" />
+                    <div class="dev-name">STEPHANIE ONG</div>
+                    <div class="dev-role">Full Stack Developer</div>
+                    <p class="dev-desc">Responsible for system architecture, database design, and back-end development.</p>
+                </div>
+
+                <div class="dev-card">
+                    <img src="../Assests/alyssa.jpg" alt="alyssa" class="dev-photo" /> 
+                    <div class="dev-name">ALYSSA TEO</div>
+                    <div class="dev-role">Database Administrator</div>
+                    <p class="dev-desc">Managed the SQL Server database, queries, and data integrity for the booking system.</p>
+                </div>
+
+                <div class="dev-card">
+                    <img src="../Assests/erilyn.jpg" alt="erilyn" class="dev-photo" />
+                    <div class="dev-name">ERILYN KATE ABREGANA</div>
+                    <div class="dev-role">UI/UX Designer</div>
+                    <p class="dev-desc">Designed the user interface and ensured a seamless, elegant experience across all pages.</p>
+                </div>
+
+            </div>
         </div>
 
     </div>
