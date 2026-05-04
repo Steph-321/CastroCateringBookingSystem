@@ -67,6 +67,7 @@ namespace CastroCateringBookingSystem.Pages
                             }
 
                             // Store user data in session
+                            Session["Admin"] = username;
                             Session["Username"] = reader["Username"].ToString();
                             Session["UserID"]   = reader["UserID"].ToString();
 

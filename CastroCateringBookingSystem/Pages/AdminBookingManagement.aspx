@@ -188,6 +188,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         .data-table th {
             background: var(--bg-cream);
             padding: 12px;
+
         }
 
         .data-table td {

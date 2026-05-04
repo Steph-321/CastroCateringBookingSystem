@@ -588,10 +588,53 @@
         </div>
 
         <!-- Packages Grid -->
-        <div class="packages-grid" id="packagesGrid">
-            <!-- Packages will be dynamically inserted here -->
-        </div>
-    </div>
+      <div class="packages-grid">
+    <asp:Repeater ID="rptPackages" runat="server">
+        <ItemTemplate>
+            <div class="package-card">
+                
+                <div class="package-image">
+                    <img src='<%# Eval("ImagePath") %>' alt='<%# Eval("PackageName") %>' />
+                </div>
+
+                <div class="package-content">
+
+                    <div class="package-categories">
+                        <span class="package-category"><%# Eval("Category") %></span>
+                    </div>
+
+                    <h3 class="package-name"><%# Eval("PackageName") %></h3>
+
+                    <p class="package-description">
+                        <%# Eval("Description") %>
+                    </p>
+
+                    <ul class="package-features">
+                        <%# Eval("Inclusions").ToString().Replace(",", "</li><li>") %>
+                    </ul>
+
+                    <div class="package-footer">
+                        <div class="package-guests">
+                            👥 <%# Eval("MinGuests") %> - <%# Eval("MaxGuests") %>
+                        </div>
+
+                        <div class="package-price">
+                            <span class="price-amount">
+                                ₱<%# Eval("RatePerGuest") %> <span>/ guest</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <button class="btn-book-package"
+                        onclick="bookPackage('<%# Eval("PackageName") %>')">
+                        Book this package
+                    </button>
+
+                </div>
+            </div>
+        </ItemTemplate>
+    </asp:Repeater>
+</div>
 
     <!-- Footer -->
     <footer>
@@ -642,9 +685,9 @@
 
     <script>
         // ── Auth guard: redirect to login if not logged in ──
-        (function() {
+        (function () {
             var user = null;
-            try { user = JSON.parse(localStorage.getItem('castroUser')); } catch(e) {}
+            try { user = JSON.parse(localStorage.getItem('castroUser')); } catch (e) { }
             if (!user || !user.username) { window.location.href = 'LoginSignup.aspx'; return; }
             // Update nav: show username greeting or just keep Log Out
         })();
@@ -668,276 +711,6 @@
         if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileNav);
         document.querySelectorAll('#primaryNav a').forEach(a => a.addEventListener('click', closeMobileNav));
 
-        const packages = [
-            {
-                id: 1,
-                name: 'Kids Birthday Fiesta',
-                category: ['Birthday'],
-                description: 'Colorful, fun-filled menus your little ones will love.',
-                features: [
-                    'Themed snack bar',
-                    'Mini burger & pizza station',
-                    'Candy buffet',
-                    'Mascot host'
-                ],
-                guests: '10-100',
-                price: 350,
-                imageSrc: '../assests/KidsBirthdayFiesta.jpg',
-                emoji: '🎈'
-            },
-            {
-                id: 2,
-                name: 'Corporate Lite Lunch',
-                category: ['Corporate'],
-                description: 'Quick, polished catering for workshops and trainings.',
-                features: [
-                    'Boxed gourmet lunch',
-                    'Coffee & tea bar',
-                    'Fresh fruit platter',
-                    'Eco-friendly packaging'
-                ],
-                guests: '10-120',
-                price: 380,
-                imageSrc: '../assests/corporateLiteLunch.jpg',
-                emoji: '💼'
-            },
-            {
-                id: 3,
-                name: 'Family Gathering Spread',
-                category: ['Birthday', 'Anniversary', 'Family'],
-                description: 'Hearty Filipino favorites for warm family reunions.',
-                features: [
-                    'Lechon centerpiece',
-                    'Filipino buffet',
-                    'Halo-halo bar',
-                    'Tables & chairs setup'
-                ],
-                guests: '15-150',
-                price: 420,
-                imageSrc: '../assests/family gathering.jpg',
-                emoji: '👨‍‍👧👦'
-            },
-            {
-                id: 4,
-                name: 'Christening Celebration',
-                category: ['Christening', 'Family'],
-                description: 'A warm, family-focused spread for your baby’s special day.',
-                features: [
-                    'Family-style buffet',
-                    'Dessert & drinks station',
-                    'Soft theme styling',
-                    'Warm service staff'
-                ],
-                guests: '20-200',
-                price: 750,
-                imageSrc: '../assests/bunyag.jpg',
-                emoji: '🕊️'
-            },
-            {
-                id: 5,
-                name: 'Cocktail Reception',
-                category: ['Corporate', 'Anniversary'],
-                description: 'Elegant canapés and signature drinks for stand-up events.',
-                features: [
-                    'Passed hors d\'oeuvres',
-                    'Signature cocktails',
-                    'Bartender service',
-                    'Cocktail tables'
-                ],
-                guests: '30-150',
-                price: 900,
-                imageSrc: '../assests/cocktail.jpg',
-                emoji: '🍸'
-            },
-            {
-                id: 6,
-                name: 'Classic Wedding Buffet',
-                category: ['Wedding'],
-                description: 'A timeless wedding essential with varied buffet options.',
-                features: [
-                    'Multi-cuisine buffet',
-                    'Wedding cake service',
-                    'Champagne toast',
-                    'Elegant table settings'
-                ],
-                guests: '50-300',
-                price: 950,
-                imageSrc: '../assests/classicWedding.jpg',
-                emoji: '👰'
-            },
-            {
-                id: 7,
-                name: 'Debut Soirée',
-                category: ['Debut', 'Birthday'],
-                description: 'An 18th birthday celebration done in grand style.',
-                features: [
-                    'Formal dinner service',
-                    'Debut cake',
-                    '18 candles setup',
-                    'Premium beverages'
-                ],
-                guests: '50-200',
-                price: 1050,
-                imageSrc: '../assests/debut1.jpg',
-                emoji: '👗'
-            },
-            {
-                id: 8,
-                name: 'Birthday Bliss',
-                category: ['Birthday'],
-                description: 'A festive catering package designed to bring joy to every birthday moment.',
-                features: [
-                    'Custom birthday cake',
-                    'Party favorites',
-                    'Decoration setup',
-                    'Sound system'
-                ],
-                guests: '20-150',
-                price: 850,
-                imageSrc: '../assests/birthdayBliss.jpg',
-                emoji: '🎂'
-            },
-            {
-                id: 9,
-                name: 'Anniversary Elegance',
-                category: ['Anniversary', 'Wedding'],
-                description: 'A romantic, refined dinner to honor your milestone.',
-                features: [
-                    'Fine dining experience',
-                    'Wine pairing',
-                    'Floral centerpieces',
-                    'Personalized menu cards'
-                ],
-                guests: '20-100',
-                price: 1400,
-                imageSrc: '../assests/anniversaryElegance.jpg',
-                emoji: '💍'
-            },
-            {
-                id: 10,
-                name: 'Grand Wedding Feast',
-                category: ['Wedding'],
-                description: 'A timeless celebration with full-service elegance.',
-                features: [
-                    'Premium multi-course menu',
-                    'Grand wedding cake',
-                    'Full bar service',
-                    'Dedicated event coordinator'
-                ],
-                guests: '80-500',
-                price: 1200,
-                imageSrc: '../assests/grandWedding.jpg',
-                emoji: '🥂'
-            },
-            {
-                id: 11,
-                name: 'Corporate Premium Gala',
-                category: ['Corporate'],
-                description: 'Black-tie catering for galas, awards, and launches.',
-                features: [
-                    'Gourmet plated dinner',
-                    'Premium wine selection',
-                    'Red carpet service',
-                    'AV equipment setup'
-                ],
-                guests: '50-300',
-                price: 1500,
-                imageSrc: '../assests/corporatePremium.jpg',
-                emoji: '🏆'
-            },
-            {
-                id: 12,
-                name: 'Intimate Private Dining',
-                category: ['Anniversary', 'Wedding', 'Family'],
-                description: 'Chef-curated tasting menus for small gatherings.',
-                features: [
-                    'Private chef service',
-                    'Wine pairing',
-                    'Customized menu',
-                    'Intimate setting'
-                ],
-                guests: '10-30',
-                price: 1800,
-                imageSrc: '../assests/initmatePrivateDining.jpg',
-                emoji: '🍷'
-            }
-        ];
-
-        let currentPackages = [...packages];
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            renderPackages();
-        });
-
-        function renderPackages() {
-            const grid = document.getElementById('packagesGrid');
-            const count = document.getElementById('packageCount');
-            
-            grid.innerHTML = currentPackages.map(pkg => `
-                <div class="package-card">
-                    <div class="package-image">
-                        ${pkg.imageSrc ? `<img src="${pkg.imageSrc}" alt="${pkg.name}">` : pkg.emoji}
-                    </div>
-                    <div class="package-content">
-                        <div class="package-categories">
-                            ${pkg.category.map(cat => `<span class="package-category">${cat}</span>`).join('')}
-                        </div>
-                        <h3 class="package-name">${pkg.name}</h3>
-                        <p class="package-description">${pkg.description}</p>
-                        <ul class="package-features">
-                            ${pkg.features.map(feature => `<li>${feature}</li>`).join('')}
-                        </ul>
-                        <div class="package-footer">
-                            <div class="package-guests">
-                                <span>👥</span> ${pkg.guests}
-                                <span style="margin-left: 1rem;">🍴 Per guest</span>
-                            </div>
-                            <div class="package-price">
-                                <span class="price-amount">₱${pkg.price} <span>/ guest</span></span>
-                            </div>
-                        </div>
-                        <button class="btn-book-package" onclick="bookPackage('${pkg.name}')">Book this package</button>
-                    </div>
-                </div>
-            `).join('');
-            
-            count.textContent = `${currentPackages.length} package${currentPackages.length !== 1 ? 's' : ''}`;
-        }
-
-        function filterPackages() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
-            
-            currentPackages = packages.filter(pkg => {
-                const matchesSearch = pkg.name.toLowerCase().includes(searchTerm) || 
-                                    pkg.description.toLowerCase().includes(searchTerm);
-                const matchesCategory = category === 'All' || pkg.category.includes(category);
-                
-                return matchesSearch && matchesCategory;
-            });
-            
-            sortPackages();
-        }
-
-        function sortPackages() {
-            const sortBy = document.getElementById('sortFilter').value;
-            
-            switch(sortBy) {
-                case 'low-high':
-                    currentPackages.sort((a, b) => a.price - b.price);
-                    break;
-                case 'high-low':
-                    currentPackages.sort((a, b) => b.price - a.price);
-                    break;
-                case 'name':
-                    currentPackages.sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-            }
-            
-            renderPackages();
-        }
-
         function bookPackage(packageName) {
             window.location.href = 'Booking.aspx?package=' + encodeURIComponent(packageName);
         }
@@ -954,7 +727,7 @@
             document.getElementById('adminUsername').value = '';
             document.getElementById('adminPassword').value = '';
             document.getElementById('adminError').style.display = 'none';
-            setTimeout(function(){ document.getElementById('adminUsername').focus(); }, 100);
+            setTimeout(function () { document.getElementById('adminUsername').focus(); }, 100);
         }
         function closeAdminLogin() {
             document.getElementById('adminLoginOverlay').style.display = 'none';
@@ -969,7 +742,7 @@
                 document.getElementById('adminError').style.display = 'block';
             }
         }
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') closeAdminLogin();
         });
     </script>
