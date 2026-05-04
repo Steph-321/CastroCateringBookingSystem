@@ -59,7 +59,8 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0; left: 0;
+            top: 0; 
+            left: 0;
             height: 100vh;
             overflow-y: auto;
             z-index: 100;
@@ -243,9 +244,23 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             border-collapse: collapse;
         }
 
+<<<<<<< HEAD
         .data-table th {
             background: var(--bg-cream);
             padding: 12px;
+
+=======
+        .data-table thead th {
+            background: var(--beige);
+            padding: 0.85rem 1.25rem;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+>>>>>>> 9d1e311f4428596322ec363f80cd713572ae0b2d
         }
 
         .data-table tbody td {

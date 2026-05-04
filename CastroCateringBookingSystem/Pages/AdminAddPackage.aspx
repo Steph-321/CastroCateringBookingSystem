@@ -6,101 +6,30 @@
     <title>Add Package - Admin</title>
 
     <style>
-   body {
+ body { 
     margin: 0;
     padding: 0;
     background-color: #fcf9f5;
+    font-family: Arial, sans-serif;
 }
 
-/* --- MAIN LAYOUT FIX --- */
-.main-content {
-    /* This pushes the content to the right of the sidebar */
-    margin-left: 260px; 
-    /* This ensures the content area doesn't grow wider than the screen */
-    width: calc(100% - 260px); 
-    padding: 20px;
-    box-sizing: border-box;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    /* Removed align-items: center; to prevent table shrinking issues */
-}
-
-/* --- TABLE SECTION FIX --- */
-.table-section {
-    width: 100%;
-    margin-top: 40px;
-    padding: 0; /* Let the table-container handle spacing */
-    box-sizing: border-box;
-}
-
-.table-container {
-    width: 100%;
-    overflow-x: auto; /* This allows you to scroll the table if it's too wide */
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #e5dcd0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    /* Adjusted min-width to ensure columns have space but don't hide */
-    min-width: 1000px; 
-    table-layout: auto;
-}
-
-th, td {
-    text-align: left;
-    padding: 12px 15px;
-    border-bottom: 1px solid #f0e6da;
-    color: #4a3a2a;
-    /* Prevents text from forcing columns to be too wide */
-    word-wrap: break-word;
-}
-
-th {
-    background-color: #fcf9f5;
-    color: #493a2f;
-    font-weight: 600;
-}
-
-/* --- FORM CONTAINER --- */
-.container {
-    width: 100%;
-    max-width: 700px;
-    margin: 40px auto; /* Centers the form specifically */
-}
-
-/* --- SIDEBAR (UNTOUCHED) --- */
+/* =========================
+   SIDEBAR (DASHBOARD STYLE)
+========================= */
 .sidebar {
     width: 260px;
     position: fixed;
     top: 0;
     left: 0;
-    background: #fff;
+    height: 100vh;
+    z-index: 1000;
+    background: #ffffff;
     border-right: 1px solid #e5dcd0;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 100;
 }
 
-/* --- FORM & BUTTONS --- */
-.form-section {
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    border: 1px solid #e5dcd0;
-}
-
-h2 {
-    color: #493a2f;
-    margin-bottom: 1.5rem;
-}
-
+/* Sidebar Header */
 .sidebar-header {
     padding: 1.5rem;
     border-bottom: 1px solid #e5dcd0;
@@ -110,6 +39,7 @@ h2 {
     font-family: 'Playfair Display', serif;
     font-size: 1.2rem;
     font-weight: 600;
+    color: #4a3a2a;
 }
 
 .logo-subtext {
@@ -118,6 +48,7 @@ h2 {
     margin-left: 3.2rem;
 }
 
+/* Sidebar Nav */
 .sidebar-nav {
     padding: 1.5rem 1rem;
     flex: 1;
@@ -137,24 +68,127 @@ h2 {
     font-weight: 500;
 }
 
-.nav-item:hover { background: #fdfaf7; }
-.nav-item.active { background: #f4e9dc; color: #c2934a; }
+.nav-item:hover {
+    background: #fdfaf7;
+}
 
+.nav-item.active {
+    background: #f4e9dc;
+    color: #c2934a;
+}
+
+/* Sidebar Footer */
 .sidebar-footer {
     padding: 1.5rem;
     border-top: 1px solid #e5dcd0;
 }
 
-.form-group { margin-bottom: 1rem; }
-.form-group label { font-weight: 600; font-size: 0.9rem; }
-.form-group input, .form-group textarea, .form-group select {
+/* =========================
+   MAIN CONTENT (FIXED OVERLAP)
+========================= */
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+/* =========================
+   TABLE SECTION
+========================= */
+.table-section {
+    width: 100%;
+    margin-top: 40px;
+    box-sizing: border-box;
+}
+
+.table-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5dcd0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    table-layout: auto;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0e6da;
+    color: #4a3a2a;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #fcf9f5;
+    color: #493a2f;
+    font-weight: 600;
+}
+
+/* =========================
+   FORM CONTAINER
+========================= */
+.container {
+    width: 100%;
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.form-section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid #e5dcd0;
+}
+
+/* =========================
+   HEADINGS
+========================= */
+h2 {
+    color: #493a2f;
+    margin-bottom: 1.5rem;
+}
+
+/* =========================
+   FORM INPUTS
+========================= */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #4a3a2a;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.6rem;
     border-radius: 10px;
     border: 1px solid #e5dcd0;
     box-sizing: border-box;
+    outline: none;
 }
 
+/* =========================
+   BUTTONS
+========================= */
 .btn-confirm {
     background: #c2934a;
     color: #fff;
@@ -164,9 +198,12 @@ h2 {
     width: 100%;
     cursor: pointer;
     font-weight: 600;
+    transition: 0.3s;
 }
 
-.btn-confirm:hover { background: #a87a38; }
+.btn-confirm:hover {
+    background: #a87a38;
+}
 
 .btn-delete {
     background: #f4e9dc;
@@ -186,6 +223,7 @@ h2 {
     color: #ffffff;
     border-color: #a87a38;
 }
+
 
     </style>
 </head>
