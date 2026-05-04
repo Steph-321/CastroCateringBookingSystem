@@ -78,7 +78,6 @@ namespace CastroCateringBookingSystem.Pages
                 {
                     if (r.Read())
                     {
-                        lblTotalBookings.Text = Convert.ToInt32(r["TotalBookings"]).ToString();
                         lblUpcoming.Text      = r["Upcoming"].ToString();
                         lblCompleted.Text     = r["Completed"].ToString();
                         lblGuests.Text        = r["TotalGuests"].ToString();
