@@ -539,7 +539,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
                 <a href="AdminDashboard.aspx" class="nav-item active">📊 Dashboard</a>
 
                 <a href="AdminBookingManagement.aspx" class="nav-item">📋 Booking Management</a>
-
+                <a href="AdminAddPackage.aspx" class="nav-item active">➕ Add Package</a>
             </div>
 
         <div class="sidebar-footer">
