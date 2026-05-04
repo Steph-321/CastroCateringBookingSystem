@@ -589,7 +589,7 @@
 
         <!-- Packages Grid -->
       <div class="packages-grid">
-    <asp:Repeater ID="rptPackages" runat="server">
+<asp:Repeater ID="rptPackages" runat="server">
         <ItemTemplate>
             <div class="package-card">
                 
@@ -609,9 +609,10 @@
                         <%# Eval("Description") %>
                     </p>
 
-                    <ul class="package-features">
-                        <%# Eval("Inclusions").ToString().Replace(",", "</li><li>") %>
-                    </ul>
+                   <ul class="package-features">
+                    <li><%# Eval("Inclusions") %></li>
+                </ul>
+
 
                     <div class="package-footer">
                         <div class="package-guests">
