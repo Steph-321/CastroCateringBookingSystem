@@ -68,6 +68,10 @@ namespace CastroCateringBookingSystem.Pages
 
             bool withinArgao = venueLocation == "within";
             int  userId      = Convert.ToInt32(Session["UserID"]);
+            bool moaAccepted = hfMOAAccepted.Value == "1";
+
+            string withinArgaoVal = withinArgao ? "Yes" : "No";
+            string moaAcceptedVal = moaAccepted ? "Accepted" : "Not Accepted";
 
             try
             {
@@ -88,11 +92,11 @@ namespace CastroCateringBookingSystem.Pages
                         INSERT INTO Bookings
                             (UserID, PackageID, ClientName, EventType, EventDate,
                              NoOfGuests, Venue, WithinArgao, ServiceStyle,
-                             ModeOfPayment, TotalAmount, PhoneNumber, DateCreated, [Status])
+                             ModeOfPayment, TotalAmount, PhoneNumber, DateCreated, [Status], MOAAccepted)
                         VALUES
                             (@UserID, @PackageID, @ClientName, @EventType, @EventDate,
                              @NoOfGuests, @Venue, @WithinArgao, @ServiceStyle,
-                             @ModeOfPayment, @TotalAmount, @PhoneNumber, GETDATE(), 'Upcoming');
+                             @ModeOfPayment, @TotalAmount, @PhoneNumber, GETDATE(), 'Pending', @MOAAccepted);
                         SELECT SCOPE_IDENTITY();";
 
                     int newBookingId;
@@ -105,17 +109,18 @@ namespace CastroCateringBookingSystem.Pages
                         cmd.Parameters.AddWithValue("@EventDate",     eventDate);
                         cmd.Parameters.AddWithValue("@NoOfGuests",    noOfGuests);
                         cmd.Parameters.AddWithValue("@Venue",         venue);
-                        cmd.Parameters.AddWithValue("@WithinArgao",   withinArgao);
+                        cmd.Parameters.AddWithValue("@WithinArgao",   withinArgaoVal);
                         cmd.Parameters.AddWithValue("@ServiceStyle",  serviceStyle);
                         cmd.Parameters.AddWithValue("@ModeOfPayment", paymentMode);
                         cmd.Parameters.AddWithValue("@TotalAmount",   totalAmount);
                         cmd.Parameters.AddWithValue("@PhoneNumber",   phoneNumber);
+                        cmd.Parameters.AddWithValue("@MOAAccepted",   moaAcceptedVal);
                         newBookingId = Convert.ToInt32(cmd.ExecuteScalar());
                     }
 
                     // ── Store receipt data in hidden server labels so JS can read them ──
                     string bookingRef = "BK-" + newBookingId.ToString("D6");
-                    string argaoText  = withinArgao ? "Within Argao" : "Outside Argao (+\u20B12,500)";
+                    string argaoText  = withinArgaoVal == "Yes" ? "Within Argao" : "Outside Argao (+\u20B12,500)";
                     decimal ppg       = noOfGuests > 0 ? totalAmount / noOfGuests : 0;
 
                     hfReceiptRef.Value     = bookingRef;
@@ -142,8 +147,9 @@ namespace CastroCateringBookingSystem.Pages
 
         private void ShowError(string message)
         {
-            lblBookingError.Text    = message;
+            lblBookingError.Text    = "⚠ " + message;
             lblBookingError.Visible = true;
+            lblBookingError.ForeColor = System.Drawing.Color.FromArgb(0xD9, 0x26, 0x26);
         }
     }
 }
