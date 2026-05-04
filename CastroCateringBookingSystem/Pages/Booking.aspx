@@ -647,6 +647,178 @@
             font-size: 0.82rem;
         }
 
+        /* ── MOA SECTION ── */
+        .moa-section { margin-top: 0; }
+
+        .moa-intro {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .moa-scroll-box {
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            max-height: 320px;
+            overflow-y: auto;
+            background: #fdfcfa;
+            margin-bottom: 1.25rem;
+            scroll-behavior: smooth;
+        }
+
+        .moa-scroll-box::-webkit-scrollbar { width: 6px; }
+        .moa-scroll-box::-webkit-scrollbar-track { background: var(--bg-beige); border-radius: 99px; }
+        .moa-scroll-box::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 99px; }
+
+        .moa-header {
+            text-align: center;
+            padding: 1.5rem 2rem 1rem;
+            border-bottom: 2px solid var(--border-light);
+            background: var(--bg-beige);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .moa-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: 0.05em;
+        }
+
+        .moa-subtitle {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-brown);
+            margin-top: 0.2rem;
+        }
+
+        .moa-tagline {
+            font-size: 0.78rem;
+            color: var(--text-gray);
+            font-style: italic;
+            margin-top: 0.15rem;
+        }
+
+        .moa-body {
+            padding: 1.25rem 1.75rem 1.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        .moa-body p { margin-bottom: 0.5rem; }
+
+        .moa-clause-title {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin: 1.1rem 0 0.4rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .moa-list {
+            padding-left: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .moa-list li {
+            margin-bottom: 0.35rem;
+            font-size: 0.82rem;
+            color: var(--text-dark);
+        }
+
+        .moa-witness {
+            margin-top: 1.25rem;
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            font-style: italic;
+            text-align: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* Physical notice */
+        .moa-physical-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.875rem;
+            background: #fff8e8;
+            border: 1px solid #f4d589;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.82rem;
+            color: var(--text-brown);
+            line-height: 1.6;
+        }
+
+        .moa-notice-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+
+        .moa-physical-notice strong {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .moa-physical-notice p { margin: 0; }
+
+        /* Checkbox */
+        .moa-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            background: var(--bg-white);
+            transition: border-color 0.2s, background 0.2s;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .moa-checkbox-label:hover { border-color: var(--primary-gold); background: #fffdf7; }
+
+        .moa-checkbox-label.agreed {
+            border-color: var(--success);
+            background: #f0faf4;
+        }
+
+        .moa-checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-gold);
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .moa-required-msg {
+            font-size: 0.8rem;
+            color: var(--danger);
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: #fff0f0;
+            border-radius: 6px;
+            border: 1px solid #f5c0c0;
+        }
+
+        /* Confirm button disabled state */
+        .btn-confirm:disabled {
+            background: #c8b99a;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
         /* ── RESPONSIVE ── */
         @media (max-width: 1100px) {
             .booking-layout { grid-template-columns: 1fr; }
@@ -927,6 +1099,7 @@
                     <asp:HiddenField ID="hfPackageName"   runat="server" />
                     <asp:HiddenField ID="hfPackagePrice"  runat="server" />
                     <asp:HiddenField ID="hfTotalAmount"   runat="server" />
+                    <asp:HiddenField ID="hfMOAAccepted"   runat="server" Value="0" />
 
                     <%-- Receipt data: code-behind writes these after successful save --%>
                     <asp:HiddenField ID="hfShowReceipt"    runat="server" Value="0" />
@@ -944,6 +1117,85 @@
                     <asp:HiddenField ID="hfReceiptTotal"   runat="server" />
 
                 </div>
+
+                    <!-- SECTION 4: MEMORANDUM OF AGREEMENT -->
+                    <div class="form-section moa-section">
+                        <h2><span class="section-num">4</span> Memorandum of Agreement</h2>
+                        <p class="moa-intro">Please read the full agreement carefully before confirming your booking. You must agree to the terms below to proceed.</p>
+
+                        <div class="moa-scroll-box">
+                            <div class="moa-header">
+                                <div class="moa-title">CASTRO CATERING SERVICE</div>
+                                <div class="moa-subtitle">MEMORANDUM OF AGREEMENT</div>
+                                <div class="moa-tagline">Event Booking and Catering Services</div>
+                            </div>
+
+                            <div class="moa-body">
+                                <div class="moa-clause-title">PARTIES</div>
+                                <p>This Agreement is entered into by:</p>
+                                <p><strong>Service Provider:</strong> Castro Catering Service, Argao, Cebu</p>
+                                <p><strong>Client/Organizer:</strong> As identified in the booking form submitted through this system.</p>
+
+                                <div class="moa-clause-title">EVENT DETAILS</div>
+                                <p>The event details (type, date, venue, number of guests, and package) are as specified in the booking form submitted by the Client through the Castro Catering online booking system.</p>
+
+                                <div class="moa-clause-title">DAMAGES &amp; ADDITIONAL FEES</div>
+                                <p>The Client is fully responsible for any damage to the venue, equipment, utensils, or any property of Castro Catering Service caused by the Client or their guests. Damage fees are separate from the booking amount.</p>
+                                <ul class="moa-list">
+                                    <li>Damages will be assessed within 24 hours after the event.</li>
+                                    <li>The Client agrees to settle damage fees within 7 days of notification.</li>
+                                    <li>Fees for broken/damaged equipment, utensils, linens, or furniture shall be charged at repair or replacement cost.</li>
+                                </ul>
+
+                                <div class="moa-clause-title">CANCELLATION POLICY</div>
+                                <ul class="moa-list">
+                                    <li><strong>30 days or more before event:</strong> Down payment may be applied to a rescheduled date within 6 months.</li>
+                                    <li><strong>Less than 30 days before event:</strong> Down payment is fully forfeited.</li>
+                                    <li><strong>Cancellation on event day:</strong> Full payment shall be due.</li>
+                                    <li><strong>If cancelled by Castro Catering Service (force majeure):</strong> Full refund of down payment.</li>
+                                </ul>
+
+                                <div class="moa-clause-title">PAYMENT TERMS</div>
+                                <ul class="moa-list">
+                                    <li>The payment shall be made in <strong>CASH only</strong>.</li>
+                                    <li>A <strong>50% down payment</strong> is required upon signing/booking confirmation.</li>
+                                    <li>The remaining <strong>50% balance</strong> is due on or before the event day.</li>
+                                    <li>The 50% down payment is <strong>non-refundable</strong> upon cancellation.</li>
+                                    <li>Failure to pay the balance before the event may result in cancellation without refund of the down payment.</li>
+                                </ul>
+
+                                <div class="moa-clause-title">GENERAL RULES</div>
+                                <ul class="moa-list">
+                                    <li>The Client and guests must observe proper conduct and respect venue rules at all times.</li>
+                                    <li>No unauthorized alterations or arrangements without prior written consent from Castro Catering Service.</li>
+                                    <li>Castro Catering Service may terminate services without refund for disruptive or destructive behavior.</li>
+                                    <li>Any amendments to this Agreement must be in writing and signed by both parties.</li>
+                                    <li>This Agreement is governed by the laws of the Republic of the Philippines.</li>
+                                </ul>
+
+                                <div class="moa-witness">
+                                    <em>IN WITNESS WHEREOF, both parties have read and agreed to the terms of this Agreement.</em>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Physical MOA notice -->
+                        <div class="moa-physical-notice">
+                            <span class="moa-notice-icon">📋</span>
+                            <div>
+                                <strong>Physical Agreement Required</strong>
+                                <p>A printed copy of this Memorandum of Agreement will be presented for signing by both parties prior to your event date. Please bring a valid ID to the scheduled meet-up. Your digital acceptance below serves as your initial acknowledgment.</p>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox agreement -->
+                        <label class="moa-checkbox-label" id="moaCheckLabel">
+                            <input type="checkbox" id="chkMOA" onchange="onMOAChange()" />
+                            <span>I have read and fully understood the Memorandum of Agreement above. I agree to all terms including the damages policy, cancellation policy, and payment terms. I acknowledge that a physical copy will also be signed before the event.</span>
+                        </label>
+                        <p class="moa-required-msg" id="moaRequiredMsg" style="display:none;">⚠ You must agree to the Memorandum of Agreement before confirming your booking.</p>
+                    </div>
+
             </div><!-- end booking-form-col -->
 
             <!-- RIGHT: SUMMARY SIDEBAR -->
@@ -1095,10 +1347,10 @@
             <div class="footer-col">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="Packages.aspx">Our Packages</a></li>
-                    <li><a href="Booking.aspx">Book an Event</a></li>
-                    <li><a href="SmartPicker.aspx">Smart Pick</a></li>
-                    <li><a href="AboutUs.aspx">About Us</a></li>
+                    <li><a href="packages.html">Our Packages</a></li>
+                    <li><a href="booking.html">Book an Event</a></li>
+                    <li><a href="smart-pick.html">Smart Pick</a></li>
+                    <li><a href="aboutUs.html">About Us</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1406,6 +1658,31 @@
                 });
             })();
 
+            /* ── MOA CHECKBOX ── */
+            window.onMOAChange = function() {
+                var chk   = document.getElementById('chkMOA');
+                var label = document.getElementById('moaCheckLabel');
+                var msg   = document.getElementById('moaRequiredMsg');
+                var btn   = document.getElementById('<%= btnConfirm.ClientID %>');
+
+                if (chk && chk.checked) {
+                    document.getElementById('<%= hfMOAAccepted.ClientID %>').value = '1';
+                    if (label) label.classList.add('agreed');
+                    if (msg)   msg.style.display = 'none';
+                    if (btn)   btn.disabled = false;
+                } else {
+                    document.getElementById('<%= hfMOAAccepted.ClientID %>').value = '0';
+                    if (label) label.classList.remove('agreed');
+                    if (btn)   btn.disabled = true;
+                }
+            };
+
+            // Disable confirm button on load until MOA is checked
+            (function() {
+                var btn = document.getElementById('<%= btnConfirm.ClientID %>');
+                if (btn) btn.disabled = true;
+            })();
+
             /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
                Validates, writes hidden fields, returns true to allow postback      */
             window.prepareBookingPostback = function () {
@@ -1431,6 +1708,14 @@
 
                 if (missing.length > 0) {
                     alert('Please fill in:\n• ' + missing.join('\n• '));
+                    return false;
+                }
+
+                // MOA must be accepted
+                var moaAccepted = document.getElementById('<%= hfMOAAccepted.ClientID %>');
+                if (!moaAccepted || moaAccepted.value !== '1') {
+                    var msg = document.getElementById('moaRequiredMsg');
+                    if (msg) { msg.style.display = 'block'; msg.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
                     return false;
                 }
 
