@@ -304,57 +304,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         .btn-done    { background: var(--info-bg);    color: var(--info-txt);    border-color: #90CAF9; }
         .btn-delete  { background: var(--danger-bg);  color: var(--danger-txt);  border-color: #F5A0A0; }
 
-        /* ── PACKAGE BARS ── */
-        .pkg-list { padding: 0.75rem 1.5rem 1.5rem; }
-
-        .pkg-row {
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .pkg-row:last-child { border-bottom: none; }
-
-        .pkg-name {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--dark-brown);
-            min-width: 120px;
-        }
-
-        .bar-track {
-            flex: 1;
-            height: 8px;
-            background: var(--beige);
-            border-radius: 99px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold), var(--gold-light));
-            border-radius: 99px;
-        }
-
-        .pkg-count {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-light);
-            min-width: 80px;
-            text-align: right;
-        }
-
-        /* ── EMPTY ── */
-        .empty {
-            text-align: center;
-            padding: 4rem 1rem;
-            color: var(--text-light);
-        }
-
-        .empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-        .empty p { font-size: 0.875rem; }
+        
     </style>
 </head>
 
@@ -458,15 +408,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             </div>
         </div>
 
-        <!-- Package Statistics -->
-        <div class="card">
-            <div class="card-head">
-                <h2>Package Statistics</h2>
-            </div>
-            <div class="pkg-list">
-                <asp:Label ID="lblPackageStats" runat="server" />
-            </div>
-        </div>
+       
 
     </div>
 

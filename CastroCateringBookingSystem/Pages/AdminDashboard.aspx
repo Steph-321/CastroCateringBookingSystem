@@ -356,46 +356,154 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
         .badge-Completed { background: var(--info-bg);    color: var(--info-txt);    border: 1px solid #90CAF9; }
         .badge-Cancelled { background: #FDE8E8;           color: #9B1C1C;            border: 1px solid #F5A0A0; }
 
-        /* ── PACKAGE BARS ── */
-        .pkg-list { padding: 0.75rem 1.5rem 1.5rem; }
+        /* ── PACKAGE STATISTICS INFOGRAPHIC ── */
+        .pkg-list { padding: 1.5rem; }
 
-        .pkg-row {
+        /* Bar chart */
+        .pkg-chart-wrap {
             display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
+            align-items: flex-end;
+            gap: 0.5rem;
+            height: 200px;
+            padding-bottom: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            position: relative;
         }
 
-        .pkg-row:last-child { border-bottom: none; }
-
-        .pkg-name {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--dark-brown);
-            min-width: 120px;
+        .pkg-y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding-bottom: 4px;
+            font-size: 0.68rem;
+            color: var(--text-light);
+            text-align: right;
+            min-width: 28px;
+            flex-shrink: 0;
         }
 
-        .bar-track {
+        .pkg-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
             flex: 1;
-            height: 8px;
+            height: 100%;
+        }
+
+        .pkg-bar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 1;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .pkg-bar-val {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .pkg-bar-outer {
+            width: 100%;
+            max-width: 40px;
+            height: 160px;
             background: var(--beige);
-            border-radius: 99px;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            align-items: flex-end;
             overflow: hidden;
         }
 
-        .bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold), var(--gold-light));
-            border-radius: 99px;
+        .pkg-bar-inner {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-height: 4px;
         }
 
-        .pkg-count {
-            font-size: 0.8rem;
+        .pkg-bar-label {
+            font-size: 0.62rem;
             font-weight: 600;
             color: var(--text-light);
+            text-align: center;
+            max-width: 48px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 4px;
+        }
+
+        /* Circle indicators */
+        .pkg-circles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: center;
+            padding-top: 0.5rem;
+        }
+
+        .pkg-circle-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
             min-width: 80px;
-            text-align: right;
+        }
+
+        .pkg-circle-wrap {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .pkg-circle-svg {
+            width: 80px;
+            height: 80px;
+            transform: rotate(-90deg);
+        }
+
+        .pkg-circle-pct {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .pkg-circle-badge {
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pkg-circle-sub {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .pkg-empty {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            padding: 2rem;
+            text-align: center;
         }
 
         /* ── EMPTY ── */

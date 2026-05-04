@@ -23,7 +23,7 @@ namespace CastroCateringBookingSystem.Pages
             {
                 LoadBookings();
                 LoadCount();
-                LoadPackageStats();
+                
             }
         }
 
@@ -118,7 +118,7 @@ namespace CastroCateringBookingSystem.Pages
 
                 LoadBookings();
                 LoadCount();
-                LoadPackageStats();
+               
             }
         }
 
@@ -143,7 +143,7 @@ namespace CastroCateringBookingSystem.Pages
             // 🔥 REFRESH UI AFTER DELETE
             LoadBookings();
             LoadCount();
-            LoadPackageStats();
+            
         }
 
 
@@ -159,53 +159,7 @@ namespace CastroCateringBookingSystem.Pages
             }
         }
 
-        void LoadPackageStats()
-        {
-            using (SqlConnection conn = new SqlConnection(ConnStr))
-            {
-                string query = @"
-                    SELECT PackageID, COUNT(*) AS TotalBookings
-                    FROM Bookings
-                    GROUP BY PackageID
-                    ORDER BY TotalBookings DESC";
-
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                if (dt.Rows.Count == 0)
-                {
-                    lblPackageStats.Text = "<p style='color:#756e64;font-size:0.875rem;'>No package data yet.</p>";
-                    return;
-                }
-
-                int max = 1;
-                foreach (DataRow row in dt.Rows)
-                {
-                    int val = Convert.ToInt32(row["TotalBookings"]);
-                    if (val > max) max = val;
-                }
-
-                string html = "";
-                foreach (DataRow row in dt.Rows)
-                {
-                    int count = Convert.ToInt32(row["TotalBookings"]);
-                    int pct   = (int)Math.Round((double)count / max * 100);
-                    string pkg = "Package " + row["PackageID"];
-
-                    html += $@"
-                    <div class='pkg-stat-row'>
-                        <span class='pkg-name'>{pkg}</span>
-                        <div class='pkg-bar-wrap'>
-                            <div class='pkg-bar' style='width:{pct}%'></div>
-                        </div>
-                        <span class='pkg-count'>{count} booking{(count == 1 ? "" : "s")}</span>
-                    </div>";
-                }
-
-                lblPackageStats.Text = html;
-            }
-        }
+       
 
            
 
