@@ -320,7 +320,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
         .data-table thead th {
             background: var(--beige);
             padding: 0.85rem 1.25rem;
-            text-align: left;
+            text-align: center;
             font-size: 0.7rem;
             font-weight: 700;
             color: var(--text-light);
@@ -335,6 +335,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
             font-size: 0.875rem;
             color: var(--text-dark);
             vertical-align: middle;
+            text-align: center;
         }
 
         .data-table tbody tr:last-child td { border-bottom: none; }
@@ -525,7 +526,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="Home.aspx" class="brand">
-                <div class="brand-icon">✦</div>
+               
                 <div>
                     <div class="brand-name">Castro Catering</div>
                     <div class="brand-sub">Admin Panel</div>
