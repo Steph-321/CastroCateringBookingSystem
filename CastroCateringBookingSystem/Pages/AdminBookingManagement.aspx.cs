@@ -23,7 +23,7 @@ namespace CastroCateringBookingSystem.Pages
             {
                 LoadBookings();
                 LoadCount();
-                LoadPackageStats();
+                
             }
         }
 
@@ -98,9 +98,9 @@ namespace CastroCateringBookingSystem.Pages
                 string message = "";
 
                 if (newStatus == "Approved")
-                    message = "Your booking has been APPROVED 🎉";
+                    message = "Your booking has been APPROVED";
                 else if (newStatus == "Completed")
-                    message = "Your booking is COMPLETED ✔";
+                    message = "Your booking is COMPLETED";
                 else
                     message = "Your booking status was updated.";
 
@@ -118,7 +118,7 @@ namespace CastroCateringBookingSystem.Pages
 
                 LoadBookings();
                 LoadCount();
-                LoadPackageStats();
+               
             }
         }
 
@@ -143,7 +143,7 @@ namespace CastroCateringBookingSystem.Pages
             // 🔥 REFRESH UI AFTER DELETE
             LoadBookings();
             LoadCount();
-            LoadPackageStats();
+            
         }
 
 
@@ -152,43 +152,14 @@ namespace CastroCateringBookingSystem.Pages
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = "SELECT COUNT(*) FROM Bookings";
-
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
-
                 int total = (int)cmd.ExecuteScalar();
-
-                lblTotalBookings.Text = "Total Bookings: " + total;
-
-
+                lblTotalBookings.Text = "📅 " + total + " Total Booking" + (total == 1 ? "" : "s");
             }
         }
-        void LoadPackageStats()
-        {
-            using (SqlConnection conn = new SqlConnection(ConnStr))
-            {
-                string query = @"
-        SELECT PackageID, COUNT(*) AS TotalBookings
-        FROM Bookings
-        GROUP BY PackageID";
 
-                SqlCommand cmd = new SqlCommand(query, conn);
-                conn.Open();
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                string result = "";
-
-                while (reader.Read())
-                {
-                    result += "Package " + reader["PackageID"] +
-                              " = " + reader["TotalBookings"] + " bookings<br/>";
-                }
-
-                lblPackageStats.Text = result;
-
-            }
-        }
+       
 
            
 

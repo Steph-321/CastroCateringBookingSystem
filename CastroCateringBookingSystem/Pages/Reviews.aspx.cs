@@ -10,7 +10,7 @@ namespace CastroCateringBookingSystem.Pages
     public partial class Reviews : Page
     {
         private static string ConnStr =>
-            ConfigurationManager.ConnectionStrings["CastroCatering_DB"].ConnectionString;
+            ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
         // ─────────────────────────────────────────────────────────────────────
         // PAGE LOAD
@@ -95,10 +95,10 @@ namespace CastroCateringBookingSystem.Pages
 
                     const string sql = @"
                         SELECT TOP 50
-                            u.Username                        AS [Name],
+                            ISNULL(u.Username, 'Anonymous')   AS [Name],
                             ISNULL(u.ProfilePicture, '')      AS ProfilePicture,
-                            r.EventType,
-                            r.[Comment]                       AS ReviewText,
+                            ISNULL(r.EventType, '')           AS EventType,
+                            ISNULL(r.[Comment], '')           AS ReviewText,
                             r.Rating,
                             r.DateCreated                     AS [Date]
                         FROM   Reviews r
@@ -112,12 +112,12 @@ namespace CastroCateringBookingSystem.Pages
                         {
                             reviews.Add(new ReviewData
                             {
-                                Name           = reader["Name"].ToString(),
-                                ProfilePicture = reader["ProfilePicture"].ToString(),
-                                EventType      = reader["EventType"].ToString(),
-                                ReviewText     = reader["ReviewText"].ToString(),
-                                Rating         = Convert.ToInt32(reader["Rating"]),
-                                Date           = Convert.ToDateTime(reader["Date"])
+                                Name           = reader["Name"]   == DBNull.Value ? "Anonymous" : reader["Name"].ToString(),
+                                ProfilePicture = reader["ProfilePicture"] == DBNull.Value ? "" : reader["ProfilePicture"].ToString(),
+                                EventType      = reader["EventType"]  == DBNull.Value ? "" : reader["EventType"].ToString(),
+                                ReviewText     = reader["ReviewText"] == DBNull.Value ? "" : reader["ReviewText"].ToString(),
+                                Rating         = reader["Rating"]     == DBNull.Value ? 1  : Convert.ToInt32(reader["Rating"]),
+                                Date           = reader["Date"]       == DBNull.Value ? DateTime.Now : Convert.ToDateTime(reader["Date"])
                             });
                         }
                     }

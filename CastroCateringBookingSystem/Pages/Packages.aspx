@@ -647,10 +647,10 @@
             <div class="footer-col">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="packages.html">Our Packages</a></li>
-                    <li><a href="booking.html">Book an Event</a></li>
-                    <li><a href="smart-pick.html">Smart Pick</a></li>
-                    <li><a href="aboutUs.html">About Us</a></li>
+                    <li><a href="Packages.aspx">Our Packages</a></li>
+                    <li><a href="Booking.aspx">Book an Event</a></li>
+                    <li><a href="SmartPicker.aspx">Smart Pick</a></li>
+                    <li><a href="AboutUs.aspx">About Us</a></li>
                 </ul>
             </div>
 

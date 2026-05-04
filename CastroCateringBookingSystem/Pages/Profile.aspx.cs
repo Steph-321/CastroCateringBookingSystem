@@ -28,6 +28,7 @@ namespace CastroCateringBookingSystem.Pages
             {
                 LoadUserProfile();
                 LoadBookingHistory();
+                LoadNotifications();
             }
         }
 
@@ -82,11 +83,10 @@ namespace CastroCateringBookingSystem.Pages
                                 // Profile picture
                                 if (!string.IsNullOrEmpty(picPath))
                                 {
-                                    imgProfilePic.ImageUrl = ResolveUrl(picPath);
+                                    imgProfilePic.ImageUrl      = ResolveUrl(picPath);
                                     imgProfilePic.Style["display"] = "block";
-                                    // Hide the letter avatar via JS — set a flag
-                                    ClientScript.RegisterStartupScript(GetType(), "showPic",
-                                        "document.getElementById('avatarCircle').style.display='none';", true);
+                                    // Hide the letter avatar server-side — persists across postbacks
+                                    avatarCircle.Style["display"] = "none";
                                 }
                             }
                         }
@@ -219,6 +219,52 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         // ─────────────────────────────────────────────────────────────────────
+        // CANCEL BOOKING
+        // ─────────────────────────────────────────────────────────────────────
+        protected void btnConfirmCancel_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(hfCancelBookingID.Value, out int bookingId) || bookingId <= 0)
+                return;
+
+            int userId = Convert.ToInt32(Session["UserID"]);
+
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                {
+                    conn.Open();
+
+                    // Only cancel if it belongs to this user and isn't already cancelled/completed
+                    const string sql = @"
+                        UPDATE Bookings
+                        SET    [Status] = 'Cancelled'
+                        WHERE  BookingID = @BookingID
+                          AND  UserID    = @UserID
+                          AND  [Status] NOT IN ('Cancelled', 'Completed')";
+
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@BookingID", bookingId);
+                        cmd.Parameters.AddWithValue("@UserID",    userId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("CancelBooking error: " + ex.Message);
+            }
+
+            // Reload the booking list so the status updates immediately
+            LoadBookingHistory();
+            LoadNotifications();
+
+            // Close the modal client-side
+            ClientScript.RegisterStartupScript(GetType(), "closeCancel",
+                "closeCancelModal();", true);
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
         // LOAD BOOKING HISTORY
         // ─────────────────────────────────────────────────────────────────────
         private void LoadBookingHistory()
@@ -278,6 +324,64 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         // ─────────────────────────────────────────────────────────────────────
+        // LOAD NOTIFICATIONS
+        // ─────────────────────────────────────────────────────────────────────
+        private void LoadNotifications()
+        {
+            int userId = Convert.ToInt32(Session["UserID"]);
+            var notifications = new List<NotificationRecord>();
+
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                {
+                    conn.Open();
+
+                    const string sql = @"
+                        SELECT n.NotificationID, n.Message, n.DateCreated,
+                               b.EventType, b.EventDate
+                        FROM   Notifications n
+                        LEFT JOIN Bookings b ON n.BookingID = b.BookingID
+                        WHERE  n.UserID = @UserID
+                        ORDER  BY n.DateCreated DESC";
+
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UserID", userId);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                notifications.Add(new NotificationRecord
+                                {
+                                    NotificationID = Convert.ToInt32(reader["NotificationID"]),
+                                    Message        = reader["Message"].ToString(),
+                                    DateCreated    = Convert.ToDateTime(reader["DateCreated"]),
+                                    EventType      = reader["EventType"]  == DBNull.Value ? "" : reader["EventType"].ToString(),
+                                    EventDate      = reader["EventDate"]  == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EventDate"])
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("LoadNotifications error: " + ex.Message);
+            }
+
+            rptNotifications.DataSource = notifications;
+            rptNotifications.DataBind();
+
+            int count = notifications.Count;
+            lblNotifCount.Text    = count.ToString();
+            lblNotifBadge.Text    = count.ToString();
+            lblNotifBadge.Visible = count > 0;
+            phNoNotifs.Visible    = count == 0;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
         // HELPER
         // ─────────────────────────────────────────────────────────────────────
         public string GetStatusClass(string status)
@@ -304,5 +408,15 @@ namespace CastroCateringBookingSystem.Pages
         public decimal  Amount      { get; set; }
         public string   Status      { get; set; }
         public DateTime BookedAt    { get; set; }
+    }
+
+    [Serializable]
+    public class NotificationRecord
+    {
+        public int       NotificationID { get; set; }
+        public string    Message        { get; set; }
+        public DateTime  DateCreated    { get; set; }
+        public string    EventType      { get; set; }
+        public DateTime? EventDate      { get; set; }
     }
 }
