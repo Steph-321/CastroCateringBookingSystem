@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Profile.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Profile" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Profile.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Profile" EnableEventValidation="false" %>
 <!DOCTYPE html>
 <html lang="en">
 <head runat="server">
@@ -1019,19 +1019,15 @@
                 <div class="cancel-icon">⚠️</div>
                 <p class="cancel-title">Are you sure you want to cancel?</p>
                 <p class="cancel-sub">This action cannot be undone. Your booking will be marked as <strong>Cancelled</strong>.</p>
-                <p class="cancel-policy">Reminder: cancellations must be made within <strong>12 hours</strong> of booking.</p>
+                <p class="cancel-policy">Reminder: cancellations must be made within <strong>12 hours</strong> of admin approval.</p>
             </div>
             <div class="cancel-modal-foot">
                 <button type="button" class="btn-cancel-no" onclick="closeCancelModal()">Keep Booking</button>
-                <asp:Button ID="btnConfirmCancel" runat="server"
-                    Text="Yes, Confirm Cancel"
-                    CssClass="btn-cancel-yes"
-                    CausesValidation="false"
-                    OnClick="btnConfirmCancel_Click" />
+                <button type="button" class="btn-cancel-yes" id="btnConfirmCancelJS" onclick="submitCancel()">Yes, Confirm Cancel</button>
             </div>
         </div>
     </div>
-    <asp:HiddenField ID="hfCancelBookingID" runat="server" Value="0" />
+    <%-- hfCancelBookingID no longer needed - cancel handled via CancelBooking.ashx --%>
 
     <!-- NOTIFICATIONS MODAL -->
     <div id="notifModalOverlay" class="notif-overlay" onclick="if(event.target===this)closeNotifModal()">
@@ -1141,12 +1137,45 @@
         document.querySelectorAll('#primaryNav a').forEach(a => a.addEventListener('click', closeMobileNav));
 
         /* ── Cancel booking modal ── */
+        var _cancelBookingId = 0;
+
         function openCancelModal(bookingId) {
-            document.getElementById('<%= hfCancelBookingID.ClientID %>').value = bookingId;
+            _cancelBookingId = bookingId;
             document.getElementById('cancelModalOverlay').classList.add('open');
         }
         function closeCancelModal() {
             document.getElementById('cancelModalOverlay').classList.remove('open');
+        }
+
+        function submitCancel() {
+            if (!_cancelBookingId) return;
+
+            var btn = document.getElementById('btnConfirmCancelJS');
+            btn.disabled = true;
+            btn.textContent = 'Cancelling...';
+
+            var fd = new FormData();
+            fd.append('bookingId', _cancelBookingId);
+
+            fetch('CancelBooking.ashx', { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    btn.disabled = false;
+                    btn.textContent = 'Yes, Confirm Cancel';
+                    closeCancelModal();
+                    if (data.success) {
+                        // Reload the page so booking history refreshes
+                        window.location.reload();
+                    } else {
+                        alert(data.message || 'Cancellation failed. Please try again.');
+                    }
+                })
+                .catch(function() {
+                    btn.disabled = false;
+                    btn.textContent = 'Yes, Confirm Cancel';
+                    closeCancelModal();
+                    alert('Network error. Please try again.');
+                });
         }
 
         /* ── Notification modal ── */

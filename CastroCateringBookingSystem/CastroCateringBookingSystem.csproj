@@ -71,6 +71,7 @@
     <Content Include="Pages\AdminDatabaseBackup.aspx" />
     <Content Include="Pages\CheckBookedDate.ashx" />
     <Content Include="Pages\SaveBooking.ashx" />
+    <Content Include="Pages\CancelBooking.ashx" />
     <Content Include="Assests\alyssa.jpg" />
     <Content Include="Assests\anniversaryElegance.jpg" />
     <Content Include="Assests\stephanie.jpg" />

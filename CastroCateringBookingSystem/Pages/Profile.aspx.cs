@@ -235,47 +235,82 @@ namespace CastroCateringBookingSystem.Pages
                 {
                     conn.Open();
 
-                    // Allow cancellation of:
-                    //   - Pending bookings (any time)
-                    //   - Approved bookings within 12 hours of ApprovedAt
-                    const string sql = @"
-                        UPDATE Bookings
-                        SET    [Status] = 'Cancelled'
+                    // First verify this booking belongs to the logged-in user
+                    // and is in a cancellable state
+                    string checkSql = @"
+                        SELECT [Status], ApprovedAt
+                        FROM   Bookings
                         WHERE  BookingID = @BookingID
-                          AND  UserID    = @UserID
-                          AND  (
-                                  [Status] = 'Pending'
-                               OR (
-                                     [Status]    = 'Approved'
-                                 AND ApprovedAt  IS NOT NULL
-                                 AND GETDATE()  <= DATEADD(HOUR, 12, ApprovedAt)
-                                  )
-                              )";
+                          AND  UserID    = @UserID";
 
-                    using (var cmd = new SqlCommand(sql, conn))
+                    string currentStatus = null;
+                    DateTime? approvedAt = null;
+
+                    using (var chk = new SqlCommand(checkSql, conn))
                     {
-                        cmd.Parameters.AddWithValue("@BookingID", bookingId);
-                        cmd.Parameters.AddWithValue("@UserID",    userId);
-                        int rows = cmd.ExecuteNonQuery();
+                        chk.Parameters.AddWithValue("@BookingID", bookingId);
+                        chk.Parameters.AddWithValue("@UserID",    userId);
+                        using (var r = chk.ExecuteReader())
+                        {
+                            if (r.Read())
+                            {
+                                currentStatus = r["Status"].ToString();
+                                approvedAt    = r["ApprovedAt"] == DBNull.Value
+                                    ? (DateTime?)null
+                                    : Convert.ToDateTime(r["ApprovedAt"]);
+                            }
+                        }
+                    }
 
-                        if (rows == 0)
+                    // Booking not found or doesn't belong to this user
+                    if (currentStatus == null)
+                    {
+                        ClientScript.RegisterStartupScript(GetType(), "cancelDenied",
+                            "closeCancelModal(); alert('Booking not found.');", true);
+                        return;
+                    }
+
+                    // Already cancelled or completed
+                    if (currentStatus == "Cancelled" || currentStatus == "Completed")
+                    {
+                        ClientScript.RegisterStartupScript(GetType(), "cancelDenied",
+                            "closeCancelModal(); alert('This booking cannot be cancelled.');", true);
+                        LoadBookingHistory();
+                        return;
+                    }
+
+                    // Approved — check 12-hour window
+                    if (currentStatus == "Approved" && approvedAt.HasValue)
+                    {
+                        double hoursElapsed = (DateTime.Now - approvedAt.Value).TotalHours;
+                        if (hoursElapsed > 12)
                         {
                             ClientScript.RegisterStartupScript(GetType(), "cancelDenied",
-                                "closeCancelModal(); alert('Cancellation not allowed. Approved bookings can only be cancelled within 12 hours of approval.');",
+                                "closeCancelModal(); alert('Cancellation window has expired. Approved bookings can only be cancelled within 12 hours of approval.');",
                                 true);
                             LoadBookingHistory();
                             return;
                         }
                     }
 
-                    // Insert notification for the user
+                    // All checks passed — cancel it
+                    using (var cmd = new SqlCommand(
+                        "UPDATE Bookings SET [Status]='Cancelled' WHERE BookingID=@BookingID AND UserID=@UserID",
+                        conn))
+                    {
+                        cmd.Parameters.AddWithValue("@BookingID", bookingId);
+                        cmd.Parameters.AddWithValue("@UserID",    userId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Insert notification
                     using (var notifCmd = new SqlCommand(@"
                         INSERT INTO Notifications (UserID, BookingID, Message, DateCreated)
                         VALUES (@UserID, @BookingID, @Message, GETDATE())", conn))
                     {
                         notifCmd.Parameters.AddWithValue("@UserID",    userId);
                         notifCmd.Parameters.AddWithValue("@BookingID", bookingId);
-                        notifCmd.Parameters.AddWithValue("@Message",   "Your booking has been cancelled.");
+                        notifCmd.Parameters.AddWithValue("@Message",   "Your booking #BK-" + bookingId.ToString("D6") + " has been cancelled.");
                         notifCmd.ExecuteNonQuery();
                     }
                 }
@@ -283,6 +318,9 @@ namespace CastroCateringBookingSystem.Pages
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("CancelBooking error: " + ex.Message);
+                ClientScript.RegisterStartupScript(GetType(), "cancelError",
+                    "closeCancelModal(); alert('An error occurred: " + ex.Message.Replace("'", "\\'") + "');", true);
+                return;
             }
 
             LoadBookingHistory();
