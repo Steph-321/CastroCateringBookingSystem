@@ -288,25 +288,21 @@ th {
 
             <h2>Add New Package</h2>
 
-        <!-- Package Name -->
         <div class="form-group">
             <label>Package Name</label>
             <asp:TextBox ID="txtPackageName" runat="server" />
         </div>
 
-        <!-- Description -->
         <div class="form-group">
             <label>Description *</label>
             <asp:TextBox ID="txtDescription" runat="server" TextMode="MultiLine" Rows="3" />
         </div>
 
-        <!-- Rate -->
         <div class="form-group">
             <label>Rate Per Guest *</label>
             <asp:TextBox ID="txtRatePerGuest" runat="server" />
         </div>
 
-        <!-- Guests -->
         <div class="form-group">
             <label>Minimum Guests</label>
             <asp:TextBox ID="txtMinGuests" runat="server" TextMode="Number" />
@@ -317,7 +313,6 @@ th {
             <asp:TextBox ID="txtMaxGuests" runat="server" TextMode="Number" />
         </div>
 
-        <!-- Category -->
         <div class="form-group">
             <label>Category</label>
             <asp:DropDownList ID="ddlCategory" runat="server">
@@ -329,19 +324,16 @@ th {
             </asp:DropDownList>
         </div>
 
-        <!-- Inclusions -->
         <div class="form-group">
             <label>Inclusions</label>
             <asp:TextBox ID="txtInclusions" runat="server" TextMode="MultiLine" Rows="4" />
         </div>
 
-        <!-- Image -->
                <div class="form-group">
             <label>Package Image</label>
             <asp:FileUpload ID="fuImage" runat="server" />
         </div>
 
-        <!-- Button -->
         <asp:Button ID="btnAdd" runat="server"
             Text="Add Package"
             CssClass="btn-confirm"
@@ -350,53 +342,46 @@ th {
         <asp:Label ID="lblMsg" runat="server" CssClass="msg" />
 
     </div>
+
+<div class="form-section">
+        <h2>📦 Existing Packages</h2>
+
+        <div class="table-container">
+            <asp:GridView ID="gvPackages" runat="server"
+                AutoGenerateColumns="False"
+                DataKeyNames="PackageID"
+                CssClass="grid-table"
+                OnRowCommand="gvPackages_RowCommand">
+
+                <Columns>
+                    <asp:BoundField DataField="PackageID" HeaderText="ID" />
+                    <asp:BoundField DataField="PackageName" HeaderText="Package Name" />
+                    <asp:BoundField DataField="RatePerGuest" HeaderText="Rate / Guest" />
+                    <asp:BoundField DataField="Category" HeaderText="Category" />
+
+                    <asp:TemplateField HeaderText="Actions">
+                        <ItemTemplate>
+                            <asp:LinkButton runat="server"
+                                Text="Edit"
+                                CommandName="EditPackage"
+                                CommandArgument='<%# Eval("PackageID") %>' />
+
+                            &nbsp;|&nbsp;
+
+                            <asp:LinkButton runat="server"
+                                Text="Delete"
+                                CommandName="DeletePackage"
+                                CommandArgument='<%# Eval("PackageID") %>'
+                                OnClientClick="return confirm('Delete this package?');" />
+                        </ItemTemplate>
+                    </asp:TemplateField>
+
+                </Columns>
+            </asp:GridView>
+        </div>
+    </div>
+
 </div>
-
- <!-- EXISTING PACKAGES -->
-        <div class="form-section">
-
-            <h2>📦 Existing Packages</h2>
-
-            <div class="table-container">
-
-               <asp:GridView ID="gvPackages" runat="server"
-    AutoGenerateColumns="False"
-    DataKeyNames="PackageID"
-    CssClass="grid-table"
-    OnRowCommand="gvPackages_RowCommand">
-
-    <Columns>
-
-        <!-- ONLY SUMMARY FIELDS -->
-        <asp:BoundField DataField="PackageID" HeaderText="ID" />
-        <asp:BoundField DataField="PackageName" HeaderText="Package Name" />
-        <asp:BoundField DataField="RatePerGuest" HeaderText="Rate / Guest" />
-        <asp:BoundField DataField="Category" HeaderText="Category" />
-
-        <!-- ACTIONS -->
-       <asp:TemplateField HeaderText="Actions">
-    <ItemTemplate>
-
-        <asp:LinkButton runat="server"
-            Text="Edit"
-            CommandName="EditPackage"
-            CommandArgument='<%# Eval("PackageID") %>' />
-
-        &nbsp;|&nbsp;
-
-        <asp:LinkButton runat="server"
-            Text="Delete"
-            CommandName="DeletePackage"
-            CommandArgument='<%# Eval("PackageID") %>'
-            OnClientClick="return confirm('Delete this package?');" />
-
-    </ItemTemplate>
-</asp:TemplateField>
-
-    </Columns>
-</asp:GridView>
-
-
 
 
       
