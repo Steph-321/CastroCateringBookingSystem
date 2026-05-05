@@ -294,7 +294,7 @@
 
 <div class="main-content">
 
-    <h1>➕ Add New Packages</h1>
+    <h1> Add New Packages</h1>
 
     <div class="container">
 
@@ -358,7 +358,7 @@
     </div>
 
 <div class="form-section">
-        <h2>📦 Existing Packages</h2>
+        <h2>  Existing Packages</h2>
 
         <div class="table-container">
             <asp:GridView ID="gvPackages" runat="server"
