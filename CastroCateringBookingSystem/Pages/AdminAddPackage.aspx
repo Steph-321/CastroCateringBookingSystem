@@ -137,6 +137,14 @@
                  font-family: 'Playfair Display', serif;
             }
             
+
+            h2 {
+                color: var(--text-dark);
+                margin-bottom: 15px;
+                 font-family: 'Playfair Display', serif;
+            }
+            
+
            
             .container {
                 max-width: 700px;
