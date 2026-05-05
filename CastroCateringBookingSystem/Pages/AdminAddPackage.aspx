@@ -214,7 +214,7 @@
             }
 
             th, td {
-                text-align: left;
+                text-align: center;
                 padding: 12px 15px;
                 border-bottom: 1px solid #f0e6da;
                 color: var(--text-dark);
@@ -226,21 +226,40 @@
             }
 
             /* DELETE BUTTON */
-            .btn-delete {
-                background: #f4e9dc;
-                color: var(--text-dark);
-                border: 1px solid var(--gold);
-                padding: 6px 12px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: 600;
-                transition: 0.3s;
-                text-decoration: none;
+          
+            .actions {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
             }
 
-            .btn-delete:hover {
-                background: var(--gold);
-                color: white;
+            .btn-act {
+                padding: 0.3rem 0.8rem;
+                border-radius: 8px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                cursor: pointer;
+                border: 1px solid transparent;
+                transition: opacity 0.2s, transform 0.15s;
+                white-space: nowrap;
+                font-family: 'Inter', sans-serif;
+            }
+
+            .btn-act:hover {
+                opacity: 0.8;
+                transform: translateY(-1px);
+            }
+
+            .btn-edit {
+                background: #EBF4FD;
+                color: #1558A0;
+                border-color: #90CAF9;
+            }
+
+            .btn-delete {
+                background: #FDE8E8;
+                color: #9B1C1C;
+                border-color: #F5A0A0;
             }
 
 
@@ -353,18 +372,23 @@
 
                     <asp:TemplateField HeaderText="Actions">
                         <ItemTemplate>
-                            <asp:LinkButton runat="server"
-                                Text="Edit"
-                                CommandName="EditPackage"
-                                CommandArgument='<%# Eval("PackageID") %>' />
+                          <div class="actions">
 
-                            &nbsp;|&nbsp;
+                        <asp:Button runat="server"
+                            Text="Edit"
+                            CommandName="EditPackage"
+                            CommandArgument='<%# Eval("PackageID") %>'
+                            CssClass="btn-act btn-edit" />
 
-                            <asp:LinkButton runat="server"
-                                Text="Delete"
-                                CommandName="DeletePackage"
-                                CommandArgument='<%# Eval("PackageID") %>'
-                                OnClientClick="return confirm('Delete this package?');" />
+
+                        <asp:Button runat="server"
+                            Text="Delete"
+                            CommandName="DeletePackage"
+                            CommandArgument='<%# Eval("PackageID") %>'
+                            CssClass="btn-act btn-delete"
+                            OnClientClick="return confirm('Delete this package?');" />
+
+</div>
                         </ItemTemplate>
                     </asp:TemplateField>
 
