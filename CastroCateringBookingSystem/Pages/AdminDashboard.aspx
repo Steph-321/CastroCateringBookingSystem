@@ -585,15 +585,12 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
                         <h1>Dashboard</h1>
                         <p class="page-sub">Live overview of all bookings and activity</p>
                     </div>
-                    <div class="live-pill">
-                        <span class="live-dot"></span> Live
-                    </div>
                 </div>
 
                <div class="stats-row">
 
             <div class="stat-card">
-                <div class="stat-icon ic-gold"></div>
+               
                 <div>
                     <span class="stat-label">Upcoming</span>
                     <asp:Label ID="lblUpcoming" runat="server" CssClass="stat-val" />
@@ -601,7 +598,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon ic-green"></div>
+       
                 <div>
                     <span class="stat-label">Completed</span>
                     <asp:Label ID="lblCompleted" runat="server" CssClass="stat-val" />
@@ -609,7 +606,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon ic-blue"></div>
+
                 <div>
                     <span class="stat-label">Total Guests</span>
                     <asp:Label ID="lblGuests" runat="server" CssClass="stat-val" />
@@ -617,7 +614,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon ic-warm"></div>
+  
                 <div>
                     <span class="stat-label">Total Bookings</span>
                 <asp:Label ID="lblTotalBookings" runat="server" CssClass="stat-val" />                </div>

@@ -235,14 +235,22 @@ namespace CastroCateringBookingSystem.Pages
                 {
                     conn.Open();
 
+                    // Allow cancellation of:
+                    //   - Pending bookings (any time)
+                    //   - Approved bookings within 12 hours of ApprovedAt
                     const string sql = @"
                         UPDATE Bookings
                         SET    [Status] = 'Cancelled'
                         WHERE  BookingID = @BookingID
                           AND  UserID    = @UserID
-                          AND  [Status]  = 'Approved'
-                          AND  ApprovedAt IS NOT NULL
-                          AND  GETDATE() <= DATEADD(HOUR, 12, ApprovedAt)";
+                          AND  (
+                                  [Status] = 'Pending'
+                               OR (
+                                     [Status]    = 'Approved'
+                                 AND ApprovedAt  IS NOT NULL
+                                 AND GETDATE()  <= DATEADD(HOUR, 12, ApprovedAt)
+                                  )
+                              )";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     {
@@ -253,13 +261,14 @@ namespace CastroCateringBookingSystem.Pages
                         if (rows == 0)
                         {
                             ClientScript.RegisterStartupScript(GetType(), "cancelDenied",
-                                "closeCancelModal(); alert('Cancellation not allowed. This booking can only be cancelled within 12 hours after admin approval.');", true);
+                                "closeCancelModal(); alert('Cancellation not allowed. Approved bookings can only be cancelled within 12 hours of approval.');",
+                                true);
                             LoadBookingHistory();
                             return;
                         }
                     }
 
-                    // Insert notification
+                    // Insert notification for the user
                     using (var notifCmd = new SqlCommand(@"
                         INSERT INTO Notifications (UserID, BookingID, Message, DateCreated)
                         VALUES (@UserID, @BookingID, @Message, GETDATE())", conn))
@@ -426,35 +435,45 @@ namespace CastroCateringBookingSystem.Pages
         /// </summary>
         public string GetCancelButton(object bookingIdObj, object statusObj, object approvedAtObj)
         {
-            string status = statusObj?.ToString() ?? "";
-            // Only Approved bookings can be cancelled, and only within 12 hours.
-            if (status != "Approved")
-                return "";
+            string status     = statusObj?.ToString() ?? "";
+            int    bookingId  = Convert.ToInt32(bookingIdObj);
 
-            DateTime approvedAt = (approvedAtObj != null && approvedAtObj != DBNull.Value)
-                ? Convert.ToDateTime(approvedAtObj)
-                : DateTime.MinValue;
-
-            if (approvedAt == DateTime.MinValue)
-            {
-                return "<div class='booking-actions'>"
-                     + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Approval timestamp is missing'>"
-                     + "⛔ Cancellation Unavailable</button></div>";
-            }
-
-            double hoursElapsed = (DateTime.Now - approvedAt).TotalHours;
-            int bookingId = Convert.ToInt32(bookingIdObj);
-
-            if (hoursElapsed <= 12)
+            // Pending bookings — always cancellable
+            if (status == "Pending")
             {
                 return $"<div class='booking-actions'>"
                      + $"<button type='button' class='btn-cancel-booking' onclick='openCancelModal({bookingId})'>"
                      + "Cancel Booking</button></div>";
             }
 
-            return "<div class='booking-actions'>"
-                 + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Cancellation window has expired (12 hours after approval)'>"
-                 + "⛔ Cancellation Expired</button></div>";
+            // Approved bookings — only within 12 hours of ApprovedAt
+            if (status == "Approved")
+            {
+                DateTime approvedAt = (approvedAtObj != null && approvedAtObj != DBNull.Value)
+                    ? Convert.ToDateTime(approvedAtObj)
+                    : DateTime.MinValue;
+
+                if (approvedAt == DateTime.MinValue)
+                {
+                    return "<div class='booking-actions'>"
+                         + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Approval timestamp is missing'>"
+                         + "⛔ Cancellation Unavailable</button></div>";
+                }
+
+                if ((DateTime.Now - approvedAt).TotalHours <= 12)
+                {
+                    return $"<div class='booking-actions'>"
+                         + $"<button type='button' class='btn-cancel-booking' onclick='openCancelModal({bookingId})'>"
+                         + "Cancel Booking</button></div>";
+                }
+
+                return "<div class='booking-actions'>"
+                     + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Cancellation window has expired (12 hours after approval)'>"
+                     + "⛔ Cancellation Expired</button></div>";
+            }
+
+            // Completed / Cancelled — no button
+            return "";
         }
     }
 

@@ -42,7 +42,7 @@ namespace CastroCateringBookingSystem.Pages
                 FROM Bookings B
                 LEFT JOIN Users U ON B.UserID = U.UserID
                 LEFT JOIN Packages P ON B.PackageID = P.PackageID
-                ORDER BY B.EventDate DESC";
+                ORDER BY B.BookingID DESC";
 
 
 
@@ -75,8 +75,10 @@ namespace CastroCateringBookingSystem.Pages
             {
                 conn.Open();
 
-                // UPDATE STATUS
-                string updateQuery = "UPDATE Bookings SET [Status]=@Status WHERE BookingID=@ID";
+                // UPDATE STATUS — set ApprovedAt when approving
+                string updateQuery = newStatus == "Approved"
+                    ? "UPDATE Bookings SET [Status]=@Status, ApprovedAt=GETDATE() WHERE BookingID=@ID"
+                    : "UPDATE Bookings SET [Status]=@Status WHERE BookingID=@ID";
                 SqlCommand cmd = new SqlCommand(updateQuery, conn);
                 cmd.Parameters.AddWithValue("@Status", newStatus);
                 cmd.Parameters.AddWithValue("@ID", bookingId);

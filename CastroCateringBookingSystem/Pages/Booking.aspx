@@ -1000,7 +1000,7 @@
                                     <asp:ListItem Text="Credit Card" Value="Credit Card" />
                                     <asp:ListItem Text="Debit Card" Value="Debit Card" />
                                     <asp:ListItem Text="E-Wallet (GCash/PayMaya)" Value="E-Wallet (GCash/PayMaya)" />
-                                    <asp:ListItem Text="Cash" Value="Cash (Upon Event)" />
+                                    <asp:ListItem Text="Cash" Value="Cash" />
                                 </asp:DropDownList>
                             </div>
                             <div class="form-group full">

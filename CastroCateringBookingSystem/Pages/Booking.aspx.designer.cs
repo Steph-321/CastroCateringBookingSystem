@@ -24,15 +24,6 @@ namespace CastroCateringBookingSystem.Pages
         protected global::System.Web.UI.HtmlControls.HtmlForm bookingForm;
 
         /// <summary>
-        /// lblBookingError control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBookingError;
-
-        /// <summary>
         /// txtClientName control.
         /// </summary>
         /// <remarks>
@@ -103,6 +94,15 @@ namespace CastroCateringBookingSystem.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlVenueLocation;
+
+        /// <summary>
+        /// rptPackageCards control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptPackageCards;
 
         /// <summary>
         /// hfServiceStyle control.
@@ -267,6 +267,15 @@ namespace CastroCateringBookingSystem.Pages
         protected global::System.Web.UI.WebControls.HiddenField hfReceiptTotal;
 
         /// <summary>
+        /// lblBookingError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblBookingError;
+
+        /// <summary>
         /// btnConfirm control.
         /// </summary>
         /// <remarks>
@@ -274,7 +283,5 @@ namespace CastroCateringBookingSystem.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnConfirm;
-
-        protected global::System.Web.UI.WebControls.Repeater rptPackageCards;
     }
 }

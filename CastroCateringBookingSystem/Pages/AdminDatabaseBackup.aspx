@@ -222,12 +222,12 @@
                     <asp:Button ID="btnBackup" runat="server"
                         Text="💾  Back Up Now"
                         CssClass="btn-backup"
-                        OnClick="btnBackup_Click"
-                        OnClientClick="this.disabled=true; this.value='⏳  Backing up...'; return true;" />
+                        OnClick="btnBackup_Click" />
                     <div class="backup-note">
                         <strong>Full database backup</strong> — saves a complete snapshot of all tables,<br>
-                        bookings, users, packages, and reviews to the SQL Server backup folder.<br>
-                        <span style="color:#9B7A3A;">Backup path: <code>C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\Backup\</code></span>
+                        bookings, users, packages, and reviews.<br>
+                        The <code>.bak</code> file will automatically download to your computer.<br>
+                        <span style="color:#9B7A3A;">A copy is also kept in <code>App_Data/Backups/</code> on the server.</span>
                     </div>
                 </div>
                 <asp:Label ID="lblStatus" runat="server" Visible="false" />
@@ -241,7 +241,7 @@
                 <span style="font-size:0.78rem;color:var(--text-light);">Last 20 full backups</span>
             </div>
             <div class="tbl-wrap">
-                <asp:GridView ID="gvBackupHistory" runat="server"
+                    <asp:GridView ID="gvBackupHistory" runat="server"
                     AutoGenerateColumns="False"
                     CssClass="data-table"
                     GridLines="None">
@@ -252,17 +252,16 @@
                         </div>
                     </EmptyDataTemplate>
                     <Columns>
-                        <asp:BoundField DataField="BackupDate" HeaderText="Date &amp; Time"
-                            DataFormatString="{0:MMM dd, yyyy  h:mm tt}" HtmlEncode="false" />
-                        <asp:BoundField DataField="BackupName" HeaderText="Backup Name" />
-                        <asp:TemplateField HeaderText="File Path">
+                        <asp:BoundField DataField="CreatedDate" HeaderText="Date &amp; Time" />
+                        <asp:BoundField DataField="FileName"    HeaderText="File Name" />
+                        <asp:TemplateField HeaderText="Saved To">
                             <ItemTemplate>
                                 <span class="file-path"><%# Eval("FilePath") %></span>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Size">
                             <ItemTemplate>
-                                <span class="size-badge"><%# Eval("SizeMB") %> MB</span>
+                                <span class="size-badge"><%# Eval("SizeKB") %></span>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>

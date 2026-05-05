@@ -68,6 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Pages\AdminAddPackage.aspx" />
+    <Content Include="Pages\AdminDatabaseBackup.aspx" />
+    <Content Include="Pages\CheckBookedDate.ashx" />
+    <Content Include="Pages\SaveBooking.ashx" />
     <Content Include="Assests\alyssa.jpg" />
     <Content Include="Assests\anniversaryElegance.jpg" />
     <Content Include="Assests\stephanie.jpg" />
@@ -89,6 +92,7 @@
     <Content Include="Assests\initmatePrivateDining.jpg" />
     <Content Include="Assests\KidsBirthdayFiesta.jpg" />
     <Content Include="Assests\logo.png" />
+    <Content Include="Assests\grad_639136243066684049.jpg" />
     <Content Include="Pages\AboutUs.aspx" />
     <Content Include="Pages\AdminBookingManagement.aspx" />
     <Content Include="Pages\AdminDashboard.aspx" />
@@ -110,6 +114,13 @@
     </Compile>
     <Compile Include="Pages\AdminAddPackage.aspx.designer.cs">
       <DependentUpon>AdminAddPackage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\AdminDatabaseBackup.aspx.cs">
+      <DependentUpon>AdminDatabaseBackup.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\AdminDatabaseBackup.aspx.designer.cs">
+      <DependentUpon>AdminDatabaseBackup.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\AboutUs.aspx.cs">
       <DependentUpon>AboutUs.aspx</DependentUpon>
