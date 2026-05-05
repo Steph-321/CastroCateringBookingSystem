@@ -234,19 +234,29 @@ namespace CastroCateringBookingSystem.Pages
                 {
                     conn.Open();
 
-                    // Only cancel if it belongs to this user and isn't already cancelled/completed
+                    // Enforce 12-hour rule: only cancel if Approved AND within 12 hours of ApprovedAt
                     const string sql = @"
                         UPDATE Bookings
                         SET    [Status] = 'Cancelled'
                         WHERE  BookingID = @BookingID
                           AND  UserID    = @UserID
-                          AND  [Status] NOT IN ('Cancelled', 'Completed')";
+                          AND  [Status]  = 'Approved'
+                          AND  DATEDIFF(HOUR, ISNULL(ApprovedAt, DateCreated), GETDATE()) <= 12";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@BookingID", bookingId);
                         cmd.Parameters.AddWithValue("@UserID",    userId);
-                        cmd.ExecuteNonQuery();
+                        int rows = cmd.ExecuteNonQuery();
+
+                        if (rows == 0)
+                        {
+                            // Either already cancelled, completed, or 12-hour window expired
+                            ClientScript.RegisterStartupScript(GetType(), "cancelDenied",
+                                "closeCancelModal(); alert('Cancellation not allowed. Either the 12-hour window has expired or the booking cannot be cancelled.');", true);
+                            LoadBookingHistory();
+                            return;
+                        }
                     }
                 }
             }
@@ -255,13 +265,9 @@ namespace CastroCateringBookingSystem.Pages
                 System.Diagnostics.Debug.WriteLine("CancelBooking error: " + ex.Message);
             }
 
-            // Reload the booking list so the status updates immediately
             LoadBookingHistory();
             LoadNotifications();
-
-            // Close the modal client-side
-            ClientScript.RegisterStartupScript(GetType(), "closeCancel",
-                "closeCancelModal();", true);
+            ClientScript.RegisterStartupScript(GetType(), "closeCancel", "closeCancelModal();", true);
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -281,7 +287,8 @@ namespace CastroCateringBookingSystem.Pages
                     const string sql = @"
                         SELECT b.BookingID, p.PackageName, b.EventType, b.EventDate,
                                b.NoOfGuests, b.ModeOfPayment, b.TotalAmount,
-                               b.[Status], b.DateCreated
+                               b.[Status], b.DateCreated,
+                               ISNULL(b.ApprovedAt, b.DateCreated) AS ApprovedAt
                         FROM   Bookings b
                         LEFT JOIN Packages p ON b.PackageID = p.PackageID
                         WHERE  b.UserID = @UserID
@@ -305,7 +312,8 @@ namespace CastroCateringBookingSystem.Pages
                                     Payment     = reader["ModeOfPayment"].ToString(),
                                     Amount      = Convert.ToDecimal(reader["TotalAmount"]),
                                     Status      = reader["Status"].ToString(),
-                                    BookedAt    = Convert.ToDateTime(reader["DateCreated"])
+                                    BookedAt    = Convert.ToDateTime(reader["DateCreated"]),
+                                    ApprovedAt  = Convert.ToDateTime(reader["ApprovedAt"])
                                 });
                             }
                         }
@@ -388,10 +396,39 @@ namespace CastroCateringBookingSystem.Pages
         {
             switch (status)
             {
-                case "Upcoming":  return "status-upcoming";
+                case "Approved":  return "status-upcoming";
+                case "Pending":   return "status-upcoming";
                 case "Completed": return "status-completed";
                 case "Cancelled": return "status-cancelled";
                 default:          return "";
+            }
+        }
+
+        /// <summary>
+        /// Returns the cancel button HTML based on 12-hour rule.
+        /// </summary>
+        public string GetCancelButton(object bookingIdObj, object statusObj, object approvedAtObj)
+        {
+            string status = statusObj?.ToString() ?? "";
+            if (status == "Cancelled" || status == "Completed" || status == "Pending")
+                return "";
+
+            // status == "Approved" — check 12-hour window
+            DateTime approvedAt = approvedAtObj is DateTime dt ? dt : DateTime.MinValue;
+            double hoursElapsed = (DateTime.Now - approvedAt).TotalHours;
+            int bookingId = Convert.ToInt32(bookingIdObj);
+
+            if (hoursElapsed <= 12)
+            {
+                return $"<div class='booking-actions'>"
+                     + $"<button type='button' class='btn-cancel-booking' onclick='openCancelModal({bookingId})'>"
+                     + "Cancel Booking</button></div>";
+            }
+            else
+            {
+                return "<div class='booking-actions'>"
+                     + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Cancellation window has expired (12 hours after approval)'>"
+                     + "⛔ Cancellation Expired</button></div>";
             }
         }
     }
@@ -408,6 +445,14 @@ namespace CastroCateringBookingSystem.Pages
         public decimal  Amount      { get; set; }
         public string   Status      { get; set; }
         public DateTime BookedAt    { get; set; }
+        public DateTime ApprovedAt  { get; set; }
+
+        /// <summary>
+        /// True if the booking is Approved AND within 12 hours of approval.
+        /// </summary>
+        public bool CanCancel =>
+            Status == "Approved" &&
+            (DateTime.Now - ApprovedAt).TotalHours <= 12;
     }
 
     [Serializable]

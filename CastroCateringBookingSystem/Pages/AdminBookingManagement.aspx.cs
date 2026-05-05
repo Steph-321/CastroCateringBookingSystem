@@ -78,7 +78,9 @@ namespace CastroCateringBookingSystem.Pages
                 conn.Open();
 
                 // UPDATE STATUS
-                string updateQuery = "UPDATE Bookings SET Status=@Status WHERE BookingID=@ID";
+                string updateQuery = "UPDATE Bookings SET Status=@Status" +
+                    (newStatus == "Approved" ? ", ApprovedAt=GETDATE()" : "") +
+                    " WHERE BookingID=@ID";
                 SqlCommand cmd = new SqlCommand(updateQuery, conn);
                 cmd.Parameters.AddWithValue("@Status", newStatus);
                 cmd.Parameters.AddWithValue("@ID", bookingId);

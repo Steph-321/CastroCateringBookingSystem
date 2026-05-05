@@ -45,8 +45,29 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         /// <summary>
-        /// Splits the Inclusions string by comma or newline and returns
-        /// one <li> per item so they render as individual bullet points.
+        /// Splits the Category string by comma and returns one badge span per category.
+        /// </summary>
+        public string RenderCategories(string category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                return "";
+
+            var items = category.Split(new[] { ',', ';' },
+                                       StringSplitOptions.RemoveEmptyEntries);
+            string html = "";
+            foreach (var item in items)
+            {
+                string trimmed = item.Trim();
+                if (!string.IsNullOrEmpty(trimmed))
+                    html += "<span class=\"package-category\">"
+                            + System.Web.HttpUtility.HtmlEncode(trimmed)
+                            + "</span>";
+            }
+            return html;
+        }
+
+        /// <summary>
+        /// Splits the Inclusions string by comma or newline and returns one li per item.
         /// </summary>
         public string RenderInclusions(string inclusions)
         {
