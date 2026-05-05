@@ -74,24 +74,26 @@ body {
     flex: 1;
 }
 
-.nav-item {
+.nav-link {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.75rem 0.9rem;
-    margin-bottom: 0.3rem;
+    gap: 0.75rem;
+    padding: 0.7rem 0.875rem;
+    margin-bottom: 0.15rem;
     border-radius: 10px;
     text-decoration: none;
-    color: var(--text-dark);
-    font-size: 0.9rem;
-    transition: 0.2s;
+    color: var(--text-light);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
 }
 
-.nav-item:hover {
+.nav-link:hover {
     background: var(--beige);
+    color: var(--dark-brown);
 }
 
-.nav-item.active {
+.nav-link.active {
     background: var(--beige);
     color: var(--gold);
     font-weight: 600;
@@ -264,12 +266,11 @@ th {
 
             <div class="sidebar-nav">
 
-                <a href="AdminDashboard.aspx" class="nav-item active">📊 Dashboard</a>
+              <a href="AdminDashboard.aspx" class="nav-link">📊 Dashboard</a>
 
-                <a href="AdminBookingManagement.aspx" class="nav-item">📋 Booking Management</a>
-                 <a href="AdminAddPackage.aspx" class="nav-item">
-                    ➕ Add Package
-                </a>
+              <a href="AdminBookingManagement.aspx" class="nav-link">📋 Booking Management</a>
+
+              <a href="AdminAddPackage.aspx" class="nav-link active">➕ Add Package</a>
        </div>
 
             <div class="sidebar-footer">

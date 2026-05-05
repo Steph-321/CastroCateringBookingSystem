@@ -594,8 +594,7 @@
             <div class="package-card">
                 
                 <div class="package-image">
-                    <img src='<%# Eval("ImagePath") %>' alt='<%# Eval("PackageName") %>' />
-                </div>
+                <img src='<%# ResolveUrl("~/Assets/" + Eval("ImagePath")) %>' alt='<%# Eval("PackageName") %>' />                </div>
 
                 <div class="package-content">
 

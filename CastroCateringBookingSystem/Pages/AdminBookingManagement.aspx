@@ -135,7 +135,11 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
 
         .nav-link .icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
         .nav-link:hover { background: var(--beige); color: var(--dark-brown); }
-        .nav-link.active { background: var(--beige); color: var(--gold); font-weight: 600; }
+       .nav-link.active {
+            background: var(--beige);
+            color: var(--gold);
+            font-weight: 600;
+        }
 
         .sidebar-footer {
             padding: 1.25rem 1rem;
@@ -332,16 +336,13 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             </a>
         </div>
 
-        <nav class="sidebar-nav">
-            <span class="nav-label">Menu</span>
-            <a href="AdminDashboard.aspx" class="nav-link">
-                <span class="icon">📊</span> Dashboard
-            </a>
-            <a href="AdminBookingManagement.aspx" class="nav-link active">
-                <span class="icon">📋</span> Booking Management
-            </a>
-            <a href="AdminAddPackage.aspx" class="nav-item active">➕ Add Package</a>
-        </nav>
+           <div class="sidebar-nav">
+
+           <a href="AdminDashboard.aspx" class="nav-link">📊 Dashboard</a>
+           <a href="AdminBookingManagement.aspx" class="nav-link active">📋 Booking Management</a>
+           <a href="AdminAddPackage.aspx" class="nav-link">➕ Add Package</a>
+
+        </div>
 
         <div class="sidebar-footer">
             <a href="Home.aspx" class="btn-back">← Back to Site</a>
