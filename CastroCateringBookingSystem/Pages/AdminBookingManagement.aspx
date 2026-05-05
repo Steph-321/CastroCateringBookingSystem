@@ -243,15 +243,19 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         /* ── TABLE ── */
         .tbl-wrap { overflow-x: auto; }
 
-        .data-table {
+       .data-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed; /* 🔥 FIX ALIGNMENT */
         }
 
 <<<<<<< HEAD
-        .data-table th {
-            background: var(--bg-cream);
-            padding: 12px;
+       .data-table th,
+        .data-table td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
 =======
         .data-table thead th {
@@ -381,36 +385,39 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
                         </div>
                     </EmptyDataTemplate>
                     <Columns>
-                        <asp:BoundField DataField="BookingID"    HeaderText="ID" />
-                        <asp:BoundField DataField="CustomerName" HeaderText="Client" />
-                        <asp:BoundField DataField="EventType"    HeaderText="Event" />
-                        <asp:BoundField DataField="EventDate"    HeaderText="Date"
-                            DataFormatString="{0:MMM dd, yyyy}" HtmlEncode="false" />
-                        <asp:BoundField DataField="NoOfGuests"   HeaderText="Guests" />
-                        <asp:BoundField DataField="PackageID"    HeaderText="Package" />
-                        <asp:BoundField DataField="Total"        HeaderText="Total"
-                            DataFormatString="₱{0:N0}" HtmlEncode="false" />
-                        <asp:TemplateField HeaderText="Status">
+                      <asp:BoundField DataField="BookingID" HeaderText="ID" ItemStyle-Width="5%" />
+                        <asp:BoundField DataField="CustomerName" HeaderText="Client" ItemStyle-Width="15%" />
+                        <asp:BoundField DataField="EventType" HeaderText="Event" ItemStyle-Width="12%" />
+                        <asp:BoundField DataField="EventDate" HeaderText="Date" ItemStyle-Width="12%" />
+                        <asp:BoundField DataField="NoOfGuests" HeaderText="Guests" ItemStyle-Width="8%" />
+                        <asp:BoundField DataField="PackageID" HeaderText="Package" ItemStyle-Width="8%" />
+                        <asp:BoundField DataField="Total" HeaderText="Total" ItemStyle-Width="10%" />
+                       <asp:TemplateField HeaderText="Status" ItemStyle-Width="12%">
                             <ItemTemplate>
-                                <span class='badge badge-<%# Eval("Status") %>'><%# Eval("Status") %></span>
+                                <span class='badge badge-<%# Eval("Status") %>'>
+                                    <%# Eval("Status") %>
+                                </span>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Actions">
+
+                        <asp:TemplateField HeaderText="Actions" ItemStyle-Width="18%">
                             <ItemTemplate>
                                 <div class="actions">
                                     <asp:Button runat="server" Text="Approve"
                                         CommandName="Approve"
                                         CommandArgument='<%# Eval("BookingID") %>'
                                         CssClass="btn-act btn-approve" />
+
                                     <asp:Button runat="server" Text="Done"
                                         CommandName="Done"
                                         CommandArgument='<%# Eval("BookingID") %>'
                                         CssClass="btn-act btn-done" />
+
                                     <asp:Button runat="server" Text="Delete"
                                         CommandName="Delete"
                                         CommandArgument='<%# Eval("BookingID") %>'
                                         CssClass="btn-act btn-delete"
-                                        OnClientClick="return confirm('Delete this booking? This cannot be undone.');" />
+                                        OnClientClick="return confirm('Delete this booking?');" />
                                 </div>
                             </ItemTemplate>
                         </asp:TemplateField>
