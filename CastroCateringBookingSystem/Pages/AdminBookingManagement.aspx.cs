@@ -19,12 +19,9 @@ namespace CastroCateringBookingSystem.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
        
-            if (!IsPostBack)
-            {
                 LoadBookings();
                 LoadCount();
                 
-            }
         }
 
         void LoadBookings()

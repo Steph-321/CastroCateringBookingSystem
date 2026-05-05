@@ -619,8 +619,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
                 <div class="stat-icon ic-warm"></div>
                 <div>
                     <span class="stat-label">Total Bookings</span>
-                    <asp:Label ID="lblTotalBookings" runat="server" CssClass="stat-val" />
-                </div>
+                <asp:Label ID="lblTotalBookings" runat="server" CssClass="stat-val" />                </div>
             </div>
 
         </div>
