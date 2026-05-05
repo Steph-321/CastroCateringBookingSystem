@@ -175,7 +175,18 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
             transition: background 0.2s;
         }
         .btn-signout:hover { background: #fff0f0; }
-
+      
+        .main {
+            margin-left: var(--sidebar-w); 
+            width: calc(100% - var(--sidebar-w));
+            padding: 2rem 2.5rem;
+    
+            display: flex;
+            flex-direction: column;
+    
+            max-width: 1400px;   
+            margin-right: auto;
+        }
         /* ── MAIN CONTENT ── */
        .card {
             background: var(--white);
@@ -287,22 +298,22 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
 
         /* ── CARDS ── */
         .card {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
+             background: var(--white);
+             border: 1px solid var(--border);
+             border-radius: 14px;
+             overflow: hidden;
+             margin-bottom: 1.5rem;
+         }
 
-        .card-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
+         .card-head {
+             display: flex;
+             align-items: center;
+             justify-content: space-between;
+             padding: 1.1rem 1.5rem;
+             border-bottom: 1px solid var(--border);
+         }
 
-        .card-head h2 { font-size: 1rem; color: var(--dark-brown); }
+         .card-head h2 { font-size: 1rem; color: var(--dark-brown); }
 
         .chip {
             background: var(--beige);
@@ -314,39 +325,36 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
         }
 
         /* ── TABLE ── */
-        .tbl-wrap { 
-            overflow-x: auto;
-            padding: 0.5rem 0;
-        }
+        .tbl-wrap { overflow-x: auto; }
 
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+ .data-table {
+      width: 100%;
+      border-collapse: collapse;
+  }
 
-       .data-table thead th {
-            background: var(--beige);
-            padding: 0.85rem 1.25rem;
-            text-align: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            white-space: nowrap;
-        }
+  .data-table thead th {
+      background: var(--beige);
+      padding: 0.85rem 1.25rem;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      white-space: nowrap;
+  }
 
-        .data-table tbody td {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.875rem;
-            color: var(--text-dark);
-            vertical-align: middle;
-            text-align: center;
-        }
+  .data-table tbody td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+      color: var(--text-dark);
+      vertical-align: middle;
+      text-align: center;
+  }
 
-        .data-table tbody tr:last-child td { border-bottom: none; }
-        .data-table tbody tr:hover td { background: var(--cream); }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:hover td { background: var(--cream); }
 
         /* ── BADGES ── */
         .badge {
