@@ -546,16 +546,6 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             </div>
         </div>
 
-       
-        <!-- Package Statistics -->
-        <div class="card">
-            <div class="card-head">
-                <h2>Package Statistics</h2>
-            </div>
-            <div class="pkg-list">
-                <asp:Label ID="lblPackageStats" runat="server" />
-            </div>
-        </div>
 
     </div>
 
