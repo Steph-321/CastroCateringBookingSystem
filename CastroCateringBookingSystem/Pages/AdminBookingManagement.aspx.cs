@@ -154,16 +154,20 @@ namespace CastroCateringBookingSystem.Pages
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = "SELECT COUNT(*) FROM Bookings";
+
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
-                int total = (int)cmd.ExecuteScalar();
+
+                object result = cmd.ExecuteScalar();
+                int total = (result == DBNull.Value || result == null) ? 0 : Convert.ToInt32(result);
+
                 lblTotalBookings.Text = "📅 " + total + " Total Booking" + (total == 1 ? "" : "s");
             }
         }
 
-       
 
-           
+
+
 
 
     }
