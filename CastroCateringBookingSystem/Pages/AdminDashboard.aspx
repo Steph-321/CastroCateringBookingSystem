@@ -177,11 +177,12 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
         .btn-signout:hover { background: #fff0f0; }
 
         /* ── MAIN CONTENT ── */
-        .main {
-            margin-left: var(--sidebar-w);
-            flex: 1;
-            padding: 2.5rem 2.5rem 3rem;
-            min-width: 0;
+       .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 2rem; 
         }
 
         /* ── PAGE HEADER ── */
@@ -313,7 +314,10 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
         }
 
         /* ── TABLE ── */
-        .tbl-wrap { overflow-x: auto; }
+        .tbl-wrap { 
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
 
         .data-table {
             width: 100%;
