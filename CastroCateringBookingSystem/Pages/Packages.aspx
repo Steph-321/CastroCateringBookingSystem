@@ -618,7 +618,7 @@
                     </p>
 
                     <ul class="package-features">
-                        <li><%# Eval("Inclusions") %></li>
+                        <%# RenderInclusions(Eval("Inclusions").ToString()) %>
                     </ul>
 
                     <div class="package-footer">

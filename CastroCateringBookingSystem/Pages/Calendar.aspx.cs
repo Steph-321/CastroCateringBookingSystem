@@ -46,11 +46,11 @@ namespace CastroCateringBookingSystem.Pages
                 using (var conn = new SqlConnection(ConnStr))
                 {
                     conn.Open();
-                    // Get all upcoming/confirmed event dates from Bookings table
+                    // Only Approved bookings block the calendar — Pending does not
                     const string sql = @"
                         SELECT DISTINCT CAST(EventDate AS DATE)
                         FROM   Bookings
-                        WHERE  [Status] IN ('Upcoming')";
+                        WHERE  [Status] = 'Approved'";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())

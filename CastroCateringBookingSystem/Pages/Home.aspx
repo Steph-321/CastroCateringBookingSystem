@@ -863,7 +863,7 @@
                                     <h3 class="package-title">Grand Wedding Feast</h3>
                                     <p class="package-description">A timeless celebration with full-service elegance</p>
                                     <div class="package-footer">
-                                        <div class="package-price">₱1,223<span>/guest</span></div>
+                                        <div class="package-price">₱1200<span>/guest</span></div>
                                         <button class="btn-book" onclick="requireAuth(event,'Booking.aspx')">Book this package</button>
                                     </div>
                                 </div>
@@ -877,7 +877,7 @@
                                     <h3 class="package-title">Christening Celebration</h3>
                                     <p class="package-description">A warm, family-focused spread for your baby's special day</p>
                                     <div class="package-footer">
-                                        <div class="package-price">₱750<span>/guest</span></div>
+                                        <div class="package-price">₱350<span>/guest</span></div>
                                         <button class="btn-book" onclick="requireAuth(event,'Booking.aspx')">Book this package</button>
                                     </div>
                                 </div>
@@ -891,7 +891,7 @@
                                     <h3 class="package-title">Birthday Bliss</h3>
                                     <p class="package-description">Joyful menus for milestone celebrations</p>
                                     <div class="package-footer">
-                                        <div class="package-price">₱1,000<span>/guest</span></div>
+                                        <div class="package-price">₱450<span>/guest</span></div>
                                         <button class="btn-book" onclick="requireAuth(event,'Booking.aspx')">Book this package</button>
                                     </div>
                                 </div>
@@ -909,7 +909,7 @@
                                     <h3 class="package-title">Intimate Private Dining</h3>
                                     <p class="package-description">Chef-curated tasting menus for small gatherings</p>
                                     <div class="package-footer">
-                                        <div class="package-price">₱1,800<span>/guest</span></div>
+                                        <div class="package-price">₱1,200<span>/guest</span></div>
                                         <button class="btn-book" onclick="requireAuth(event,'Booking.aspx')">Book this package</button>
                                     </div>
                                 </div>
@@ -923,7 +923,7 @@
                                     <h3 class="package-title">Classic Wedding Buffet</h3>
                                     <p class="package-description">A wedding essential with varied buffet options</p>
                                     <div class="package-footer">
-                                        <div class="package-price">₱950<span>/guest</span></div>
+                                        <div class="package-price">₱650<span>/guest</span></div>
                                         <button class="btn-book" onclick="requireAuth(event,'Booking.aspx')">Book this package</button>
                                     </div>
                                 </div>
@@ -931,7 +931,7 @@
 
                             <div class="package-card view-all-card">
                                 <div class="package-image">
-                                    <img src="../assests/debut1.jpg" alt="Classic Wedding Buffet" />
+                                    <img src="../assests/debut1.jpg" alt="explore" />
                                 </div>
                                 <div class="package-content">
                                     <h3 class="package-title">Explore all packages</h3>

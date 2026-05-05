@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
 
@@ -16,6 +17,30 @@ namespace CastroCateringBookingSystem.Pages
             {
                 Response.Redirect("~/Pages/LoginSignup.aspx");
                 return;
+            }
+
+            if (!IsPostBack)
+            {
+                LoadPackageCards();
+            }
+        }
+
+        // ── LOAD PACKAGES FROM DB INTO CARDS ─────────────────────
+        private void LoadPackageCards()
+        {
+            using (var conn = new SqlConnection(ConnStr))
+            {
+                const string sql = @"
+                    SELECT PackageName, RatePerGuest
+                    FROM   Packages
+                    ORDER  BY PackageID ASC";
+
+                var da = new SqlDataAdapter(sql, conn);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                rptPackageCards.DataSource = dt;
+                rptPackageCards.DataBind();
             }
         }
 

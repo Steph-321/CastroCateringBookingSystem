@@ -615,17 +615,29 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
                     <asp:GridView ID="GridViewRecent" runat="server"
                         AutoGenerateColumns="False"
                         CssClass="data-table">
-
+                        <EmptyDataTemplate>
+                            <div class="empty">
+                                <div class="empty-icon">📭</div>
+                                <p>No bookings yet.</p>
+                            </div>
+                        </EmptyDataTemplate>
                         <Columns>
-                            <asp:BoundField DataField="BookingID" HeaderText="ID" />
+                            <asp:BoundField DataField="BookingID"    HeaderText="ID" />
                             <asp:BoundField DataField="CustomerName" HeaderText="Client" />
-                            <asp:BoundField DataField="EventType" HeaderText="Event" />
-                            <asp:BoundField DataField="EventDate" HeaderText="Date" />
-                            <asp:BoundField DataField="PackageID" HeaderText="Package" />
-                            <asp:BoundField DataField="Total" HeaderText="Total" />
-                            <asp:BoundField DataField="Status" HeaderText="Status" />
+                            <asp:BoundField DataField="EventType"    HeaderText="Event" />
+                            <asp:BoundField DataField="EventDate"    HeaderText="Date"
+                                DataFormatString="{0:MMM dd, yyyy}" HtmlEncode="false" />
+                            <asp:BoundField DataField="PackageID"    HeaderText="Package" />
+                            <asp:BoundField DataField="Total"        HeaderText="Total"
+                                DataFormatString="&#8369;{0:N0}" HtmlEncode="false" />
+                            <asp:TemplateField HeaderText="Status">
+                                <ItemTemplate>
+                                    <span class='badge badge-<%# Eval("Status") %>'>
+                                        <%# Eval("Status") %>
+                                    </span>
+                                </ItemTemplate>
+                            </asp:TemplateField>
                         </Columns>
-
                     </asp:GridView>
                 </div>
             </div>
