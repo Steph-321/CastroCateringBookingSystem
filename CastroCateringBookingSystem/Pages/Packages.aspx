@@ -587,31 +587,39 @@
             </div>
         </div>
 
-        <!-- Packages Grid -->
-      <div class="packages-grid">
-<asp:Repeater ID="rptPackages" runat="server">
+     <!-- Packages Grid -->
+<div class="packages-grid">
+    <asp:Repeater ID="rptPackages" runat="server">
         <ItemTemplate>
-            <div class="package-card">
-                
-                <div class="package-image">
-                <img src='<%# ResolveUrl("~/Assets/" + Eval("ImagePath")) %>' alt='<%# Eval("PackageName") %>' />                </div>
 
+            <div class="package-card">
+
+                <!-- IMAGE -->
+                <div class="package-image">
+                    <img src='<%# ResolveUrl(Eval("ImagePath").ToString()) %>' 
+                         alt='<%# Eval("PackageName") %>' />
+                </div>
+
+                <!-- CONTENT -->
                 <div class="package-content">
 
                     <div class="package-categories">
-                        <span class="package-category"><%# Eval("Category") %></span>
+                        <span class="package-category">
+                            <%# Eval("Category") %>
+                        </span>
                     </div>
 
-                    <h3 class="package-name"><%# Eval("PackageName") %></h3>
+                    <h3 class="package-name">
+                        <%# Eval("PackageName") %>
+                    </h3>
 
                     <p class="package-description">
                         <%# Eval("Description") %>
                     </p>
 
-                   <ul class="package-features">
-                    <li><%# Eval("Inclusions") %></li>
-                </ul>
-
+                    <ul class="package-features">
+                        <li><%# Eval("Inclusions") %></li>
+                    </ul>
 
                     <div class="package-footer">
                         <div class="package-guests">
@@ -620,7 +628,8 @@
 
                         <div class="package-price">
                             <span class="price-amount">
-                                ₱<%# Eval("RatePerGuest") %> <span>/ guest</span>
+                                ₱<%# Eval("RatePerGuest") %> 
+                                <span>/ guest</span>
                             </span>
                         </div>
                     </div>
@@ -630,8 +639,10 @@
                         Book this package
                     </button>
 
-                </div>
-            </div>
+                </div> <!-- package-content -->
+
+            </div> <!-- package-card -->
+
         </ItemTemplate>
     </asp:Repeater>
 </div>
