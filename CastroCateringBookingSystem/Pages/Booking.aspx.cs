@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
 
@@ -17,6 +18,30 @@ namespace CastroCateringBookingSystem.Pages
                 Response.Redirect("~/Pages/LoginSignup.aspx");
                 return;
             }
+
+            if (!IsPostBack)
+            {
+                LoadPackageCards();
+            }
+        }
+
+        // ── LOAD PACKAGES FROM DB INTO CARDS ─────────────────────
+        private void LoadPackageCards()
+        {
+            using (var conn = new SqlConnection(ConnStr))
+            {
+                const string sql = @"
+                    SELECT PackageName, RatePerGuest
+                    FROM   Packages
+                    ORDER  BY PackageID ASC";
+
+                var da = new SqlDataAdapter(sql, conn);
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                rptPackageCards.DataSource = dt;
+                rptPackageCards.DataBind();
+            }
         }
 
         protected void btnConfirm_Click(object sender, EventArgs e)
@@ -33,18 +58,22 @@ namespace CastroCateringBookingSystem.Pages
             string packageName   = hfPackageName.Value.Trim();
             string totalAmtStr   = hfTotalAmount.Value.Trim();
 
-            if (string.IsNullOrWhiteSpace(clientName)    ||
-                string.IsNullOrWhiteSpace(phoneNumber)   ||
-                string.IsNullOrWhiteSpace(eventType)     ||
-                string.IsNullOrWhiteSpace(eventDateStr)  ||
-                string.IsNullOrWhiteSpace(guestCountStr) ||
-                string.IsNullOrWhiteSpace(paymentMode)   ||
-                string.IsNullOrWhiteSpace(venue)         ||
-                string.IsNullOrWhiteSpace(venueLocation) ||
-                string.IsNullOrWhiteSpace(serviceStyle)  ||
-                string.IsNullOrWhiteSpace(packageName))
+            // ── Debug: surface exactly which field is missing ──
+            var missing = new System.Collections.Generic.List<string>();
+            if (string.IsNullOrWhiteSpace(clientName))    missing.Add("clientName");
+            if (string.IsNullOrWhiteSpace(phoneNumber))   missing.Add("phoneNumber");
+            if (string.IsNullOrWhiteSpace(eventType))     missing.Add("eventType");
+            if (string.IsNullOrWhiteSpace(eventDateStr))  missing.Add("eventDate");
+            if (string.IsNullOrWhiteSpace(guestCountStr)) missing.Add("guestCount");
+            if (string.IsNullOrWhiteSpace(paymentMode))   missing.Add("paymentMode");
+            if (string.IsNullOrWhiteSpace(venue))         missing.Add("venue");
+            if (string.IsNullOrWhiteSpace(venueLocation)) missing.Add("venueLocation");
+            if (string.IsNullOrWhiteSpace(serviceStyle))  missing.Add("serviceStyle[hf=" + hfServiceStyle.Value + "]");
+            if (string.IsNullOrWhiteSpace(packageName))   missing.Add("packageName[hf=" + hfPackageName.Value + "]");
+
+            if (missing.Count > 0)
             {
-                ShowError("Please fill in all required fields.");
+                ShowError("Missing fields: " + string.Join(", ", missing));
                 return;
             }
 
@@ -60,18 +89,18 @@ namespace CastroCateringBookingSystem.Pages
                 return;
             }
 
-            if (!decimal.TryParse(totalAmtStr, out decimal totalAmount))
+            // Parse total — fall back to 0 if JS didn't write it (shouldn't happen)
+            if (!decimal.TryParse(totalAmtStr,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out decimal totalAmount))
             {
-                ShowError("Could not calculate total amount. Please try again.");
-                return;
+                totalAmount = 0;
             }
 
-            bool withinArgao = venueLocation == "within";
-            int  userId      = Convert.ToInt32(Session["UserID"]);
-            bool moaAccepted = hfMOAAccepted.Value == "1";
-
+            bool withinArgao  = venueLocation == "within";
+            int  userId       = Convert.ToInt32(Session["UserID"]);
             string withinArgaoVal = withinArgao ? "Yes" : "No";
-            string moaAcceptedVal = moaAccepted ? "Accepted" : "Not Accepted";
 
             try
             {
@@ -92,11 +121,11 @@ namespace CastroCateringBookingSystem.Pages
                         INSERT INTO Bookings
                             (UserID, PackageID, ClientName, EventType, EventDate,
                              NoOfGuests, Venue, WithinArgao, ServiceStyle,
-                             ModeOfPayment, TotalAmount, PhoneNumber, DateCreated, [Status], MOAAccepted)
+                             ModeOfPayment, TotalAmount, PhoneNumber, DateCreated, [Status])
                         VALUES
                             (@UserID, @PackageID, @ClientName, @EventType, @EventDate,
                              @NoOfGuests, @Venue, @WithinArgao, @ServiceStyle,
-                             @ModeOfPayment, @TotalAmount, @PhoneNumber, GETDATE(), 'Pending', @MOAAccepted);
+                             @ModeOfPayment, @TotalAmount, @PhoneNumber, GETDATE(), 'Pending');
                         SELECT SCOPE_IDENTITY();";
 
                     int newBookingId;
@@ -114,28 +143,58 @@ namespace CastroCateringBookingSystem.Pages
                         cmd.Parameters.AddWithValue("@ModeOfPayment", paymentMode);
                         cmd.Parameters.AddWithValue("@TotalAmount",   totalAmount);
                         cmd.Parameters.AddWithValue("@PhoneNumber",   phoneNumber);
-                        cmd.Parameters.AddWithValue("@MOAAccepted",   moaAcceptedVal);
                         newBookingId = Convert.ToInt32(cmd.ExecuteScalar());
                     }
 
-                    // ── Store receipt data in hidden server labels so JS can read them ──
+                    // ── Build receipt data and inject directly via startup script ──
                     string bookingRef = "BK-" + newBookingId.ToString("D6");
-                    string argaoText  = withinArgaoVal == "Yes" ? "Within Argao" : "Outside Argao (+\u20B12,500)";
+                    string argaoText  = withinArgao ? "Within Argao" : "Outside Argao (+\u20B12,500)";
                     decimal ppg       = noOfGuests > 0 ? totalAmount / noOfGuests : 0;
+                    string totalFmt   = "\u20B1" + totalAmount.ToString("N0");
+                    string ppgFmt     = "\u20B1" + ppg.ToString("N0") + "/guest";
+                    string issuedAt   = DateTime.Now.ToString("MMM dd, yyyy h:mm tt");
 
-                    hfReceiptRef.Value     = bookingRef;
-                    hfReceiptName.Value    = clientName;
-                    hfReceiptPhone.Value   = phoneNumber;
-                    hfReceiptEvent.Value   = eventType;
-                    hfReceiptDate.Value    = eventDate.ToString("MMMM dd, yyyy");
-                    hfReceiptVenue.Value   = venue + " (" + argaoText + ")";
-                    hfReceiptGuests.Value  = noOfGuests.ToString();
-                    hfReceiptPkg.Value     = packageName;
-                    hfReceiptPPG.Value     = "\u20B1" + ppg.ToString("N0") + "/guest";
-                    hfReceiptService.Value = serviceStyle;
-                    hfReceiptPayment.Value = paymentMode;
-                    hfReceiptTotal.Value   = "\u20B1" + totalAmount.ToString("N0");
-                    hfShowReceipt.Value    = "1";   // ← signal JS to open modal
+                    // Escape strings for safe JS embedding
+                    string script = string.Format(@"
+                        (function() {{
+                            document.getElementById('modalBookingId').textContent = {0};
+                            document.getElementById('rcptName').textContent       = {1};
+                            document.getElementById('rcptPhone').textContent      = {2};
+                            document.getElementById('rcptEventType').textContent  = {3};
+                            document.getElementById('rcptDate').textContent       = {4};
+                            document.getElementById('rcptVenue').textContent      = {5};
+                            document.getElementById('rcptGuests').textContent     = {6} + ' guests';
+                            document.getElementById('rcptPackage').textContent    = {7};
+                            document.getElementById('rcptPricePerGuest').textContent = {8};
+                            document.getElementById('rcptService').textContent   = {9};
+                            document.getElementById('rcptPayment').textContent   = {10};
+                            document.getElementById('rcptStatus').textContent    = 'Pending Approval';
+                            document.getElementById('rcptTimestamp').textContent = {11};
+                            document.getElementById('rcptSubtotal').textContent  = {12};
+                            document.getElementById('rcptServiceFee').textContent  = 'Included';
+                            document.getElementById('rcptLocationFee').textContent = 'Included';
+                            document.getElementById('rcptTotal').textContent     = {12};
+                            document.getElementById('rcptRowWeekend').style.display = 'none';
+                            document.getElementById('rcptRowRush').style.display    = 'none';
+                            document.getElementById('modalOverlay').classList.add('open');
+                            document.body.style.overflow = 'hidden';
+                        }})();",
+                        JsStr(bookingRef),
+                        JsStr(clientName),
+                        JsStr(phoneNumber),
+                        JsStr(eventType),
+                        JsStr(eventDate.ToString("MMMM dd, yyyy")),
+                        JsStr(venue + " (" + argaoText + ")"),
+                        JsStr(noOfGuests.ToString()),
+                        JsStr(packageName),
+                        JsStr(ppgFmt),
+                        JsStr(serviceStyle),
+                        JsStr(paymentMode),
+                        JsStr(issuedAt),
+                        JsStr(totalFmt)
+                    );
+
+                    ScriptManager.RegisterStartupScript(this, GetType(), "showReceipt", script, true);
                 }
             }
             catch (Exception ex)
@@ -143,6 +202,16 @@ namespace CastroCateringBookingSystem.Pages
                 ShowError("A database error occurred: " + ex.Message);
                 System.Diagnostics.Debug.WriteLine("Booking error: " + ex.Message);
             }
+        }
+
+        /// <summary>Encodes a string as a safe JS string literal (double-quoted).</summary>
+        private static string JsStr(string s)
+        {
+            if (s == null) return "\"\"";
+            return "\"" + s.Replace("\\", "\\\\")
+                           .Replace("\"", "\\\"")
+                           .Replace("\r", "")
+                           .Replace("\n", "\\n") + "\"";
         }
 
         private void ShowError(string message)

@@ -580,6 +580,18 @@
             border-color: #b83232;
         }
 
+        .btn-cancel-expired {
+            background: #f5f5f5;
+            border: 1px solid #ccc;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .btn-cancel-expired:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+
         /* ── Cancel confirmation modal ── */
         .cancel-overlay {
             display: none;
@@ -674,9 +686,11 @@
             font-weight: 700;
             color: #fff;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.15s;
+            letter-spacing: 0.02em;
         }
-        .btn-cancel-yes:hover { background: #9b1c1c; }
+        .btn-cancel-yes:hover { background: #9b1c1c; transform: translateY(-1px); }
+        .btn-cancel-yes:active { transform: translateY(0); }
 
         /* ── Notification bell ── */
         .btn-notif {
@@ -970,9 +984,7 @@
                                     <div class="detail-item"><%# Eval("NoOfGuests") %> guests</div>
                                     <div class="detail-item"><%# Eval("Payment") %></div>
                                 </div>
-                                <%# (Eval("Status").ToString() != "Cancelled" && Eval("Status").ToString() != "Completed")
-                                    ? "<div class='booking-actions'><button type='button' class='btn-cancel-booking' onclick='openCancelModal(" + Eval("BookingID") + ")'>Cancel Booking</button></div>"
-                                    : "" %>
+                                <%# ((CastroCateringBookingSystem.Pages.Profile)Page).GetCancelButton(Eval("BookingID"), Eval("Status"), Eval("ApprovedAt")) %>
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>

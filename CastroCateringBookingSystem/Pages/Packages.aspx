@@ -604,9 +604,7 @@
                 <div class="package-content">
 
                     <div class="package-categories">
-                        <span class="package-category">
-                            <%# Eval("Category") %>
-                        </span>
+                        <%# ((CastroCateringBookingSystem.Pages.Packages)Page).RenderCategories(Eval("Category").ToString()) %>
                     </div>
 
                     <h3 class="package-name">
@@ -618,7 +616,7 @@
                     </p>
 
                     <ul class="package-features">
-                        <li><%# Eval("Inclusions") %></li>
+                        <%# RenderInclusions(Eval("Inclusions").ToString()) %>
                     </ul>
 
                     <div class="package-footer">
@@ -645,6 +643,12 @@
 
         </ItemTemplate>
     </asp:Repeater>
+
+    <!-- No results message -->
+    <div id="noResultsMsg" class="no-results" style="display:none; grid-column: 1 / -1;">
+        <div class="no-results-icon">🔍</div>
+        <p>No packages match your search. Try a different keyword or category.</p>
+    </div>
 </div>
 
     <!-- Footer -->
@@ -700,6 +704,84 @@
             var user = null;
             try { user = JSON.parse(localStorage.getItem('castroUser')); } catch (e) { }
             if (!user || !user.username) { window.location.href = 'LoginSignup.aspx'; return; }
+        })();
+
+        // ── FILTER & SORT ──────────────────────────────────────────────────
+
+        function getCards() {
+            return Array.from(document.querySelectorAll('.packages-grid .package-card'));
+        }
+
+        function getCardText(card) {
+            var name = card.querySelector('.package-name');
+            return name ? name.textContent.toLowerCase() : '';
+        }
+
+        function getCardCategories(card) {
+            var spans = card.querySelectorAll('.package-category');
+            return Array.from(spans).map(function(s) {
+                return s.textContent.trim().toLowerCase();
+            });
+        }
+
+        function getCardPrice(card) {
+            var priceEl = card.querySelector('.price-amount');
+            if (!priceEl) return 0;
+            // Strip ₱, commas, spaces and /guest
+            var raw = priceEl.textContent.replace(/[₱,\s]/g, '').replace('/guest','').trim();
+            return parseFloat(raw) || 0;
+        }
+
+        function filterPackages() {
+            var search   = document.getElementById('searchInput').value.toLowerCase().trim();
+            var category = document.getElementById('categoryFilter').value;
+            var cards    = getCards();
+            var visible  = 0;
+
+            cards.forEach(function(card) {
+                var nameMatch     = getCardText(card).indexOf(search) !== -1;
+                var catMatch      = category === 'All' ||
+                                    getCardCategories(card).some(function(c) {
+                                        return c === category.toLowerCase();
+                                    });
+                var show = nameMatch && catMatch;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            // Show/hide no-results message
+            var noResults = document.getElementById('noResultsMsg');
+            if (noResults) noResults.style.display = visible === 0 ? 'block' : 'none';
+
+            document.getElementById('packageCount').textContent =
+                visible + ' package' + (visible !== 1 ? 's' : '');
+        }
+
+        function sortPackages() {
+            var sortVal = document.getElementById('sortFilter').value;
+            var grid    = document.querySelector('.packages-grid');
+            var cards   = getCards();
+
+            cards.sort(function(a, b) {
+                if (sortVal === 'low-high')  return getCardPrice(a) - getCardPrice(b);
+                if (sortVal === 'high-low')  return getCardPrice(b) - getCardPrice(a);
+                if (sortVal === 'name')      return getCardText(a).localeCompare(getCardText(b));
+                return 0;
+            });
+
+            // Re-append in sorted order
+            cards.forEach(function(card) { grid.appendChild(card); });
+
+            // Re-apply current filter after sort
+            filterPackages();
+        }
+
+        // Set initial count on load
+        window.addEventListener('DOMContentLoaded', function() {
+            var total = getCards().length;
+            document.getElementById('packageCount').textContent =
+                total + ' package' + (total !== 1 ? 's' : '');
+        });
             // Update nav: show username greeting or just keep Log Out
         })();
 

@@ -246,18 +246,8 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
        .data-table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* 🔥 FIX ALIGNMENT */
         }
 
-<<<<<<< HEAD
-       .data-table th,
-        .data-table td {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-=======
         .data-table thead th {
             background: var(--beige);
             padding: 0.85rem 1.25rem;
@@ -268,7 +258,6 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             text-transform: uppercase;
             letter-spacing: 0.07em;
             white-space: nowrap;
->>>>>>> 9d1e311f4428596322ec363f80cd713572ae0b2d
         }
 
         .data-table tbody td {
@@ -321,7 +310,138 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         .btn-done    { background: var(--info-bg);    color: var(--info-txt);    border-color: #90CAF9; }
         .btn-delete  { background: var(--danger-bg);  color: var(--danger-txt);  border-color: #F5A0A0; }
 
-        
+        /* ── PACKAGE STATISTICS INFOGRAPHIC ── */
+        .pkg-list { padding: 1.5rem; }
+
+        .pkg-chart-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            height: 200px;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            position: relative;
+        }
+
+        .pkg-y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding-bottom: 4px;
+            font-size: 0.68rem;
+            color: var(--text-light);
+            text-align: right;
+            min-width: 28px;
+            flex-shrink: 0;
+        }
+
+        .pkg-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            flex: 1;
+            height: 100%;
+        }
+
+        .pkg-bar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 1;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .pkg-bar-val { font-size: 0.7rem; font-weight: 700; color: var(--text-light); }
+
+        .pkg-bar-outer {
+            width: 100%;
+            max-width: 40px;
+            height: 160px;
+            background: var(--beige);
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .pkg-bar-inner {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-height: 4px;
+        }
+
+        .pkg-bar-label {
+            font-size: 0.62rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-align: center;
+            max-width: 48px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 4px;
+        }
+
+        .pkg-circles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: center;
+            padding-top: 0.5rem;
+        }
+
+        .pkg-circle-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 80px;
+        }
+
+        .pkg-circle-wrap { position: relative; width: 80px; height: 80px; }
+
+        .pkg-circle-svg {
+            width: 80px; height: 80px;
+            transform: rotate(-90deg);
+        }
+
+        .pkg-circle-pct {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .pkg-circle-badge {
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pkg-circle-sub { font-size: 0.7rem; color: var(--text-light); text-align: center; }
+
+        .pkg-empty { color: var(--text-light); font-size: 0.875rem; padding: 2rem; text-align: center; }
+
+        .empty { text-align: center; padding: 4rem 1rem; color: var(--text-light); }
+        .empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty p { font-size: 0.875rem; }
     </style>
 </head>
 
@@ -427,9 +547,17 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         </div>
 
        
+        <!-- Package Statistics -->
+        <div class="card">
+            <div class="card-head">
+                <h2>Package Statistics</h2>
+            </div>
+            <div class="pkg-list">
+                <asp:Label ID="lblPackageStats" runat="server" />
+            </div>
+        </div>
 
     </div>
 
-</form>
-</body>
+</form></body>
 </html>

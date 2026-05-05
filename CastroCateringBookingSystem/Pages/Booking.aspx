@@ -576,6 +576,31 @@
 
         .btn-done:hover { background: #a87a38; }
 
+        /* ── WARNING MODAL BUTTONS ── */
+        .warning-modal .modal-actions {
+            padding: 1rem 2rem 1.75rem;
+            gap: 0.75rem;
+        }
+        .warning-modal .modal-actions .btn-done {
+            flex: 1;
+            margin-top: 0;
+            width: auto;
+            background: var(--bg-beige);
+            border: 1.5px solid var(--border-light);
+            color: var(--text-brown);
+            font-weight: 600;
+        }
+        .warning-modal .modal-actions .btn-done:hover {
+            background: var(--border-light);
+        }
+        .warning-modal .modal-actions .btn-confirm {
+            flex: 1;
+            margin-top: 0;
+            width: auto;
+            padding: 0.8rem;
+            font-size: 0.9rem;
+        }
+
         /* ── FOOTER ── */
         footer {
             background: var(--bg-beige);
@@ -645,6 +670,35 @@
             text-align: center;
             color: #9e9189;
             font-size: 0.82rem;
+        }
+
+        /* ── DATE AVAILABILITY WARNING ── */
+        .date-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0.65rem 0.875rem;
+            background: #fff0f0;
+            border: 1px solid #f5c0c0;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: #c40000;
+            font-weight: 500;
+            animation: fadeInDown 0.2s ease;
+        }
+
+        .date-warning-icon { font-size: 1rem; flex-shrink: 0; }
+
+        .date-checking {
+            margin-top: 0.4rem;
+            font-size: 0.78rem;
+            color: var(--text-gray);
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         /* ── MOA SECTION ── */
@@ -853,48 +907,6 @@
         }
     </style>
 </head>
-    <!-- WARNING MODAL -->
-<div class="modal-overlay" id="warningOverlay">
-    <div class="modal-box">
-
-        <div class="modal-top warning-top">
-            <div class="modal-check warning-icon">⚠</div>
-            <h2>Additional Charges Warning</h2>
-            <div class="booking-id">Please review before continuing</div>
-        </div>
-
-        <div class="modal-body">
-            <p class="warning-text">
-                Your booking may include additional charges:
-            </p>
-
-            <ul class="warning-list">
-                <li>Weekend surcharge</li>
-                <li>Rush booking fee</li>
-                <li>Extra service customization</li>
-            </ul>
-
-            <p class="warning-note">
-                Do you want to continue with this booking?
-            </p>
-        </div>
-
-        <div class="modal-actions">
-            <button type="button" class="btn-print" onclick="closeWarningModal()">
-                Cancel
-            </button>
-
-           <button type="button" id="btnProceedBooking">
-            Yes, Continue
-        </button>
-
-        </div>
-
-    </div>
-</div>
-
-
-
 <body>
 
     <!-- NAV -->
@@ -969,6 +981,13 @@
                             <div class="form-group">
                                 <label for="txtEventDate">Event Date <span class="req">*</span></label>
                                 <asp:TextBox ID="txtEventDate" runat="server" CssClass="form-input" TextMode="Date" />
+                                <div id="dateUnavailableWarning" class="date-warning" style="display:none;">
+                                    <span class="date-warning-icon">🚫</span>
+                                    <span id="dateWarningText">This date is already booked and unavailable. Please choose a different date.</span>
+                                </div>
+                                <div id="dateCheckingMsg" class="date-checking" style="display:none;">
+                                    ⏳ Checking availability...
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="txtGuestCount">Number of Guests <span class="req">*</span></label>
@@ -982,7 +1001,7 @@
                                     <asp:ListItem Text="Credit Card" Value="Credit Card" />
                                     <asp:ListItem Text="Debit Card" Value="Debit Card" />
                                     <asp:ListItem Text="E-Wallet (GCash/PayMaya)" Value="E-Wallet (GCash/PayMaya)" />
-                                    <asp:ListItem Text="Cash (Upon Event)" Value="Cash (Upon Event)" />
+                                    <asp:ListItem Text="Cash" Value="Cash (Upon Event)" />
                                 </asp:DropDownList>
                             </div>
                             <div class="form-group full">
@@ -1043,54 +1062,19 @@
                     <div class="form-section">
                         <h2><span class="section-num">3</span> Package Selection</h2>
                         <div class="package-cards" id="packageCards">
-                            <label class="pkg-label" data-pkg="Kids Birthday Fiesta" data-price="350">
-                                <input type="radio" name="packageChoice" value="Kids Birthday Fiesta">
-                                <div class="pkg-card"><div class="pkg-name">Kids Birthday Fiesta</div><div class="pkg-price">&#8369;350/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Corporate Lite Lunch" data-price="380">
-                                <input type="radio" name="packageChoice" value="Corporate Lite Lunch">
-                                <div class="pkg-card"><div class="pkg-name">Corporate Lite Lunch</div><div class="pkg-price">&#8369;380/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Family Gathering Spread" data-price="420">
-                                <input type="radio" name="packageChoice" value="Family Gathering Spread">
-                                <div class="pkg-card"><div class="pkg-name">Family Gathering Spread</div><div class="pkg-price">&#8369;420/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Christening Celebration" data-price="750">
-                                <input type="radio" name="packageChoice" value="Christening Celebration">
-                                <div class="pkg-card"><div class="pkg-name">Christening Celebration</div><div class="pkg-price">&#8369;750/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Cocktail Reception" data-price="900">
-                                <input type="radio" name="packageChoice" value="Cocktail Reception">
-                                <div class="pkg-card"><div class="pkg-name">Cocktail Reception</div><div class="pkg-price">&#8369;900/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Classic Wedding Buffet" data-price="950">
-                                <input type="radio" name="packageChoice" value="Classic Wedding Buffet">
-                                <div class="pkg-card"><div class="pkg-name">Classic Wedding Buffet</div><div class="pkg-price">&#8369;950/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Debut Soiree" data-price="1050">
-                                <input type="radio" name="packageChoice" value="Debut Soiree">
-                                <div class="pkg-card"><div class="pkg-name">Debut Soir&#233;e</div><div class="pkg-price">&#8369;1,050/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Birthday Bliss" data-price="850">
-                                <input type="radio" name="packageChoice" value="Birthday Bliss">
-                                <div class="pkg-card"><div class="pkg-name">Birthday Bliss</div><div class="pkg-price">&#8369;850/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Anniversary Elegance" data-price="1400">
-                                <input type="radio" name="packageChoice" value="Anniversary Elegance">
-                                <div class="pkg-card"><div class="pkg-name">Anniversary Elegance</div><div class="pkg-price">&#8369;1,400/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Grand Wedding Feast" data-price="1200">
-                                <input type="radio" name="packageChoice" value="Grand Wedding Feast">
-                                <div class="pkg-card"><div class="pkg-name">Grand Wedding Feast</div><div class="pkg-price">&#8369;1,200/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Corporate Premium Gala" data-price="1500">
-                                <input type="radio" name="packageChoice" value="Corporate Premium Gala">
-                                <div class="pkg-card"><div class="pkg-name">Corporate Premium Gala</div><div class="pkg-price">&#8369;1,500/guest</div></div>
-                            </label>
-                            <label class="pkg-label" data-pkg="Intimate Private Dining" data-price="1800">
-                                <input type="radio" name="packageChoice" value="Intimate Private Dining">
-                                <div class="pkg-card"><div class="pkg-name">Intimate Private Dining</div><div class="pkg-price">&#8369;1,800/guest</div></div>
-                            </label>
+                            <asp:Repeater ID="rptPackageCards" runat="server">
+                                <ItemTemplate>
+                                    <label class="pkg-label"
+                                        data-pkg='<%# Eval("PackageName") %>'
+                                        data-price='<%# Eval("RatePerGuest") %>'>
+                                        <input type="radio" name="packageChoice" value='<%# Eval("PackageName") %>'>
+                                        <div class="pkg-card">
+                                            <div class="pkg-name"><%# Eval("PackageName") %></div>
+                                            <div class="pkg-price">&#8369;<%# string.Format("{0:N0}", Eval("RatePerGuest")) %>/guest</div>
+                                        </div>
+                                    </label>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </div>
                     </div>
 
@@ -1155,7 +1139,7 @@
                                     <li><strong>If cancelled by Castro Catering Service (force majeure):</strong> Full refund of down payment.</li>
                                 </ul>
 
-                                <div class="moa-clause-title">PAYMENT TERMS</div>
+                                <div class="moa-clause-title">PAYMENT TERMS (if chosen Mode of payment is CASH)</div>
                                 <ul class="moa-list">
                                     <li>The payment shall be made in <strong>CASH only</strong>.</li>
                                     <li>A <strong>50% down payment</strong> is required upon signing/booking confirmation.</li>
@@ -1256,25 +1240,25 @@
     </div><!-- end page-wrapper -->
     </form>
 
-   <!-- WARNING MODAL (weekend/rush fees) -->
-<!-- WARNING MODAL -->
-<div class="modal-overlay" id="warningOverlay">
-    <div class="modal-box warning-modal">
-
-        <h2>Additional Charges Apply</h2>
-
-        <ul id="warningList"></ul>
-
-        <div class="modal-actions">
-            <button type="button" onclick="closeWarningModal()">Cancel</button>
-
-            <button type="button" id="btnProceedBooking">
-                Yes, Continue
-            </button>
+    <!-- WARNING MODAL -->
+    <div class="modal-overlay" id="warningOverlay" onclick="if(event.target===this)closeWarningModal()">
+        <div class="modal-box warning-modal">
+            <div class="modal-top warning-top">
+                <div class="modal-check warning-icon">⚠</div>
+                <h2>Additional Charges Warning</h2>
+                <div class="booking-id">Please review before continuing</div>
+            </div>
+            <div class="modal-body">
+                <p class="warning-text">Your booking includes the following additional charges:</p>
+                <ul id="warningList" class="warning-list"></ul>
+                <p class="warning-note">Do you want to continue with this booking?</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-done" onclick="closeWarningModal()">Cancel</button>
+                <button type="button" id="btnProceedBooking" class="btn-confirm" style="flex:1;">Yes, Continue</button>
+            </div>
         </div>
-
     </div>
-</div>
 
 
 
@@ -1312,6 +1296,8 @@
                     <div class="receipt-row"><span class="r-label">Price/guest</span><span class="r-value" id="rcptPricePerGuest">—</span></div>
                     <div class="receipt-row"><span class="r-label">Service Style</span><span class="r-value" id="rcptService">—</span></div>
                     <div class="receipt-row"><span class="r-label">Payment</span><span class="r-value" id="rcptPayment">—</span></div>
+                    <div class="receipt-row"><span class="r-label">Status</span><span class="r-value" id="rcptStatus" style="color:#b07d00;font-weight:700;">Pending Approval</span></div>
+                    <div class="receipt-row"><span class="r-label">Submitted</span><span class="r-value" id="rcptTimestamp">—</span></div>
                 </div>
                 <hr class="receipt-divider">
                 <div class="receipt-section">
@@ -1373,10 +1359,7 @@
         (function () {
             'use strict';
 
-            // ── Auth guard ──
-            var _user = null;
-            try { _user = JSON.parse(localStorage.getItem('castroUser')); } catch (e) { }
-            if (!_user || !_user.username) { window.location.href = 'LoginSignup.aspx'; }
+            // Auth is handled server-side via ASP.NET Session in Page_Load.
 
             /* ── HELPERS ── */
             function fmt(n) {
@@ -1402,6 +1385,12 @@
                 var diff = (ev - today) / (1000 * 60 * 60 * 24);
                 return diff >= 0 && diff <= 7;
             }
+
+            function formatDisplayDate(dateStr) {
+                if (!dateStr) return '';
+                var d = new Date(dateStr + 'T00:00:00');
+                return d.toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
             function byName(name) {
                 return document.querySelector('[name$="' + name + '"]')
                     || document.getElementById(name);
@@ -1417,7 +1406,8 @@
                 guests: 0, payment: '', location: '',
                 serviceName: '', serviceFee: 0, serviceFeeType: 'flat',
                 packageName: '', packagePrice: 0,
-                locationFee: 0, weekendFee: 0, rushFee: 0
+                locationFee: 0, weekendFee: 0, rushFee: 0,
+                dateBlocked: false
             };
             var proceedAfterWarning = false;
 
@@ -1518,10 +1508,48 @@
             onEl(byName('txtPhoneNumber'), 'input', function () { state.phone = this.value.trim(); updateSummary(); });
             onEl(byName('ddlEventType'), 'change', function () { state.eventType = this.value; updateSummary(); });
             onEl(byName('txtEventDate'), 'change', function () {
-                state.date = this.value;
-                state.weekendFee = isWeekend(this.value) ? 3000 : 0;
-                state.rushFee = isRush(this.value) ? 5000 : 0;
-                updateSummary();
+                var val = this.value;
+                state.date        = val;
+                state.dateBlocked = false;
+                state.weekendFee  = isWeekend(val) ? 3000 : 0;
+                state.rushFee     = isRush(val)    ? 5000 : 0;
+
+                var warning   = document.getElementById('dateUnavailableWarning');
+                var checking  = document.getElementById('dateCheckingMsg');
+
+                if (!val) {
+                    if (warning)  warning.style.display  = 'none';
+                    if (checking) checking.style.display = 'none';
+                    updateSummary();
+                    return;
+                }
+
+                // Show checking indicator
+                if (warning)  warning.style.display  = 'none';
+                if (checking) checking.style.display = 'block';
+
+                fetch('CheckBookedDate.ashx?date=' + encodeURIComponent(val))
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (checking) checking.style.display = 'none';
+                        if (data && data.booked) {
+                            state.dateBlocked = true;
+                            if (warning) {
+                                document.getElementById('dateWarningText').textContent =
+                                    'This date (' + formatDisplayDate(val) + ') is already booked and unavailable. Please choose a different date.';
+                                warning.style.display = 'flex';
+                            }
+                        } else {
+                            state.dateBlocked = false;
+                            if (warning) warning.style.display = 'none';
+                        }
+                        updateSummary();
+                    })
+                    .catch(function() {
+                        if (checking) checking.style.display = 'none';
+                        state.dateBlocked = false;
+                        updateSummary();
+                    });
             });
             onEl(byName('txtGuestCount'), 'input', function () {
                 var v = parseInt(this.value, 10);
@@ -1600,6 +1628,13 @@
             // "Yes, Continue" in the warning modal
             document.getElementById('btnProceedBooking').addEventListener('click', function () {
                 closeWarningModal();
+
+                // Final date check before proceeding
+                if (state.dateBlocked) {
+                    var w = document.getElementById('dateUnavailableWarning');
+                    if (w) { w.style.display = 'flex'; w.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                    return;
+                }
 
                 var guests   = state.guests;
                 var subtotal = state.packagePrice * guests;
@@ -1719,6 +1754,13 @@
                     return false;
                 }
 
+                // Date must not be blocked
+                if (state.dateBlocked) {
+                    var w = document.getElementById('dateUnavailableWarning');
+                    if (w) { w.style.display = 'flex'; w.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                    return false;
+                }
+
                 var warnings = [];
                 if (state.weekendFee > 0) warnings.push('Weekend premium: ₱3,000');
                 if (state.rushFee    > 0) warnings.push('Rush fee: ₱5,000');
@@ -1779,41 +1821,7 @@
 
 
     <script>
-        /* ── On page load: check if server set hfShowReceipt=1 and open modal ── */
-        (function () {
-            var showFlag = document.getElementById('<%= hfShowReceipt.ClientID %>');
-            if (!showFlag || showFlag.value !== '1') return;
-
-            // Read all receipt data from hidden fields
-            function hv(id) {
-                var el = document.getElementById(id);
-                return el ? el.value : '';
-            }
-
-            document.getElementById('modalBookingId').textContent = hv('<%= hfReceiptRef.ClientID %>');
-            document.getElementById('rcptName').textContent = hv('<%= hfReceiptName.ClientID %>');
-            document.getElementById('rcptPhone').textContent = hv('<%= hfReceiptPhone.ClientID %>');
-            document.getElementById('rcptEventType').textContent = hv('<%= hfReceiptEvent.ClientID %>');
-            document.getElementById('rcptDate').textContent = hv('<%= hfReceiptDate.ClientID %>');
-            document.getElementById('rcptVenue').textContent = hv('<%= hfReceiptVenue.ClientID %>');
-            document.getElementById('rcptGuests').textContent = hv('<%= hfReceiptGuests.ClientID %>') + ' guests';
-            document.getElementById('rcptPackage').textContent = hv('<%= hfReceiptPkg.ClientID %>');
-            document.getElementById('rcptPricePerGuest').textContent = hv('<%= hfReceiptPPG.ClientID %>');
-            document.getElementById('rcptService').textContent = hv('<%= hfReceiptService.ClientID %>');
-            document.getElementById('rcptPayment').textContent       = hv('<%= hfReceiptPayment.ClientID %>');
-            document.getElementById('rcptSubtotal').textContent      = hv('<%= hfReceiptTotal.ClientID %>');
-            document.getElementById('rcptServiceFee').textContent    = 'Included';
-            document.getElementById('rcptLocationFee').textContent   = 'Included';
-            document.getElementById('rcptTotal').textContent         = hv('<%= hfReceiptTotal.ClientID %>');
-            document.getElementById('rcptRowService').style.display  = '';
-            document.getElementById('rcptRowLocation').style.display = '';
-            document.getElementById('rcptRowWeekend').style.display  = 'none';
-            document.getElementById('rcptRowRush').style.display     = 'none';
-
-            document.getElementById('modalOverlay').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        })();
-
+        /* ── Receipt modal utilities ── */
         function closeReceiptModal() {
             document.getElementById('modalOverlay').classList.remove('open');
             document.body.style.overflow = '';
@@ -1827,20 +1835,20 @@
 
         /* ── Print Receipt ── */
         document.getElementById('btnPrint').addEventListener('click', function() {
-            function hv(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+            var get = function(id) { var el = document.getElementById(id); return el ? el.textContent : ''; };
 
-            var id      = hv('<%= hfReceiptRef.ClientID %>');
-            var name    = hv('<%= hfReceiptName.ClientID %>');
-            var phone   = hv('<%= hfReceiptPhone.ClientID %>');
-            var evtType = hv('<%= hfReceiptEvent.ClientID %>');
-            var date    = hv('<%= hfReceiptDate.ClientID %>');
-            var venue   = hv('<%= hfReceiptVenue.ClientID %>');
-            var guests  = hv('<%= hfReceiptGuests.ClientID %>');
-            var pkg     = hv('<%= hfReceiptPkg.ClientID %>');
-            var ppg     = hv('<%= hfReceiptPPG.ClientID %>');
-            var svc     = hv('<%= hfReceiptService.ClientID %>');
-            var payment = hv('<%= hfReceiptPayment.ClientID %>');
-            var total   = hv('<%= hfReceiptTotal.ClientID %>');
+            var id      = document.getElementById('modalBookingId').textContent;
+            var name    = get('rcptName');
+            var phone   = get('rcptPhone');
+            var evtType = get('rcptEventType');
+            var date    = get('rcptDate');
+            var venue   = get('rcptVenue');
+            var guests  = get('rcptGuests');
+            var pkg     = get('rcptPackage');
+            var ppg     = get('rcptPricePerGuest');
+            var svc     = get('rcptService');
+            var payment = get('rcptPayment');
+            var total   = get('rcptTotal');
 
             var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
                 + '<title>Booking Receipt ' + id + '</title>'
@@ -1889,25 +1897,6 @@
             if (e.target === this) closeReceiptModal();
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const btn = document.getElementById('btnProceedBooking');
-
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    confirmBooking();
-                });
-            }
-            var btnProceed = document.getElementById('btnProceedBooking');
-            if (btnProceed) {
-                btnProceed.addEventListener('click', function () {
-                    confirmBooking();
-                });
-            }
-
-        });
-    </script>
-
     <!-- Admin Login Modal -->
     <div id="adminLoginOverlay" style="display:none;position:fixed;inset:0;background:rgba(33,28,24,0.65);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeAdminLogin()">
         <div style="background:#fff;border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;font-family:'Inter',sans-serif;">

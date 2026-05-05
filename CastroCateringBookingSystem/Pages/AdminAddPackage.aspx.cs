@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Web.UI.WebControls;
 
 namespace CastroCateringBookingSystem.Pages
@@ -20,7 +21,7 @@ namespace CastroCateringBookingSystem.Pages
         {
             if (Session["Admin"] == null)
             {
-                Response.Redirect("~/Login.aspx");
+                Response.Redirect("~/Pages/LoginSignup.aspx");
             }
 
             if (!IsPostBack)
@@ -30,7 +31,7 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         // =========================
-        // LOAD GRID (ONLY 4 FIELDS)
+        // LOAD GRID
         // =========================
         void LoadPackages()
         {
@@ -55,6 +56,37 @@ namespace CastroCateringBookingSystem.Pages
         }
 
         // =========================
+        // HANDLE IMAGE UPLOAD
+        // Returns the saved relative path, or null if no file uploaded
+        // =========================
+        private string SaveUploadedImage()
+        {
+            if (!fuImage.HasFile) return null;
+
+            string ext = Path.GetExtension(fuImage.FileName).ToLower();
+            if (ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".webp" && ext != ".gif")
+            {
+                lblMsg.Text = "⚠ Only JPG, PNG, WEBP or GIF images are allowed.";
+                return null;
+            }
+
+            // Save to ~/Assests/ folder (same folder the existing package images use)
+            string uploadDir = Server.MapPath("~/Assests/");
+            if (!Directory.Exists(uploadDir))
+                Directory.CreateDirectory(uploadDir);
+
+            // Use a unique filename to avoid overwriting existing images
+            string fileName  = Path.GetFileNameWithoutExtension(fuImage.FileName)
+                               .Replace(" ", "_") + "_" + DateTime.Now.Ticks + ext;
+            string fullPath  = Path.Combine(uploadDir, fileName);
+
+            fuImage.SaveAs(fullPath);
+
+            // Return the relative path that matches how other images are stored
+            return "~/Assests/" + fileName;
+        }
+
+        // =========================
         // ADD / UPDATE PACKAGE
         // =========================
         protected void btnAdd_Click(object sender, EventArgs e)
@@ -76,9 +108,12 @@ namespace CastroCateringBookingSystem.Pages
 
             int minGuests = 0;
             int maxGuests = 0;
-
             int.TryParse(txtMinGuests.Text, out minGuests);
             int.TryParse(txtMaxGuests.Text, out maxGuests);
+
+            // Try to save the uploaded image — returns null if none uploaded
+            string newImagePath = SaveUploadedImage();
+            if (lblMsg.Text.StartsWith("⚠")) return; // image validation failed
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -89,6 +124,8 @@ namespace CastroCateringBookingSystem.Pages
                 // =========================
                 if (EditID == 0)
                 {
+                    string imagePath = newImagePath ?? "";
+
                     string query = @"
                         INSERT INTO Packages
                         (PackageName, Description, RatePerGuest, MinGuests, MaxGuests, Category, Inclusions, ImagePath)
@@ -96,16 +133,14 @@ namespace CastroCateringBookingSystem.Pages
                         (@PackageName, @Description, @RatePerGuest, @MinGuests, @MaxGuests, @Category, @Inclusions, @ImagePath)";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
-
-                    cmd.Parameters.AddWithValue("@PackageName", txtPackageName.Text.Trim());
-                    cmd.Parameters.AddWithValue("@Description", txtDescription.Text.Trim());
+                    cmd.Parameters.AddWithValue("@PackageName",  txtPackageName.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Description",  txtDescription.Text.Trim());
                     cmd.Parameters.AddWithValue("@RatePerGuest", rate);
-                    cmd.Parameters.AddWithValue("@MinGuests", minGuests);
-                    cmd.Parameters.AddWithValue("@MaxGuests", maxGuests);
-                    cmd.Parameters.AddWithValue("@Category", ddlCategory.SelectedValue);
-                    cmd.Parameters.AddWithValue("@Inclusions", txtInclusions.Text.Trim());
-                    cmd.Parameters.AddWithValue("@ImagePath", "");
-
+                    cmd.Parameters.AddWithValue("@MinGuests",    minGuests);
+                    cmd.Parameters.AddWithValue("@MaxGuests",    maxGuests);
+                    cmd.Parameters.AddWithValue("@Category",     ddlCategory.SelectedValue);
+                    cmd.Parameters.AddWithValue("@Inclusions",   txtInclusions.Text.Trim());
+                    cmd.Parameters.AddWithValue("@ImagePath",    imagePath);
                     cmd.ExecuteNonQuery();
 
                     lblMsg.Text = "✔ Package added successfully!";
@@ -115,44 +150,68 @@ namespace CastroCateringBookingSystem.Pages
                 // =========================
                 else
                 {
-                    string query = @"
-                        UPDATE Packages SET
-                        PackageName=@PackageName,
-                        Description=@Description,
-                        RatePerGuest=@RatePerGuest,
-                        MinGuests=@MinGuests,
-                        MaxGuests=@MaxGuests,
-                        Category=@Category,
-                        Inclusions=@Inclusions
-                        WHERE PackageID=@id";
+                    // Only update ImagePath if a new image was uploaded;
+                    // otherwise keep the existing one
+                    string query;
+                    SqlCommand cmd;
 
-                    SqlCommand cmd = new SqlCommand(query, conn);
+                    if (newImagePath != null)
+                    {
+                        query = @"
+                            UPDATE Packages SET
+                                PackageName  = @PackageName,
+                                Description  = @Description,
+                                RatePerGuest = @RatePerGuest,
+                                MinGuests    = @MinGuests,
+                                MaxGuests    = @MaxGuests,
+                                Category     = @Category,
+                                Inclusions   = @Inclusions,
+                                ImagePath    = @ImagePath
+                            WHERE PackageID = @id";
 
-                    cmd.Parameters.AddWithValue("@PackageName", txtPackageName.Text.Trim());
-                    cmd.Parameters.AddWithValue("@Description", txtDescription.Text.Trim());
+                        cmd = new SqlCommand(query, conn);
+                        cmd.Parameters.AddWithValue("@ImagePath", newImagePath);
+                    }
+                    else
+                    {
+                        // No new image — don't touch ImagePath
+                        query = @"
+                            UPDATE Packages SET
+                                PackageName  = @PackageName,
+                                Description  = @Description,
+                                RatePerGuest = @RatePerGuest,
+                                MinGuests    = @MinGuests,
+                                MaxGuests    = @MaxGuests,
+                                Category     = @Category,
+                                Inclusions   = @Inclusions
+                            WHERE PackageID = @id";
+
+                        cmd = new SqlCommand(query, conn);
+                    }
+
+                    cmd.Parameters.AddWithValue("@PackageName",  txtPackageName.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Description",  txtDescription.Text.Trim());
                     cmd.Parameters.AddWithValue("@RatePerGuest", rate);
-                    cmd.Parameters.AddWithValue("@MinGuests", minGuests);
-                    cmd.Parameters.AddWithValue("@MaxGuests", maxGuests);
-                    cmd.Parameters.AddWithValue("@Category", ddlCategory.SelectedValue);
-                    cmd.Parameters.AddWithValue("@Inclusions", txtInclusions.Text.Trim());
-                    cmd.Parameters.AddWithValue("@id", EditID);
-
+                    cmd.Parameters.AddWithValue("@MinGuests",    minGuests);
+                    cmd.Parameters.AddWithValue("@MaxGuests",    maxGuests);
+                    cmd.Parameters.AddWithValue("@Category",     ddlCategory.SelectedValue);
+                    cmd.Parameters.AddWithValue("@Inclusions",   txtInclusions.Text.Trim());
+                    cmd.Parameters.AddWithValue("@id",           EditID);
                     cmd.ExecuteNonQuery();
 
                     lblMsg.Text = "✔ Package updated successfully!";
                 }
             }
 
-            // RESET FORM
+            // Reset form
             EditID = 0;
             btnAdd.Text = "Add Package";
-
-            txtPackageName.Text = "";
-            txtDescription.Text = "";
+            txtPackageName.Text  = "";
+            txtDescription.Text  = "";
             txtRatePerGuest.Text = "";
-            txtMinGuests.Text = "";
-            txtMaxGuests.Text = "";
-            txtInclusions.Text = "";
+            txtMinGuests.Text    = "";
+            txtMaxGuests.Text    = "";
+            txtInclusions.Text   = "";
 
             LoadPackages();
         }
@@ -167,7 +226,6 @@ namespace CastroCateringBookingSystem.Pages
                 string query = "DELETE FROM Packages WHERE PackageID = @id";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", id);
-
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
@@ -183,22 +241,21 @@ namespace CastroCateringBookingSystem.Pages
                 string query = "SELECT * FROM Packages WHERE PackageID = @id";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", id);
-
                 conn.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
 
                 if (dr.Read())
                 {
-                    txtPackageName.Text = dr["PackageName"].ToString();
-                    txtDescription.Text = dr["Description"].ToString();
-                    txtRatePerGuest.Text = dr["RatePerGuest"].ToString();
-                    txtMinGuests.Text = dr["MinGuests"].ToString();
-                    txtMaxGuests.Text = dr["MaxGuests"].ToString();
-                    ddlCategory.SelectedValue = dr["Category"].ToString();
-                    txtInclusions.Text = dr["Inclusions"].ToString();
+                    txtPackageName.Text        = dr["PackageName"].ToString();
+                    txtDescription.Text        = dr["Description"].ToString();
+                    txtRatePerGuest.Text       = dr["RatePerGuest"].ToString();
+                    txtMinGuests.Text          = dr["MinGuests"].ToString();
+                    txtMaxGuests.Text          = dr["MaxGuests"].ToString();
+                    ddlCategory.SelectedValue  = dr["Category"].ToString();
+                    txtInclusions.Text         = dr["Inclusions"].ToString();
 
-                    EditID = id;
-                    btnAdd.Text = "Update Package";
+                    EditID       = id;
+                    btnAdd.Text  = "Update Package";
                 }
             }
         }

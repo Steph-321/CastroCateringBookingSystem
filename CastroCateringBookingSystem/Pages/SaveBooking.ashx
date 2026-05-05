@@ -42,7 +42,7 @@ namespace CastroCateringBookingSystem.Pages
                 // Look up PackageID from Packages table by name
                 int packageId = GetPackageId(packageName);
 
-                string connStr = ConfigurationManager.ConnectionStrings["CastroDB"].ConnectionString;
+                string connStr = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
                 using (var conn = new SqlConnection(connStr))
                 {
@@ -91,7 +91,7 @@ namespace CastroCateringBookingSystem.Pages
 
         private int GetPackageId(string packageName)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["CastroDB"].ConnectionString;
+            string connStr = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
             using (var conn = new SqlConnection(connStr))
             {
                 conn.Open();

@@ -287,7 +287,7 @@
 
             <div class="sidebar-footer">
                 <a href="Home.aspx" class="btn-back">← Back to User Site</a>
-                <a href="Logout.aspx" class="btn-signout">→ Sign out</a>
+                <a href="LoginSignup.aspx" class="btn-signout">→ Sign out</a>
             </div>
 
         </aside>
@@ -331,7 +331,10 @@
                 <asp:ListItem Text="Wedding" Value="Wedding" />
                 <asp:ListItem Text="Birthday" Value="Birthday" />
                 <asp:ListItem Text="Corporate" Value="Corporate" />
-                <asp:ListItem Text="Debut" Value="Debut" />
+                <asp:ListItem Text="Christening" Value="Christening" />
+                <asp:ListItem Text="Anniversary" Value="Anniversary" />
+                <asp:ListItem Text="Family Gathering" Value="Gathering" />
+                <asp:ListItem Text="Others" Value="Others" />
             </asp:DropDownList>
         </div>
 
