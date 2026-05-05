@@ -352,55 +352,48 @@ th {
     </div>
 </div>
 
-    <div class="form-section">
-        <h2>📦 Existing Packages</h2>
-        <div class="table-container">
-            <table>
-                </table>
-        </div>
-<asp:GridView ID="gvPackages" runat="server"
+ <!-- EXISTING PACKAGES -->
+        <div class="form-section">
+
+            <h2>📦 Existing Packages</h2>
+
+            <div class="table-container">
+
+               <asp:GridView ID="gvPackages" runat="server"
     AutoGenerateColumns="False"
     DataKeyNames="PackageID"
+    CssClass="grid-table"
     OnRowCommand="gvPackages_RowCommand">
 
     <Columns>
 
-        <!-- ID -->
+        <!-- ONLY SUMMARY FIELDS -->
         <asp:BoundField DataField="PackageID" HeaderText="ID" />
-
-        <!-- Name -->
         <asp:BoundField DataField="PackageName" HeaderText="Package Name" />
-
-        <!-- Rate -->
         <asp:BoundField DataField="RatePerGuest" HeaderText="Rate / Guest" />
-
-        <!-- Category -->
         <asp:BoundField DataField="Category" HeaderText="Category" />
 
         <!-- ACTIONS -->
-        <asp:TemplateField HeaderText="Actions">
-            <ItemTemplate>
+       <asp:TemplateField HeaderText="Actions">
+    <ItemTemplate>
 
-                <asp:LinkButton 
-                    runat="server"
-                    Text="Edit"
-                    CommandName="EditPackage"
-                    CommandArgument='<%# Eval("PackageID") %>' />
+        <asp:LinkButton runat="server"
+            Text="Edit"
+            CommandName="EditPackage"
+            CommandArgument='<%# Eval("PackageID") %>' />
 
-                &nbsp;|&nbsp;
+        &nbsp;|&nbsp;
 
-                <asp:LinkButton 
-                    runat="server"
-                    Text="Delete"
-                    CommandName="DeletePackage"
-                    CommandArgument='<%# Eval("PackageID") %>'
-                    OnClientClick="return confirm('Delete this package?');" />
+        <asp:LinkButton runat="server"
+            Text="Delete"
+            CommandName="DeletePackage"
+            CommandArgument='<%# Eval("PackageID") %>'
+            OnClientClick="return confirm('Delete this package?');" />
 
-            </ItemTemplate>
-        </asp:TemplateField>
+    </ItemTemplate>
+</asp:TemplateField>
 
     </Columns>
-
 </asp:GridView>
 
 

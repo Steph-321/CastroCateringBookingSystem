@@ -2,12 +2,10 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
 using System.Web.UI.WebControls;
 
 namespace CastroCateringBookingSystem.Pages
 {
-   
     public partial class AdminAddPackage : System.Web.UI.Page
     {
         private int EditID
@@ -15,6 +13,7 @@ namespace CastroCateringBookingSystem.Pages
             get { return ViewState["EditID"] != null ? (int)ViewState["EditID"] : 0; }
             set { ViewState["EditID"] = value; }
         }
+
         string connStr = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -30,6 +29,9 @@ namespace CastroCateringBookingSystem.Pages
             }
         }
 
+        // =========================
+        // LOAD GRID (ONLY 4 FIELDS)
+        // =========================
         void LoadPackages()
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -38,13 +40,8 @@ namespace CastroCateringBookingSystem.Pages
                     SELECT 
                         PackageID,
                         PackageName,
-                        Description,
                         RatePerGuest,
-                        MinGuests,
-                        MaxGuests,
-                        Category,
-                        Inclusions,
-                        ImagePath
+                        Category
                     FROM Packages
                     ORDER BY PackageID DESC";
 
@@ -57,6 +54,9 @@ namespace CastroCateringBookingSystem.Pages
             }
         }
 
+        // =========================
+        // ADD / UPDATE PACKAGE
+        // =========================
         protected void btnAdd_Click(object sender, EventArgs e)
         {
             if (txtPackageName.Text.Trim() == "" ||
@@ -84,14 +84,16 @@ namespace CastroCateringBookingSystem.Pages
             {
                 conn.Open();
 
+                // =========================
+                // INSERT MODE
+                // =========================
                 if (EditID == 0)
                 {
-                    // ✅ INSERT MODE
                     string query = @"
-                INSERT INTO Packages
-                (PackageName, Description, RatePerGuest, MinGuests, MaxGuests, Category, Inclusions, ImagePath)
-                VALUES
-                (@PackageName, @Description, @RatePerGuest, @MinGuests, @MaxGuests, @Category, @Inclusions, @ImagePath)";
+                        INSERT INTO Packages
+                        (PackageName, Description, RatePerGuest, MinGuests, MaxGuests, Category, Inclusions, ImagePath)
+                        VALUES
+                        (@PackageName, @Description, @RatePerGuest, @MinGuests, @MaxGuests, @Category, @Inclusions, @ImagePath)";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
 
@@ -108,19 +110,21 @@ namespace CastroCateringBookingSystem.Pages
 
                     lblMsg.Text = "✔ Package added successfully!";
                 }
+                // =========================
+                // UPDATE MODE
+                // =========================
                 else
                 {
-                    // ✅ UPDATE MODE
                     string query = @"
-                UPDATE Packages SET
-                PackageName=@PackageName,
-                Description=@Description,
-                RatePerGuest=@RatePerGuest,
-                MinGuests=@MinGuests,
-                MaxGuests=@MaxGuests,
-                Category=@Category,
-                Inclusions=@Inclusions
-                WHERE PackageID=@id";
+                        UPDATE Packages SET
+                        PackageName=@PackageName,
+                        Description=@Description,
+                        RatePerGuest=@RatePerGuest,
+                        MinGuests=@MinGuests,
+                        MaxGuests=@MaxGuests,
+                        Category=@Category,
+                        Inclusions=@Inclusions
+                        WHERE PackageID=@id";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
 
@@ -139,11 +143,9 @@ namespace CastroCateringBookingSystem.Pages
                 }
             }
 
-            // reset form
+            // RESET FORM
             EditID = 0;
             btnAdd.Text = "Add Package";
-
-            LoadPackages();
 
             txtPackageName.Text = "";
             txtDescription.Text = "";
@@ -151,7 +153,13 @@ namespace CastroCateringBookingSystem.Pages
             txtMinGuests.Text = "";
             txtMaxGuests.Text = "";
             txtInclusions.Text = "";
+
+            LoadPackages();
         }
+
+        // =========================
+        // DELETE
+        // =========================
         private void DeletePackage(int id)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -164,6 +172,10 @@ namespace CastroCateringBookingSystem.Pages
                 cmd.ExecuteNonQuery();
             }
         }
+
+        // =========================
+        // LOAD DATA TO FORM (EDIT)
+        // =========================
         private void LoadPackageToForm(int id)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -186,25 +198,27 @@ namespace CastroCateringBookingSystem.Pages
                     txtInclusions.Text = dr["Inclusions"].ToString();
 
                     EditID = id;
-
                     btnAdd.Text = "Update Package";
                 }
             }
         }
+
+        // =========================
+        // GRID COMMANDS
+        // =========================
         protected void gvPackages_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            int packageId = Convert.ToInt32(e.CommandArgument);
+            int id = Convert.ToInt32(e.CommandArgument);
 
             if (e.CommandName == "DeletePackage")
             {
-                DeletePackage(packageId);
+                DeletePackage(id);
                 LoadPackages();
             }
             else if (e.CommandName == "EditPackage")
             {
-                LoadPackageToForm(packageId);
+                LoadPackageToForm(id);
             }
         }
-
     }
 }
