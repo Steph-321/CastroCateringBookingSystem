@@ -365,35 +365,42 @@ th {
 
     <Columns>
 
+        <!-- ID -->
         <asp:BoundField DataField="PackageID" HeaderText="ID" />
 
+        <!-- Name -->
         <asp:BoundField DataField="PackageName" HeaderText="Package Name" />
 
+        <!-- Rate -->
+        <asp:BoundField DataField="RatePerGuest" HeaderText="Rate / Guest" />
+
+        <!-- Category -->
         <asp:BoundField DataField="Category" HeaderText="Category" />
 
-        <asp:BoundField DataField="Description" HeaderText="Description" />
+        <!-- ACTIONS -->
+        <asp:TemplateField HeaderText="Actions">
+            <ItemTemplate>
 
-        <asp:BoundField DataField="RatePerGuest" HeaderText="Rate/Guest" />
+                <asp:LinkButton 
+                    runat="server"
+                    Text="Edit"
+                    CommandName="EditPackage"
+                    CommandArgument='<%# Eval("PackageID") %>' />
 
-        <asp:BoundField DataField="MinGuests" HeaderText="Min Guests" />
+                &nbsp;|&nbsp;
 
-        <asp:BoundField DataField="MaxGuests" HeaderText="Max Guests" />
+                <asp:LinkButton 
+                    runat="server"
+                    Text="Delete"
+                    CommandName="DeletePackage"
+                    CommandArgument='<%# Eval("PackageID") %>'
+                    OnClientClick="return confirm('Delete this package?');" />
 
-        <asp:BoundField DataField="Inclusions" HeaderText="Inclusions" />
-
-      <asp:TemplateField>
-    <ItemTemplate>
-        <asp:LinkButton 
-            ID="btnDelete"
-            runat="server"
-            Text="Delete"
-            CommandName="DeletePackage"
-            CommandArgument='<%# Eval("PackageID") %>' />
-    </ItemTemplate>
-</asp:TemplateField>
-
+            </ItemTemplate>
+        </asp:TemplateField>
 
     </Columns>
+
 </asp:GridView>
 
 
