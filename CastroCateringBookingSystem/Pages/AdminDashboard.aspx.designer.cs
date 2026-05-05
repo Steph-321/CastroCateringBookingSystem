@@ -69,6 +69,15 @@ namespace CastroCateringBookingSystem.Pages
         protected global::System.Web.UI.WebControls.Label lblGuests;
 
         /// <summary>
+        /// lblTotalBookings control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTotalBookings;
+
+        /// <summary>
         /// GridViewRecent control.
         /// </summary>
         /// <remarks>

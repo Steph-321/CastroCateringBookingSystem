@@ -567,41 +567,68 @@ Inherits="CastroCateringBookingSystem.Pages.AdminDashboard" %>
                     </div>
                 </div>
 
-                <div class="stat-box">
-                    <div class="stat-title">Upcoming</div>
-                    <asp:Label ID="lblUpcoming" runat="server" CssClass="stat-value" />
-                </div>
+               <div class="stats-row">
 
-                <div class="stat-box">
-                    <div class="stat-title">Completed</div>
-                    <asp:Label ID="lblCompleted" runat="server" CssClass="stat-value" />
+            <div class="stat-card">
+                <div class="stat-icon ic-gold">📅</div>
+                <div>
+                    <span class="stat-label">Upcoming</span>
+                    <asp:Label ID="lblUpcoming" runat="server" CssClass="stat-val" />
                 </div>
-
-                <div class="stat-box">
-                    <div class="stat-title">Total Guests</div>
-                    <asp:Label ID="lblGuests" runat="server" CssClass="stat-value" />
-                </div>
-
             </div>
 
-            <!-- RECENT BOOKINGS -->
-            <h2>Recent Bookings</h2>
+            <div class="stat-card">
+                <div class="stat-icon ic-green">✔</div>
+                <div>
+                    <span class="stat-label">Completed</span>
+                    <asp:Label ID="lblCompleted" runat="server" CssClass="stat-val" />
+                </div>
+            </div>
 
-            <asp:GridView ID="GridViewRecent" runat="server"
-                AutoGenerateColumns="False"
-                CssClass="data-table">
+            <div class="stat-card">
+                <div class="stat-icon ic-blue">👥</div>
+                <div>
+                    <span class="stat-label">Total Guests</span>
+                    <asp:Label ID="lblGuests" runat="server" CssClass="stat-val" />
+                </div>
+            </div>
 
-                <Columns>
-                    <asp:BoundField DataField="BookingID" HeaderText="ID" />
-                    <asp:BoundField DataField="CustomerName" HeaderText="Client" />
-                    <asp:BoundField DataField="EventType" HeaderText="Event" />
-                    <asp:BoundField DataField="EventDate" HeaderText="Date" />
-                    <asp:BoundField DataField="PackageID" HeaderText="Package" />
-                    <asp:BoundField DataField="Total" HeaderText="Total" />
-                    <asp:BoundField DataField="Status" HeaderText="Status" />
-                </Columns>
+            <div class="stat-card">
+                <div class="stat-icon ic-warm">📊</div>
+                <div>
+                    <span class="stat-label">Total Bookings</span>
+                    <asp:Label ID="lblTotalBookings" runat="server" CssClass="stat-val" />
+                </div>
+            </div>
 
-            </asp:GridView>
+        </div>
+
+
+            <!-- LEFT: RECENT BOOKINGS -->
+            <div class="card">
+                <div class="card-head">
+                    <h2>Recent Bookings</h2>
+                    <span class="chip">Live</span>
+                </div>
+
+                <div class="tbl-wrap">
+                    <asp:GridView ID="GridViewRecent" runat="server"
+                        AutoGenerateColumns="False"
+                        CssClass="data-table">
+
+                        <Columns>
+                            <asp:BoundField DataField="BookingID" HeaderText="ID" />
+                            <asp:BoundField DataField="CustomerName" HeaderText="Client" />
+                            <asp:BoundField DataField="EventType" HeaderText="Event" />
+                            <asp:BoundField DataField="EventDate" HeaderText="Date" />
+                            <asp:BoundField DataField="PackageID" HeaderText="Package" />
+                            <asp:BoundField DataField="Total" HeaderText="Total" />
+                            <asp:BoundField DataField="Status" HeaderText="Status" />
+                        </Columns>
+
+                    </asp:GridView>
+                </div>
+            </div>
 
                 <!-- Package Statistics -->
                 <div class="card">
