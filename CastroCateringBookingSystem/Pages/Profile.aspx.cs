@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
@@ -234,14 +235,14 @@ namespace CastroCateringBookingSystem.Pages
                 {
                     conn.Open();
 
-                    // Enforce 12-hour rule: only cancel if Approved AND within 12 hours of ApprovedAt
                     const string sql = @"
                         UPDATE Bookings
                         SET    [Status] = 'Cancelled'
                         WHERE  BookingID = @BookingID
                           AND  UserID    = @UserID
                           AND  [Status]  = 'Approved'
-                          AND  DATEDIFF(HOUR, ISNULL(ApprovedAt, DateCreated), GETDATE()) <= 12";
+                          AND  ApprovedAt IS NOT NULL
+                          AND  GETDATE() <= DATEADD(HOUR, 12, ApprovedAt)";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     {
@@ -251,12 +252,22 @@ namespace CastroCateringBookingSystem.Pages
 
                         if (rows == 0)
                         {
-                            // Either already cancelled, completed, or 12-hour window expired
                             ClientScript.RegisterStartupScript(GetType(), "cancelDenied",
-                                "closeCancelModal(); alert('Cancellation not allowed. Either the 12-hour window has expired or the booking cannot be cancelled.');", true);
+                                "closeCancelModal(); alert('Cancellation not allowed. This booking can only be cancelled within 12 hours after admin approval.');", true);
                             LoadBookingHistory();
                             return;
                         }
+                    }
+
+                    // Insert notification
+                    using (var notifCmd = new SqlCommand(@"
+                        INSERT INTO Notifications (UserID, BookingID, Message, DateCreated)
+                        VALUES (@UserID, @BookingID, @Message, GETDATE())", conn))
+                    {
+                        notifCmd.Parameters.AddWithValue("@UserID",    userId);
+                        notifCmd.Parameters.AddWithValue("@BookingID", bookingId);
+                        notifCmd.Parameters.AddWithValue("@Message",   "Your booking has been cancelled.");
+                        notifCmd.ExecuteNonQuery();
                     }
                 }
             }
@@ -276,7 +287,7 @@ namespace CastroCateringBookingSystem.Pages
         private void LoadBookingHistory()
         {
             int userId = Convert.ToInt32(Session["UserID"]);
-            var bookings = new List<BookingRecord>();
+            var dt = new DataTable();
 
             try
             {
@@ -285,38 +296,44 @@ namespace CastroCateringBookingSystem.Pages
                     conn.Open();
 
                     const string sql = @"
-                        SELECT b.BookingID, p.PackageName, b.EventType, b.EventDate,
-                               b.NoOfGuests, b.ModeOfPayment, b.TotalAmount,
-                               b.[Status], b.DateCreated,
-                               ISNULL(b.ApprovedAt, b.DateCreated) AS ApprovedAt
+                        SELECT DISTINCT
+                               b.BookingID,
+                               COALESCE(p.PackageName, '(Package unavailable)') AS PackageName,
+                               b.EventType,
+                               b.EventDate,
+                               b.NoOfGuests,
+                               b.ModeOfPayment  AS Payment,
+                               b.TotalAmount    AS Amount,
+                               b.[Status],
+                               b.DateCreated    AS BookedAt,
+                               b.ApprovedAt,
+                               b.Venue,
+                               b.ServiceStyle
                         FROM   Bookings b
                         LEFT JOIN Packages p ON b.PackageID = p.PackageID
+                        LEFT JOIN Users u ON u.UserID = @UserID
                         WHERE  b.UserID = @UserID
+                           OR  (
+                                ISNULL(LTRIM(RTRIM(u.PhoneNumber)), '') <> ''
+                                AND
+                                ISNULL(REPLACE(REPLACE(REPLACE(REPLACE(b.PhoneNumber, ' ', ''), '-', ''), '(', ''), ')', ''), '')
+                                =
+                                ISNULL(REPLACE(REPLACE(REPLACE(REPLACE(u.PhoneNumber, ' ', ''), '-', ''), '(', ''), ')', ''), '')
+                               )
+                           OR  (
+                                ISNULL(LTRIM(RTRIM(u.Username)), '') <> ''
+                                AND
+                                LTRIM(RTRIM(ISNULL(b.ClientName, '')))
+                                =
+                                LTRIM(RTRIM(ISNULL(u.Username, '')))
+                               )
                         ORDER  BY b.DateCreated DESC";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@UserID", userId);
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                bookings.Add(new BookingRecord
-                                {
-                                    BookingID   = Convert.ToInt32(reader["BookingID"]),
-                                    PackageName = reader["PackageName"].ToString(),
-                                    EventType   = reader["EventType"].ToString(),
-                                    EventDate   = Convert.ToDateTime(reader["EventDate"]),
-                                    NoOfGuests  = Convert.ToInt32(reader["NoOfGuests"]),
-                                    Payment     = reader["ModeOfPayment"].ToString(),
-                                    Amount      = Convert.ToDecimal(reader["TotalAmount"]),
-                                    Status      = reader["Status"].ToString(),
-                                    BookedAt    = Convert.ToDateTime(reader["DateCreated"]),
-                                    ApprovedAt  = Convert.ToDateTime(reader["ApprovedAt"])
-                                });
-                            }
-                        }
+                        using (var da = new SqlDataAdapter(cmd))
+                            da.Fill(dt);
                     }
                 }
             }
@@ -325,10 +342,10 @@ namespace CastroCateringBookingSystem.Pages
                 System.Diagnostics.Debug.WriteLine("LoadBookingHistory error: " + ex.Message);
             }
 
-            rptBookings.DataSource = bookings;
+            rptBookings.DataSource = dt;
             rptBookings.DataBind();
-            lblBookingCount.Text = bookings.Count + " booking" + (bookings.Count != 1 ? "s" : "");
-            phNoBookings.Visible = (bookings.Count == 0);
+            lblBookingCount.Text = dt.Rows.Count + " booking" + (dt.Rows.Count != 1 ? "s" : "");
+            phNoBookings.Visible = (dt.Rows.Count == 0);
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -397,7 +414,7 @@ namespace CastroCateringBookingSystem.Pages
             switch (status)
             {
                 case "Approved":  return "status-upcoming";
-                case "Pending":   return "status-upcoming";
+                case "Pending":   return "status-pending";
                 case "Completed": return "status-completed";
                 case "Cancelled": return "status-cancelled";
                 default:          return "";
@@ -410,11 +427,21 @@ namespace CastroCateringBookingSystem.Pages
         public string GetCancelButton(object bookingIdObj, object statusObj, object approvedAtObj)
         {
             string status = statusObj?.ToString() ?? "";
-            if (status == "Cancelled" || status == "Completed" || status == "Pending")
+            // Only Approved bookings can be cancelled, and only within 12 hours.
+            if (status != "Approved")
                 return "";
 
-            // status == "Approved" — check 12-hour window
-            DateTime approvedAt = approvedAtObj is DateTime dt ? dt : DateTime.MinValue;
+            DateTime approvedAt = (approvedAtObj != null && approvedAtObj != DBNull.Value)
+                ? Convert.ToDateTime(approvedAtObj)
+                : DateTime.MinValue;
+
+            if (approvedAt == DateTime.MinValue)
+            {
+                return "<div class='booking-actions'>"
+                     + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Approval timestamp is missing'>"
+                     + "⛔ Cancellation Unavailable</button></div>";
+            }
+
             double hoursElapsed = (DateTime.Now - approvedAt).TotalHours;
             int bookingId = Convert.ToInt32(bookingIdObj);
 
@@ -424,12 +451,10 @@ namespace CastroCateringBookingSystem.Pages
                      + $"<button type='button' class='btn-cancel-booking' onclick='openCancelModal({bookingId})'>"
                      + "Cancel Booking</button></div>";
             }
-            else
-            {
-                return "<div class='booking-actions'>"
-                     + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Cancellation window has expired (12 hours after approval)'>"
-                     + "⛔ Cancellation Expired</button></div>";
-            }
+
+            return "<div class='booking-actions'>"
+                 + "<button type='button' class='btn-cancel-booking btn-cancel-expired' disabled title='Cancellation window has expired (12 hours after approval)'>"
+                 + "⛔ Cancellation Expired</button></div>";
         }
     }
 
@@ -445,14 +470,11 @@ namespace CastroCateringBookingSystem.Pages
         public decimal  Amount      { get; set; }
         public string   Status      { get; set; }
         public DateTime BookedAt    { get; set; }
-        public DateTime ApprovedAt  { get; set; }
-
-        /// <summary>
-        /// True if the booking is Approved AND within 12 hours of approval.
-        /// </summary>
-        public bool CanCancel =>
+        public DateTime? ApprovedAt { get; set; }
+        public bool     CanCancel   =>
             Status == "Approved" &&
-            (DateTime.Now - ApprovedAt).TotalHours <= 12;
+            ApprovedAt.HasValue &&
+            (DateTime.Now - ApprovedAt.Value).TotalHours <= 12;
     }
 
     [Serializable]

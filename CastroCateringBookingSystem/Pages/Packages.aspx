@@ -714,7 +714,13 @@
 
         function getCardText(card) {
             var name = card.querySelector('.package-name');
-            return name ? name.textContent.toLowerCase() : '';
+            var desc = card.querySelector('.package-description');
+            var allText = [
+                name ? name.textContent : '',
+                desc ? desc.textContent : '',
+                card.textContent || ''
+            ].join(' ');
+            return allText.toLowerCase();
         }
 
         function getCardCategories(card) {
@@ -739,10 +745,12 @@
             var visible  = 0;
 
             cards.forEach(function(card) {
-                var nameMatch     = getCardText(card).indexOf(search) !== -1;
+                var searchable    = getCardText(card);
+                var nameMatch     = searchable.indexOf(search) !== -1;
                 var catMatch      = category === 'All' ||
                                     getCardCategories(card).some(function(c) {
-                                        return c === category.toLowerCase();
+                                        var selected = category.toLowerCase();
+                                        return c === selected || c.indexOf(selected) !== -1;
                                     });
                 var show = nameMatch && catMatch;
                 card.style.display = show ? '' : 'none';
@@ -776,14 +784,13 @@
             filterPackages();
         }
 
-        // Set initial count on load
+        // Set initial count based on DB-rendered package cards.
         window.addEventListener('DOMContentLoaded', function() {
             var total = getCards().length;
             document.getElementById('packageCount').textContent =
                 total + ' package' + (total !== 1 ? 's' : '');
+            filterPackages();
         });
-            // Update nav: show username greeting or just keep Log Out
-        })();
 
         // Mobile Menu Toggle (home-style)
         const mobileMenuBtn = document.querySelector('.mobile-menu');

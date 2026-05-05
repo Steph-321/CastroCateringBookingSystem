@@ -283,6 +283,7 @@
               <a href="AdminBookingManagement.aspx" class="nav-link">📋 Booking Management</a>
 
               <a href="AdminAddPackage.aspx" class="nav-link active">➕ Add Package</a>
+              <a href="AdminDatabaseBackup.aspx" class="nav-link">🗄️ Database Backup</a>
        </div>
 
             <div class="sidebar-footer">

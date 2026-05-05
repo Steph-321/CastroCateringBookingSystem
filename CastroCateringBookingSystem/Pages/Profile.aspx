@@ -363,6 +363,11 @@
             color: #856404;
         }
 
+        .status-pending {
+            background: #e8f4fd;
+            color: #0c5460;
+        }
+
         .status-completed {
             background: #d4edda;
             color: #155724;
@@ -678,7 +683,7 @@
         .btn-cancel-yes {
             flex: 1;
             padding: 0.7rem;
-            background: #b83232;
+            background: var(--primary-gold);
             border: none;
             border-radius: 10px;
             font-family: 'Inter', sans-serif;
@@ -689,7 +694,7 @@
             transition: background 0.2s, transform 0.15s;
             letter-spacing: 0.02em;
         }
-        .btn-cancel-yes:hover { background: #9b1c1c; transform: translateY(-1px); }
+        .btn-cancel-yes:hover { background: #a87a38; transform: translateY(-1px); }
         .btn-cancel-yes:active { transform: translateY(0); }
 
         /* ── Notification bell ── */
@@ -996,7 +1001,7 @@
                 </div>
 
                 <div class="policy-note">
-                    Cancellation policy: contact us within <strong>12 hours</strong> of booking to cancel.
+                    Cancellation policy: a client may cancel only within <strong>12 hours after admin approval</strong>.
                 </div>
             </div>
 
@@ -1008,7 +1013,7 @@
         <div class="cancel-modal">
             <div class="cancel-modal-head">
                 <h3>Cancel Booking</h3>
-                <button class="notif-close" onclick="closeCancelModal()" aria-label="Close">&times;</button>
+                <button type="button" class="notif-close" onclick="closeCancelModal()" aria-label="Close">&times;</button>
             </div>
             <div class="cancel-modal-body">
                 <div class="cancel-icon">⚠️</div>
@@ -1019,8 +1024,9 @@
             <div class="cancel-modal-foot">
                 <button type="button" class="btn-cancel-no" onclick="closeCancelModal()">Keep Booking</button>
                 <asp:Button ID="btnConfirmCancel" runat="server"
-                    Text="Yes, Cancel It"
+                    Text="Yes, Confirm Cancel"
                     CssClass="btn-cancel-yes"
+                    CausesValidation="false"
                     OnClick="btnConfirmCancel_Click" />
             </div>
         </div>
@@ -1032,7 +1038,7 @@
         <div class="notif-modal">
             <div class="notif-modal-head">
                 <h3>Notifications</h3>
-                <button class="notif-close" onclick="closeNotifModal()" aria-label="Close">&times;</button>
+                <button type="button" class="notif-close" onclick="closeNotifModal()" aria-label="Close">&times;</button>
             </div>
             <div class="notif-modal-body">
                 <asp:Repeater ID="rptNotifications" runat="server">
@@ -1113,181 +1119,7 @@
     </footer>
 
     <script>
-        // Sample booking data
-        const sampleBookings = [
-            {
-                id: 'b-1001',
-                package: 'Grand Wedding Feast',
-                date: '2026-05-03',
-                eventType: 'Wedding',
-                guests: 120,
-                payment: 'Bank Transfer',
-                amount: 144000,
-                status: 'upcoming',
-                bookedAt: '2026-04-21T23:06:11',
-                canCancel: false
-            },
-            {
-                id: 'b-1002',
-                package: 'Corporate Essentials',
-                date: '2026-04-27',
-                eventType: 'Corporate',
-                guests: 60,
-                payment: 'Credit Card',
-                amount: 39000,
-                status: 'upcoming',
-                bookedAt: '2026-04-18T23:06:11',
-                canCancel: false
-            },
-            {
-                id: 'b-1003',
-                package: 'Birthday Bliss',
-                date: '2026-04-11',
-                eventType: 'Birthday',
-                guests: 40,
-                payment: 'GCash',
-                amount: 19200,
-                status: 'completed',
-                bookedAt: '2026-03-24T23:06:11',
-                canCancel: false
-            },
-            {
-                id: 'b-1004',
-                package: 'Intimate Private Dining',
-                date: '2026-03-24',
-                eventType: 'Anniversary',
-                guests: 18,
-                payment: 'Cash',
-                amount: 32400,
-                status: 'completed',
-                bookedAt: '2026-03-09T23:06:11',
-                canCancel: false
-            }
-        ];
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // ── Populate profile from localStorage ──
-            var user = null;
-            try { user = JSON.parse(localStorage.getItem('castroUser')); } catch(e) {}
-
-            if (!user || !user.username) {
-                // Not logged in — redirect to login
-                window.location.href = 'LoginSignup.aspx';
-                return;
-            }
-
-            var initial = user.username.charAt(0).toUpperCase();
-            document.getElementById('profileAvatar').textContent  = initial;
-            document.getElementById('profileName').textContent    = user.username;
-            document.getElementById('profileEmail').textContent   = user.email    || '—';
-            document.getElementById('infoUsername').textContent   = user.username;
-            document.getElementById('infoEmail').textContent      = user.email    || '—';
-            document.getElementById('infoPhone').textContent      = user.phone    || '—';
-            document.getElementById('infoAddress').textContent    = user.address  || '—';
-
-            // Also update nav Log Out button
-            var logoutBtn = document.querySelector('.btn-login[onclick*="logout"]');
-            if (logoutBtn) logoutBtn.textContent = 'Log Out';
-
-            loadBookings();
-        });
-
-        function loadBookings() {
-            const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-            const allBookings = [...bookings, ...sampleBookings];
-            
-            // Sort by booking date (newest first)
-            allBookings.sort((a, b) => new Date(b.bookedAt) - new Date(a.bookedAt));
-            
-            // Check cancellation eligibility
-            allBookings.forEach(booking => {
-                const bookingTime = new Date(booking.bookedAt);
-                const now = new Date();
-                const hoursDiff = (now - bookingTime) / (1000 * 60 * 60);
-                booking.canCancel = hoursDiff < 12 && booking.status === 'upcoming';
-            });
-            
-            const bookingList = document.getElementById('bookingList');
-            const bookingCount = document.getElementById('bookingCount');
-            
-            bookingCount.textContent = `${allBookings.length} bookings`;
-            
-            if (allBookings.length === 0) {
-                bookingList.innerHTML = `
-                    <div style="padding: 3rem; text-align: center; color: var(--text-gray);">
-                        <p>No bookings yet. Start planning your event!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            bookingList.innerHTML = allBookings.map(booking => `
-                <div class="booking-item">
-                    <div class="booking-top">
-                        <div>
-                            <div class="booking-package">
-                                ${booking.package}
-                                <span class="booking-status status-${booking.status}">
-                                    ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                                </span>
-                            </div>
-                            <div class="booking-id">
-                                #${booking.id} · Booked ${formatDate(booking.bookedAt)}
-                            </div>
-                        </div>
-                        <div class="booking-amount">₱${booking.amount.toLocaleString()}</div>
-                    </div>
-                    
-                    <div class="booking-details">
-                        <div class="detail-item">📅 ${formatDate(booking.date)}</div>
-                        <div class="detail-item">${booking.eventType}</div>
-                        <div class="detail-item">${booking.guests} guests</div>
-                        <div class="detail-item">${booking.payment}</div>
-                    </div>
-                    
-                    ${booking.status === 'upcoming' ? `
-                        <div class="booking-actions">
-                            ${booking.canCancel ? `
-                                <button class="btn-cancel" onclick="cancelBooking('${booking.id}')">
-                                    Cancel Booking
-                                </button>
-                                <span class="cancellation-note">You can cancel within 12 hours of booking</span>
-                            ` : `
-                                <span class="cancellation-note" style="color: var(--text-gray);">
-                                    Cancellation closed (booked more than 12 hours ago)
-                                </span>
-                            `}
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-            return date.toLocaleDateString('en-US', options);
-        }
-
-        function cancelBooking(bookingId) {
-            if (confirm('Are you sure you want to cancel this booking?')) {
-                let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-                const bookingIndex = bookings.findIndex(b => b.id === bookingId);
-                
-                if (bookingIndex !== -1) {
-                    bookings[bookingIndex].status = 'cancelled';
-                    localStorage.setItem('bookings', JSON.stringify(bookings));
-                    alert('Booking cancelled successfully.');
-                    loadBookings();
-                } else {
-                    alert('This is a sample booking and cannot be cancelled in this demo.');
-                }
-            }
-        }
-
-        function editProfile() {
-            alert('Profile editing feature would open a modal or redirect to an edit page.');
-        }
+        // Booking history and profile data are rendered server-side from SQL.
 
         // Mobile Menu Toggle (home-style)
         const mobileMenuBtn = document.querySelector('.mobile-menu');

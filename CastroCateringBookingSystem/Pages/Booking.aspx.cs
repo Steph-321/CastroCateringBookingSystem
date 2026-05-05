@@ -57,6 +57,7 @@ namespace CastroCateringBookingSystem.Pages
             string serviceStyle  = hfServiceStyle.Value.Trim();
             string packageName   = hfPackageName.Value.Trim();
             string totalAmtStr   = hfTotalAmount.Value.Trim();
+            string moaAccepted   = hfMOAAccepted.Value.Trim();
 
             // ── Debug: surface exactly which field is missing ──
             var missing = new System.Collections.Generic.List<string>();
@@ -74,6 +75,12 @@ namespace CastroCateringBookingSystem.Pages
             if (missing.Count > 0)
             {
                 ShowError("Missing fields: " + string.Join(", ", missing));
+                return;
+            }
+
+            if (!string.Equals(moaAccepted, "1", StringComparison.Ordinal))
+            {
+                ShowError("You must agree to the Memorandum of Agreement before confirming your booking.");
                 return;
             }
 
@@ -100,7 +107,6 @@ namespace CastroCateringBookingSystem.Pages
 
             bool withinArgao  = venueLocation == "within";
             int  userId       = Convert.ToInt32(Session["UserID"]);
-            string withinArgaoVal = withinArgao ? "Yes" : "No";
 
             try
             {
@@ -115,6 +121,11 @@ namespace CastroCateringBookingSystem.Pages
                         pkgCmd.Parameters.AddWithValue("@Name", packageName);
                         object r = pkgCmd.ExecuteScalar();
                         if (r != null) packageId = Convert.ToInt32(r);
+                    }
+                    if (packageId <= 0)
+                    {
+                        ShowError("Selected package is invalid. Please select a package again.");
+                        return;
                     }
 
                     const string sql = @"
@@ -138,7 +149,7 @@ namespace CastroCateringBookingSystem.Pages
                         cmd.Parameters.AddWithValue("@EventDate",     eventDate);
                         cmd.Parameters.AddWithValue("@NoOfGuests",    noOfGuests);
                         cmd.Parameters.AddWithValue("@Venue",         venue);
-                        cmd.Parameters.AddWithValue("@WithinArgao",   withinArgaoVal);
+                        cmd.Parameters.AddWithValue("@WithinArgao",   withinArgao);
                         cmd.Parameters.AddWithValue("@ServiceStyle",  serviceStyle);
                         cmd.Parameters.AddWithValue("@ModeOfPayment", paymentMode);
                         cmd.Parameters.AddWithValue("@TotalAmount",   totalAmount);
@@ -154,47 +165,20 @@ namespace CastroCateringBookingSystem.Pages
                     string ppgFmt     = "\u20B1" + ppg.ToString("N0") + "/guest";
                     string issuedAt   = DateTime.Now.ToString("MMM dd, yyyy h:mm tt");
 
-                    // Escape strings for safe JS embedding
-                    string script = string.Format(@"
-                        (function() {{
-                            document.getElementById('modalBookingId').textContent = {0};
-                            document.getElementById('rcptName').textContent       = {1};
-                            document.getElementById('rcptPhone').textContent      = {2};
-                            document.getElementById('rcptEventType').textContent  = {3};
-                            document.getElementById('rcptDate').textContent       = {4};
-                            document.getElementById('rcptVenue').textContent      = {5};
-                            document.getElementById('rcptGuests').textContent     = {6} + ' guests';
-                            document.getElementById('rcptPackage').textContent    = {7};
-                            document.getElementById('rcptPricePerGuest').textContent = {8};
-                            document.getElementById('rcptService').textContent   = {9};
-                            document.getElementById('rcptPayment').textContent   = {10};
-                            document.getElementById('rcptStatus').textContent    = 'Pending Approval';
-                            document.getElementById('rcptTimestamp').textContent = {11};
-                            document.getElementById('rcptSubtotal').textContent  = {12};
-                            document.getElementById('rcptServiceFee').textContent  = 'Included';
-                            document.getElementById('rcptLocationFee').textContent = 'Included';
-                            document.getElementById('rcptTotal').textContent     = {12};
-                            document.getElementById('rcptRowWeekend').style.display = 'none';
-                            document.getElementById('rcptRowRush').style.display    = 'none';
-                            document.getElementById('modalOverlay').classList.add('open');
-                            document.body.style.overflow = 'hidden';
-                        }})();",
-                        JsStr(bookingRef),
-                        JsStr(clientName),
-                        JsStr(phoneNumber),
-                        JsStr(eventType),
-                        JsStr(eventDate.ToString("MMMM dd, yyyy")),
-                        JsStr(venue + " (" + argaoText + ")"),
-                        JsStr(noOfGuests.ToString()),
-                        JsStr(packageName),
-                        JsStr(ppgFmt),
-                        JsStr(serviceStyle),
-                        JsStr(paymentMode),
-                        JsStr(issuedAt),
-                        JsStr(totalFmt)
-                    );
-
-                    ScriptManager.RegisterStartupScript(this, GetType(), "showReceipt", script, true);
+                    // Write receipt data to hidden fields; page JS reads these and opens the modal.
+                    hfShowReceipt.Value    = "1";
+                    hfReceiptRef.Value     = bookingRef;
+                    hfReceiptName.Value    = clientName;
+                    hfReceiptPhone.Value   = phoneNumber;
+                    hfReceiptEvent.Value   = eventType;
+                    hfReceiptDate.Value    = eventDate.ToString("MMMM dd, yyyy");
+                    hfReceiptVenue.Value   = venue + " (" + argaoText + ")";
+                    hfReceiptGuests.Value  = noOfGuests.ToString();
+                    hfReceiptPkg.Value     = packageName;
+                    hfReceiptPPG.Value     = ppgFmt;
+                    hfReceiptService.Value = serviceStyle;
+                    hfReceiptPayment.Value = paymentMode;
+                    hfReceiptTotal.Value   = totalFmt;
                 }
             }
             catch (Exception ex)
@@ -202,16 +186,6 @@ namespace CastroCateringBookingSystem.Pages
                 ShowError("A database error occurred: " + ex.Message);
                 System.Diagnostics.Debug.WriteLine("Booking error: " + ex.Message);
             }
-        }
-
-        /// <summary>Encodes a string as a safe JS string literal (double-quoted).</summary>
-        private static string JsStr(string s)
-        {
-            if (s == null) return "\"\"";
-            return "\"" + s.Replace("\\", "\\\\")
-                           .Replace("\"", "\\\"")
-                           .Replace("\r", "")
-                           .Replace("\n", "\\n") + "\"";
         }
 
         private void ShowError(string message)

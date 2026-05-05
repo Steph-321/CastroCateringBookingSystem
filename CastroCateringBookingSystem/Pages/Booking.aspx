@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Booking.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Booking" ResponseEncoding="UTF-8" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Booking.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.Booking" ResponseEncoding="UTF-8" EnableEventValidation="false" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -940,7 +940,6 @@
 
     <!-- PAGE -->
     <form id="bookingForm" runat="server">
-    <asp:Label ID="lblBookingError" runat="server" ForeColor="Red" Visible="false" />
     <div class="page-wrapper">
         <div class="page-header">
             <h1>Book an Event</h1>
@@ -1222,7 +1221,9 @@
                             <span class="total-label">Total</span>
                             <span class="total-amount" id="totalAmount">&#8369;0</span>
                         </div>
-                       
+
+                        <asp:Label ID="lblBookingError" runat="server" Visible="false"
+                            style="display:block;margin-top:0.75rem;padding:0.65rem 0.9rem;background:#fff0f0;border:1px solid #f5c0c0;border-radius:8px;font-size:0.85rem;color:#c40000;font-weight:600;" />
 
                        <asp:Button ID="btnConfirm" runat="server"
                         Text="Confirm Booking"
@@ -1621,37 +1622,20 @@
                 document.getElementById('warningOverlay').classList.remove('open');
                 document.body.style.overflow = '';
             }
+            window.closeWarningModal = closeWarningModal;
 
-            // Flag: set to true when user has acknowledged the warning
-            var _warningAcknowledged = false;
-
-            // "Yes, Continue" in the warning modal
+            // "Yes, Continue" in the warning modal — write fields then submit form directly
             document.getElementById('btnProceedBooking').addEventListener('click', function () {
                 closeWarningModal();
 
-                // Final date check before proceeding
                 if (state.dateBlocked) {
                     var w = document.getElementById('dateUnavailableWarning');
                     if (w) { w.style.display = 'flex'; w.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
                     return;
                 }
 
-                var guests   = state.guests;
-                var subtotal = state.packagePrice * guests;
-                var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-                var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
-
-                // Write hidden fields
-                document.getElementById('<%= hfServiceStyle.ClientID %>').value  = state.serviceName;
-                document.getElementById('<%= hfPackageName.ClientID %>').value   = state.packageName;
-                document.getElementById('<%= hfPackagePrice.ClientID %>').value  = state.packagePrice;
-                document.getElementById('<%= hfTotalAmount.ClientID %>').value   = total;
-
-                // Bypass the warning check on the next OnClientClick call
-                _warningAcknowledged = true;
-
-                // Trigger the ASP.NET postback
-                document.getElementById('<%= btnConfirm.ClientID %>').click();
+                _writeHiddenFields();
+                _submitForm();
             });
 
 
@@ -1698,38 +1682,66 @@
                 var chk   = document.getElementById('chkMOA');
                 var label = document.getElementById('moaCheckLabel');
                 var msg   = document.getElementById('moaRequiredMsg');
-                var btn   = document.getElementById('<%= btnConfirm.ClientID %>');
 
                 if (chk && chk.checked) {
                     document.getElementById('<%= hfMOAAccepted.ClientID %>').value = '1';
                     if (label) label.classList.add('agreed');
                     if (msg)   msg.style.display = 'none';
-                    if (btn)   btn.disabled = false;
                 } else {
                     document.getElementById('<%= hfMOAAccepted.ClientID %>').value = '0';
                     if (label) label.classList.remove('agreed');
-                    if (btn)   btn.disabled = true;
                 }
             };
 
-            // Disable confirm button on load until MOA is checked
-            (function() {
-                var btn = document.getElementById('<%= btnConfirm.ClientID %>');
-                if (btn) btn.disabled = true;
-            })();
+            /* ── Shared helpers ── */
+            function _writeHiddenFields() {
+                var guests   = state.guests;
+                var subtotal = state.packagePrice * guests;
+                var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
+                var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
 
-            /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
-               Validates, writes hidden fields, returns true to allow postback      */
-            window.prepareBookingPostback = function () {
+                document.getElementById('<%= hfServiceStyle.ClientID %>').value = state.serviceName;
+                document.getElementById('<%= hfPackageName.ClientID %>').value  = state.packageName;
+                document.getElementById('<%= hfPackagePrice.ClientID %>').value = state.packagePrice;
+                document.getElementById('<%= hfTotalAmount.ClientID %>').value  = total;
+            }
 
-                // If user already acknowledged the warning, let the postback through
-                if (_warningAcknowledged) {
-                    _warningAcknowledged = false; // reset for next booking
-                    return true;
+            function _submitForm() {
+                // Trigger server click reliably even when __doPostBack is unavailable.
+                if (typeof __doPostBack === 'function') {
+                    __doPostBack('<%= btnConfirm.UniqueID %>', '');
+                    return;
                 }
 
-                var missing = [];
+                var form = document.getElementById('<%= bookingForm.ClientID %>');
+                if (!form) return;
 
+                var eventTarget = form.querySelector('input[name="__EVENTTARGET"]');
+                if (!eventTarget) {
+                    eventTarget = document.createElement('input');
+                    eventTarget.type = 'hidden';
+                    eventTarget.name = '__EVENTTARGET';
+                    form.appendChild(eventTarget);
+                }
+
+                var eventArgument = form.querySelector('input[name="__EVENTARGUMENT"]');
+                if (!eventArgument) {
+                    eventArgument = document.createElement('input');
+                    eventArgument.type = 'hidden';
+                    eventArgument.name = '__EVENTARGUMENT';
+                    form.appendChild(eventArgument);
+                }
+
+                eventTarget.value = '<%= btnConfirm.UniqueID %>';
+                eventArgument.value = '';
+                form.submit();
+            }
+
+            /* ── prepareBookingPostback: called by OnClientClick on btnConfirm ──
+               Only runs when the user clicks the button directly (not via warning modal). */
+            window.prepareBookingPostback = function () {
+
+                var missing = [];
                 if (!state.name)        missing.push('Client Name');
                 if (!state.phone)       missing.push('Phone Number');
                 if (!state.eventType)   missing.push('Event Type');
@@ -1767,20 +1779,11 @@
 
                 if (warnings.length > 0) {
                     openWarningModal(warnings);
-                    return false; // stop postback; user must click "Yes, Continue"
+                    return false; // stop — user must confirm in warning modal
                 }
 
-                // No warnings — write hidden fields and allow postback directly
-                var guests   = state.guests;
-                var subtotal = state.packagePrice * guests;
-                var svcFee   = state.serviceFeeType === 'per-guest' ? state.serviceFee * guests : 0;
-                var total    = subtotal + svcFee + state.locationFee + state.weekendFee + state.rushFee;
-
-                document.getElementById('<%= hfServiceStyle.ClientID %>').value  = state.serviceName;
-                document.getElementById('<%= hfPackageName.ClientID %>').value   = state.packageName;
-                document.getElementById('<%= hfPackagePrice.ClientID %>').value  = state.packagePrice;
-                document.getElementById('<%= hfTotalAmount.ClientID %>').value   = total;
-
+                // No warnings — write fields and allow postback
+                _writeHiddenFields();
                 return true;
             };
 
@@ -1812,6 +1815,9 @@
                     document.getElementById('adminError').style.display = 'block';
                 }
             }
+            window.showAdminLogin = showAdminLogin;
+            window.closeAdminLogin = closeAdminLogin;
+            window.submitAdminLogin = submitAdminLogin;
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') closeAdminLogin();
             });
@@ -1826,6 +1832,50 @@
             document.getElementById('modalOverlay').classList.remove('open');
             document.body.style.overflow = '';
         }
+
+        (function openReceiptIfPosted() {
+            var hfShow = document.getElementById('<%= hfShowReceipt.ClientID %>');
+            if (!hfShow || hfShow.value !== '1') return;
+
+            var val = function(id) {
+                var el = document.getElementById(id);
+                return el ? el.value : '';
+            };
+            var setText = function(id, text) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = text || '—';
+            };
+
+            setText('modalBookingId', val('<%= hfReceiptRef.ClientID %>'));
+            setText('rcptName', val('<%= hfReceiptName.ClientID %>'));
+            setText('rcptPhone', val('<%= hfReceiptPhone.ClientID %>'));
+            setText('rcptEventType', val('<%= hfReceiptEvent.ClientID %>'));
+            setText('rcptDate', val('<%= hfReceiptDate.ClientID %>'));
+            setText('rcptVenue', val('<%= hfReceiptVenue.ClientID %>'));
+            setText('rcptGuests', val('<%= hfReceiptGuests.ClientID %>') + ' guests');
+            setText('rcptPackage', val('<%= hfReceiptPkg.ClientID %>'));
+            setText('rcptPricePerGuest', val('<%= hfReceiptPPG.ClientID %>'));
+            setText('rcptService', val('<%= hfReceiptService.ClientID %>'));
+            setText('rcptPayment', val('<%= hfReceiptPayment.ClientID %>'));
+            setText('rcptStatus', 'Pending Approval');
+            setText('rcptTimestamp', new Date().toLocaleString('en-PH'));
+            setText('rcptSubtotal', val('<%= hfReceiptTotal.ClientID %>'));
+            setText('rcptServiceFee', 'Included');
+            setText('rcptLocationFee', 'Included');
+            setText('rcptTotal', val('<%= hfReceiptTotal.ClientID %>'));
+
+            var weekendRow = document.getElementById('rcptRowWeekend');
+            var rushRow = document.getElementById('rcptRowRush');
+            if (weekendRow) weekendRow.style.display = 'none';
+            if (rushRow) rushRow.style.display = 'none';
+
+            var overlay = document.getElementById('modalOverlay');
+            if (overlay) overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            // Prevent modal reopening on manual refresh after successful postback.
+            hfShow.value = '0';
+        })();
 
         /* ── Done: close modal and reload for fresh form ── */
         document.getElementById('btnDone').addEventListener('click', function() {
