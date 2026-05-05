@@ -18,10 +18,11 @@ namespace CastroCateringBookingSystem.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-       
+            if (!IsPostBack)
+            {
                 LoadBookings();
                 LoadCount();
-                
+            }
         }
 
         void LoadBookings()
@@ -75,9 +76,7 @@ namespace CastroCateringBookingSystem.Pages
                 conn.Open();
 
                 // UPDATE STATUS
-                string updateQuery = "UPDATE Bookings SET Status=@Status" +
-                    (newStatus == "Approved" ? ", ApprovedAt=GETDATE()" : "") +
-                    " WHERE BookingID=@ID";
+                string updateQuery = "UPDATE Bookings SET [Status]=@Status WHERE BookingID=@ID";
                 SqlCommand cmd = new SqlCommand(updateQuery, conn);
                 cmd.Parameters.AddWithValue("@Status", newStatus);
                 cmd.Parameters.AddWithValue("@ID", bookingId);
@@ -105,20 +104,18 @@ namespace CastroCateringBookingSystem.Pages
 
                 // INSERT NOTIFICATION
                 string notifQuery = @"
-                INSERT INTO Notifications (UserID, Message)
-                VALUES (@UserID, @Message)";
+                INSERT INTO Notifications (UserID, BookingID, Message, DateCreated)
+                VALUES (@UserID, @BookingID, @Message, GETDATE())";
 
                 SqlCommand cmdNotif = new SqlCommand(notifQuery, conn);
-                cmdNotif.Parameters.AddWithValue("@UserID", userId);
-                cmdNotif.Parameters.AddWithValue("@Message", message);
-
+                cmdNotif.Parameters.AddWithValue("@UserID",    userId);
+                cmdNotif.Parameters.AddWithValue("@BookingID", bookingId);
+                cmdNotif.Parameters.AddWithValue("@Message",   message);
                 cmdNotif.ExecuteNonQuery();
-
-
-                LoadBookings();
-                LoadCount();
-               
             }
+
+            LoadBookings();
+            LoadCount();
         }
 
 
@@ -131,18 +128,14 @@ namespace CastroCateringBookingSystem.Pages
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 string query = "DELETE FROM Bookings WHERE BookingID=@id";
-
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", id);
-
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
 
-            // 🔥 REFRESH UI AFTER DELETE
             LoadBookings();
             LoadCount();
-            
         }
 
 

@@ -1,272 +1,282 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminDatabaseBackup.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.AdminDatabaseBackup" %>
-
+<%@ Page Language="C#" AutoEventWireup="true"
+    CodeBehind="AdminDatabaseBackup.aspx.cs"
+    Inherits="CastroCateringBookingSystem.Pages.AdminDatabaseBackup" %>
 <!DOCTYPE html>
 <html lang="en">
 <head runat="server">
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Database Backup - Castro Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Backup — Castro Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --gold: #C9A961;
+            --gold:       #C9A961;
             --dark-brown: #4A3F35;
-            --cream: #FAF8F3;
-            --beige: #F5F1E8;
-            --white: #FFFFFF;
-            --text-dark: #2C2420;
+            --cream:      #FAF8F3;
+            --beige:      #F5F1E8;
+            --white:      #FFFFFF;
+            --text-dark:  #2C2420;
             --text-light: #6B5B4F;
-            --border: #E8E0D5;
+            --border:     #E8E0D5;
             --success-bg: #EDF7F1;
-            --success-txt: #1E6B3E;
-            --info-bg: #EBF4FD;
-            --sidebar-w: 260px;
+            --success-txt:#1E6B3E;
+            --error-bg:   #FDE8E8;
+            --error-txt:  #9B1C1C;
+            --sidebar-w:  260px;
         }
 
-        body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text-dark); }
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        html, body { height: 100%; }
+        body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text-dark); line-height: 1.6; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* ── LAYOUT ── */
         #form1 { display: flex; min-height: 100vh; }
 
+        /* ── SIDEBAR ── */
         .sidebar {
-            width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--white);
-            border-right: 1px solid var(--border); display: flex; flex-direction: column;
-            position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto;
+            width: var(--sidebar-w); min-width: var(--sidebar-w);
+            background: var(--white); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; height: 100vh;
+            overflow-y: auto; z-index: 100;
         }
         .sidebar-header { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--border); }
-        .brand-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--dark-brown); }
-        .brand-sub { font-size: 0.68rem; color: var(--text-light); letter-spacing: 0.07em; text-transform: uppercase; }
+        .brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .brand-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--dark-brown); line-height: 1.2; }
+        .brand-sub  { font-size: 0.68rem; color: var(--text-light); letter-spacing: 0.07em; text-transform: uppercase; }
         .sidebar-nav { padding: 1.5rem 1rem; flex: 1; }
         .nav-link {
-            display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.875rem; margin-bottom: 0.15rem;
-            border-radius: 10px; text-decoration: none; color: var(--text-light); font-size: 0.875rem; font-weight: 500;
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 0.875rem; margin-bottom: 0.15rem;
+            border-radius: 10px; text-decoration: none;
+            color: var(--text-light); font-size: 0.875rem; font-weight: 500;
             transition: background 0.2s, color 0.2s;
         }
         .nav-link:hover { background: var(--beige); color: var(--dark-brown); }
         .nav-link.active { background: var(--beige); color: var(--gold); font-weight: 600; }
         .sidebar-footer { padding: 1.25rem 1rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.4rem; }
-        .btn-back, .btn-signout {
-            display: block; padding: 0.6rem 0.875rem; border-radius: 10px; text-decoration: none; font-size: 0.82rem; font-weight: 500;
+        .btn-back {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 0.875rem; background: var(--beige);
+            border: 1px solid var(--border); border-radius: 10px;
+            text-decoration: none; color: var(--text-dark);
+            font-size: 0.82rem; font-weight: 500; transition: background 0.2s;
         }
-        .btn-back { background: var(--beige); border: 1px solid var(--border); color: var(--text-dark); }
-        .btn-signout { color: #b83232; }
+        .btn-back:hover { background: #ede6db; }
+        .btn-signout {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 0.875rem; background: transparent; border: none;
+            border-radius: 10px; color: #b83232;
+            font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-signout:hover { background: #fff0f0; }
 
-        .main { margin-left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); padding: 2.5rem; }
-        .page-header { margin-bottom: 1.5rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); }
-        .page-header h1 { font-size: 1.85rem; color: var(--dark-brown); }
-        .page-sub { font-size: 0.9rem; color: var(--text-light); margin-top: 0.25rem; }
+        /* ── MAIN ── */
+        .main { margin-left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); padding: 2rem 2.5rem; box-sizing: border-box; }
 
-        .card {
+        .page-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        .page-header h1 { font-size: 1.9rem; color: var(--dark-brown); }
+        .page-sub { font-size: 0.875rem; color: var(--text-light); margin-top: 0.2rem; }
+
+        /* ── STAT CARDS ── */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+        .stat-card {
             background: var(--white); border: 1px solid var(--border); border-radius: 14px;
-            padding: 1.4rem 1.5rem; margin-bottom: 1.25rem;
+            padding: 1.4rem 1.5rem; display: flex; align-items: center; gap: 1rem;
         }
-        .backup-info {
-            background: var(--info-bg);
-            border: 1px solid #bdd8f5;
-            color: #184b7a;
-            border-radius: 12px;
-            padding: 1rem 1.1rem;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
+        .stat-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+        .ic-gold  { background: #FDF5E4; }
+        .ic-blue  { background: #EBF4FD; }
+        .ic-green { background: #EDF7F1; }
+        .ic-warm  { background: #FFF0E6; }
+        .stat-label { font-size: 0.7rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.07em; display: block; }
+        .stat-val   { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--dark-brown); display: block; margin-top: 0.15rem; }
 
-        .action-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.9rem; }
+        /* ── BACKUP CARD ── */
+        .card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 2rem; }
+        .card-head { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .card-head h2 { font-size: 1.05rem; color: var(--dark-brown); }
+        .card-body { padding: 1.75rem 1.5rem; }
+
+        /* ── BACKUP BUTTON ── */
+        .backup-action { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
         .btn-backup {
-            background: var(--gold); color: #fff; border: none; border-radius: 10px;
-            padding: 0.85rem 1.5rem; font-size: 0.92rem; font-weight: 700; cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.85rem 2rem;
+            background: var(--gold); border: none; border-radius: 12px;
+            font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700;
+            color: var(--dark-brown); cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(201,169,97,0.3);
         }
-        .btn-backup:hover { background: #a87a38; transform: translateY(-1px); }
-        .btn-backup:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+        .btn-backup:hover { background: #b8923f; color: #fff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,169,97,0.4); }
+        .btn-backup:active { transform: translateY(0); }
+        .backup-note { font-size: 0.82rem; color: var(--text-light); line-height: 1.6; }
+        .backup-note strong { color: var(--text-dark); }
 
-        .progress-wrap { display: none; width: min(460px, 100%); }
-        .progress-top { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-light); margin-bottom: 0.35rem; }
-        .progress-bar {
-            width: 100%; height: 10px; background: var(--beige); border-radius: 99px; overflow: hidden;
-            border: 1px solid var(--border);
+        /* ── STATUS MESSAGE ── */
+        .status-msg {
+            display: block; margin-top: 1.25rem;
+            padding: 0.85rem 1.1rem; border-radius: 10px;
+            font-size: 0.875rem; font-weight: 600;
         }
-        .progress-fill {
-            width: 0%; height: 100%; background: linear-gradient(90deg, var(--gold), #e0bf73);
-            border-radius: 99px; transition: width 0.25s;
-        }
+        .status-msg.success { background: var(--success-bg); color: var(--success-txt); border: 1px solid #a5d6b7; }
+        .status-msg.error   { background: var(--error-bg);   color: var(--error-txt);   border: 1px solid #f5a0a0; }
 
-        .success-msg {
-            display: none;
-            margin-top: 1rem;
-            padding: 0.75rem 0.95rem;
-            border-radius: 10px;
-            background: var(--success-bg);
-            color: var(--success-txt);
-            border: 1px solid #b2dfc5;
-            font-size: 0.88rem;
-            font-weight: 600;
-        }
-
-        .record-title { font-size: 1rem; color: var(--dark-brown); margin-bottom: 0.8rem; }
-        .tbl-wrap { overflow-x: auto; }
+        /* ── HISTORY TABLE ── */
+        .tbl-wrap { width: 100%; overflow-x: auto; }
         .data-table { width: 100%; border-collapse: collapse; }
         .data-table thead th {
-            background: var(--beige);
-            padding: 0.75rem 0.9rem;
-            text-align: left;
-            font-size: 0.72rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--text-light);
+            background: var(--beige); padding: 0.85rem 1.25rem;
+            text-align: left; font-size: 0.7rem; font-weight: 700;
+            color: var(--text-light); text-transform: uppercase; letter-spacing: 0.07em;
             white-space: nowrap;
         }
         .data-table tbody td {
-            padding: 0.9rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.87rem;
-            color: var(--text-dark);
+            padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border);
+            font-size: 0.875rem; color: var(--text-dark); vertical-align: middle;
         }
         .data-table tbody tr:last-child td { border-bottom: none; }
-        .badge-complete {
-            display: inline-block;
-            background: var(--success-bg);
-            color: var(--success-txt);
-            border: 1px solid #b2dfc5;
-            border-radius: 99px;
-            padding: 0.2rem 0.65rem;
-            font-size: 0.72rem;
-            font-weight: 700;
-        }
+        .data-table tbody tr:hover td { background: var(--cream); }
+        .file-path { font-family: monospace; font-size: 0.78rem; color: var(--text-light); word-break: break-all; }
+        .size-badge { background: var(--beige); color: var(--text-light); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+
+        .empty-row { text-align: center; padding: 3rem 1rem; color: var(--text-light); font-size: 0.875rem; }
+        .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
 <form id="form1" runat="server">
+
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="brand-name">Castro Catering</div>
-            <div class="brand-sub">Admin Panel</div>
+            <a href="Home.aspx" class="brand">
+                <div>
+                    <div class="brand-name">Castro Catering</div>
+                    <div class="brand-sub">Admin Panel</div>
+                </div>
+            </a>
         </div>
         <div class="sidebar-nav">
-            <a href="AdminDashboard.aspx" class="nav-link">📊 Dashboard</a>
+            <a href="AdminDashboard.aspx"        class="nav-link">📊 Dashboard</a>
             <a href="AdminBookingManagement.aspx" class="nav-link">📋 Booking Management</a>
-            <a href="AdminAddPackage.aspx" class="nav-link">➕ Add Package</a>
-            <a href="AdminDatabaseBackup.aspx" class="nav-link active">🗄️ Database Backup</a>
+            <a href="AdminAddPackage.aspx"        class="nav-link">➕ Add Package</a>
+            <a href="AdminDatabaseBackup.aspx"    class="nav-link active">🗄️ Database Backup</a>
         </div>
         <div class="sidebar-footer">
-            <a href="Home.aspx" class="btn-back">← Back to Site</a>
-            <a href="LoginSignup.aspx" class="btn-signout">⎋ Sign Out</a>
+            <a href="Home.aspx"         class="btn-back">← Back to Site</a>
+            <a href="LoginSignup.aspx"  class="btn-signout">⎋ Sign Out</a>
         </div>
     </aside>
 
-    <main class="main">
+    <!-- MAIN -->
+    <div class="main">
+
         <div class="page-header">
             <h1>Database Backup</h1>
-            <p class="page-sub">Create backup copies of your system database for recovery and security.</p>
+            <p class="page-sub">Create and manage full backups of the CastroCatering_DB database</p>
         </div>
 
-        <section class="card">
-            <div class="backup-info">
-                This feature creates a backup copy of the database so your records can be recovered in case of accidental loss, corruption, or unexpected system issues.
-            </div>
-            <div class="action-row">
-                <button id="btnCreateBackup" type="button" class="btn-backup">Create Database Backup</button>
-                <div id="progressWrap" class="progress-wrap">
-                    <div class="progress-top">
-                        <span>Creating backup...</span>
-                        <span id="progressPct">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div id="progressFill" class="progress-fill"></div>
-                    </div>
+        <!-- STAT CARDS -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon ic-gold">🗄️</div>
+                <div>
+                    <span class="stat-label">Database Size</span>
+                    <asp:Label ID="lblDbSize" runat="server" CssClass="stat-val" Text="—" />
                 </div>
             </div>
-            <div id="successMsg" class="success-msg">Database backup created successfully</div>
-        </section>
-
-        <section class="card">
-            <h2 class="record-title">Backup Record</h2>
-            <div class="tbl-wrap">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Backup File Name</th>
-                            <th>Date Created</th>
-                            <th>Time Created</th>
-                            <th>Backup Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="backupTableBody">
-                        <tr>
-                            <td colspan="4" style="color:#7e7267; font-style:italic;">No backup created yet.</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="stat-card">
+                <div class="stat-icon ic-blue">🕐</div>
+                <div>
+                    <span class="stat-label">Last Backup</span>
+                    <asp:Label ID="lblLastBackup" runat="server" CssClass="stat-val" Text="—" />
+                </div>
             </div>
-        </section>
-    </main>
+            <div class="stat-card">
+                <div class="stat-icon ic-green">📋</div>
+                <div>
+                    <span class="stat-label">Total Records</span>
+                    <asp:Label ID="lblTotalRecords" runat="server" CssClass="stat-val" Text="—" />
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon ic-warm">👥</div>
+                <div>
+                    <span class="stat-label">Registered Users</span>
+                    <asp:Label ID="lblTotalUsers" runat="server" CssClass="stat-val" Text="—" />
+                </div>
+            </div>
+        </div>
+
+        <!-- BACKUP ACTION CARD -->
+        <div class="card">
+            <div class="card-head">
+                <h2>🗄️ Create New Backup</h2>
+            </div>
+            <div class="card-body">
+                <div class="backup-action">
+                    <asp:Button ID="btnBackup" runat="server"
+                        Text="💾  Back Up Now"
+                        CssClass="btn-backup"
+                        OnClick="btnBackup_Click"
+                        OnClientClick="this.disabled=true; this.value='⏳  Backing up...'; return true;" />
+                    <div class="backup-note">
+                        <strong>Full database backup</strong> — saves a complete snapshot of all tables,<br>
+                        bookings, users, packages, and reviews to the SQL Server backup folder.<br>
+                        <span style="color:#9B7A3A;">Backup path: <code>C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\Backup\</code></span>
+                    </div>
+                </div>
+                <asp:Label ID="lblStatus" runat="server" Visible="false" />
+            </div>
+        </div>
+
+        <!-- BACKUP HISTORY CARD -->
+        <div class="card">
+            <div class="card-head">
+                <h2>📂 Backup History</h2>
+                <span style="font-size:0.78rem;color:var(--text-light);">Last 20 full backups</span>
+            </div>
+            <div class="tbl-wrap">
+                <asp:GridView ID="gvBackupHistory" runat="server"
+                    AutoGenerateColumns="False"
+                    CssClass="data-table"
+                    GridLines="None">
+                    <EmptyDataTemplate>
+                        <div class="empty-row">
+                            <div class="empty-icon">📭</div>
+                            <p>No backups found. Click <strong>Back Up Now</strong> to create your first backup.</p>
+                        </div>
+                    </EmptyDataTemplate>
+                    <Columns>
+                        <asp:BoundField DataField="BackupDate" HeaderText="Date &amp; Time"
+                            DataFormatString="{0:MMM dd, yyyy  h:mm tt}" HtmlEncode="false" />
+                        <asp:BoundField DataField="BackupName" HeaderText="Backup Name" />
+                        <asp:TemplateField HeaderText="File Path">
+                            <ItemTemplate>
+                                <span class="file-path"><%# Eval("FilePath") %></span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Size">
+                            <ItemTemplate>
+                                <span class="size-badge"><%# Eval("SizeMB") %> MB</span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+                <asp:PlaceHolder ID="phNoHistory" runat="server" Visible="false">
+                    <div class="empty-row">
+                        <div class="empty-icon">📭</div>
+                        <p>No backup history available.</p>
+                    </div>
+                </asp:PlaceHolder>
+            </div>
+        </div>
+
+    </div>
 </form>
-
-<script>
-    (function () {
-        var btn = document.getElementById('btnCreateBackup');
-        var progressWrap = document.getElementById('progressWrap');
-        var progressFill = document.getElementById('progressFill');
-        var progressPct = document.getElementById('progressPct');
-        var successMsg = document.getElementById('successMsg');
-        var backupTableBody = document.getElementById('backupTableBody');
-
-        function pad(n) { return String(n).padStart(2, '0'); }
-
-        function formatDate(d) {
-            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-        }
-
-        function formatTime(d) {
-            var hours = d.getHours();
-            var mins = pad(d.getMinutes());
-            var ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            if (hours === 0) hours = 12;
-            return hours + ':' + mins + ' ' + ampm;
-        }
-
-        function buildFileName(d) {
-            return 'CastroBackup_' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '_' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.bak';
-        }
-
-        btn.addEventListener('click', function () {
-            btn.disabled = true;
-            successMsg.style.display = 'none';
-            progressWrap.style.display = 'block';
-            progressFill.style.width = '0%';
-            progressPct.textContent = '0%';
-
-            var pct = 0;
-            var timer = setInterval(function () {
-                pct += 10;
-                progressFill.style.width = pct + '%';
-                progressPct.textContent = pct + '%';
-
-                if (pct >= 100) {
-                    clearInterval(timer);
-                    setTimeout(function () {
-                        var now = new Date();
-                        var row = document.createElement('tr');
-                        row.innerHTML =
-                            '<td>' + buildFileName(now) + '</td>' +
-                            '<td>' + formatDate(now) + '</td>' +
-                            '<td>' + formatTime(now) + '</td>' +
-                            '<td><span class="badge-complete">Completed</span></td>';
-
-                        if (backupTableBody.children.length === 1 && backupTableBody.children[0].children.length === 1) {
-                            backupTableBody.innerHTML = '';
-                        }
-                        backupTableBody.insertBefore(row, backupTableBody.firstChild);
-
-                        progressWrap.style.display = 'none';
-                        successMsg.style.display = 'block';
-                        btn.disabled = false;
-                    }, 300);
-                }
-            }, 140);
-        });
-    })();
-</script>
 </body>
 </html>
