@@ -507,21 +507,21 @@
                 <div class="dev-card">
                     <img src="../Assests/stephanie.jpg" alt="stephanie" class="dev-photo" />
                     <div class="dev-name">STEPHANIE ONG</div>
-                    <div class="dev-role">Full Stack Developer</div>
+                    <!-- <div class="dev-role">Full Stack Developer</div>-->
                     <p class="dev-desc">Responsible for system architecture, database design, and back-end development.</p>
                 </div>
 
                 <div class="dev-card">
                     <img src="../Assests/alyssa.jpg" alt="alyssa" class="dev-photo" /> 
                     <div class="dev-name">ALYSSA TEO</div>
-                    <div class="dev-role">Database Administrator</div>
+                   <!-- <div class="dev-role">Database Administrator</div> -->
                     <p class="dev-desc">Managed the SQL Server database, queries, and data integrity for the booking system.</p>
                 </div>
 
                 <div class="dev-card">
                     <img src="../Assests/erilyn.jpg" alt="erilyn" class="dev-photo" />
                     <div class="dev-name">ERILYN KATE ABREGANA</div>
-                    <div class="dev-role">UI/UX Designer</div>
+                   <!-- <div class="dev-role">UI/UX Designer</div> -->
                     <p class="dev-desc">Designed the user interface and ensured a seamless, elegant experience across all pages.</p>
                 </div>
 

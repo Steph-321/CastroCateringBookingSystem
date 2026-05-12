@@ -1334,10 +1334,10 @@
             <div class="footer-col">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="packages.html">Our Packages</a></li>
-                    <li><a href="booking.html">Book an Event</a></li>
-                    <li><a href="smart-pick.html">Smart Pick</a></li>
-                    <li><a href="aboutUs.html">About Us</a></li>
+                    <li><a href="Packages.aspx">Our Packages</a></li>
+                    <li><a href="Booking.aspx">Book an Event</a></li>
+                    <li><a href="SmartPicker.aspx">Smart Pick</a></li>
+                    <li><a href="AboutUs.aspx">About Us</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1679,19 +1679,32 @@
 
             /* ── MOA CHECKBOX ── */
             window.onMOAChange = function() {
-                var chk   = document.getElementById('chkMOA');
-                var label = document.getElementById('moaCheckLabel');
-                var msg   = document.getElementById('moaRequiredMsg');
+                var chk    = document.getElementById('chkMOA');
+                var label  = document.getElementById('moaCheckLabel');
+                var msg    = document.getElementById('moaRequiredMsg');
+                var btn    = document.getElementById('<%= btnConfirm.ClientID %>');
 
                 if (chk && chk.checked) {
                     document.getElementById('<%= hfMOAAccepted.ClientID %>').value = '1';
                     if (label) label.classList.add('agreed');
                     if (msg)   msg.style.display = 'none';
+                    if (btn)   { btn.disabled = false; btn.title = ''; }
                 } else {
                     document.getElementById('<%= hfMOAAccepted.ClientID %>').value = '0';
                     if (label) label.classList.remove('agreed');
+                    if (btn)   { btn.disabled = true; btn.title = 'You must agree to the Memorandum of Agreement first.'; }
                 }
             };
+
+            /* ── Disable confirm button on page load until MOA is checked ── */
+            (function initMOAButton() {
+                var btn = document.getElementById('<%= btnConfirm.ClientID %>');
+                var chk = document.getElementById('chkMOA');
+                if (btn && chk && !chk.checked) {
+                    btn.disabled = true;
+                    btn.title = 'You must agree to the Memorandum of Agreement first.';
+                }
+            })();
 
             /* ── Shared helpers ── */
             function _writeHiddenFields() {

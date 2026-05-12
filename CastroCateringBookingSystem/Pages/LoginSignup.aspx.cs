@@ -152,13 +152,26 @@ namespace CastroCateringBookingSystem.Pages
                         insertCmd.Parameters.AddWithValue("@Phone",    phone);
                         insertCmd.Parameters.AddWithValue("@Address",  address);
 
-                        int newUserId = Convert.ToInt32(insertCmd.ExecuteScalar());
-                        Session["UserID"] = newUserId;
+                        insertCmd.ExecuteScalar();
                     }
                 }
 
-                Session["Username"] = username;
-                RedirectWithUser(username, email, phone, address);
+                // Clear the sign-up form fields
+                txtRegUsername.Text = "";
+                txtRegEmail.Text    = "";
+                txtRegPassword.Text = "";
+                txtRegPhone.Text    = "";
+                txtRegAddress.Text  = "";
+
+                // Switch back to the login panel and show a success message
+                hfActivePanel.Value = "login";
+                SetStatus(lblLoginStatus,
+                    "Account created! Please log in to continue.", true);
+                SetStatus(lblRegStatus, "", true);
+
+                // Tell the client-side JS to slide back to the login panel
+                ClientScript.RegisterStartupScript(GetType(), "switchToLogin",
+                    "showLogin();", true);
             }
             catch (Exception ex)
             {
