@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
 
-namespace CastroCateringBookingSystem.Pages
+namespace CastroCateringBookingSystem.Admin
 {
     public partial class AdminDatabaseBackup : Page
     {
@@ -17,6 +17,12 @@ namespace CastroCateringBookingSystem.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
+            {
+                Response.Redirect("~/Admin/AdminLogin.aspx");
+                return;
+            }
+
             // Handle download request via query string: ?download=filename.bak
             string dlFile = Request.QueryString["download"];
             if (!string.IsNullOrEmpty(dlFile))

@@ -9,15 +9,20 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace CastroCateringBookingSystem.Pages
+namespace CastroCateringBookingSystem.Admin
 {
     public partial class AdminBookingManagement : System.Web.UI.Page
     {
         string ConnStr = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
-        
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
+            {
+                Response.Redirect("~/Admin/AdminLogin.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 LoadBookings();

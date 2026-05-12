@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI.WebControls;
 
-namespace CastroCateringBookingSystem.Pages
+namespace CastroCateringBookingSystem.Admin
 {
     public partial class AdminAddPackage : System.Web.UI.Page
     {
@@ -19,9 +19,10 @@ namespace CastroCateringBookingSystem.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["Admin"] == null)
+            if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
             {
-                Response.Redirect("~/Pages/LoginSignup.aspx");
+                Response.Redirect("~/Admin/AdminLogin.aspx");
+                return;
             }
 
             if (!IsPostBack)

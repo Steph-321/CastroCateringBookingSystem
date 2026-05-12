@@ -1,13 +1,13 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true"
-CodeBehind="AdminBookingManagement.aspx.cs"
-Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
+CodeBehind="AdminDashboard.aspx.cs"
+Inherits="CastroCateringBookingSystem.Admin.AdminDashboard" %>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Management — Castro Admin</title>
+    <title>Admin - Castro Catering</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,12 +28,12 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             --warn-txt:    #8A6200;
             --info-bg:     #EBF4FD;
             --info-txt:    #1558A0;
-            --danger-bg:   #FDE8E8;
-            --danger-txt:  #9B1C1C;
             --sidebar-w:   260px;
         }
 
-        html, body { height: 100%; }
+        html, body {
+            height: 100%;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -59,8 +59,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0; 
-            left: 0;
+            top: 0; left: 0;
             height: 100vh;
             overflow-y: auto;
             z-index: 100;
@@ -135,12 +134,11 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
 
         .nav-link .icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
         .nav-link:hover { background: var(--beige); color: var(--dark-brown); }
-       .nav-link.active {
+        .nav-link.active {
             background: var(--beige);
             color: var(--gold);
             font-weight: 600;
         }
-
         .sidebar-footer {
             padding: 1.25rem 1rem;
             border-top: 1px solid var(--border);
@@ -148,20 +146,6 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             flex-direction: column;
             gap: 0.4rem;
         }
-
-        .btn-back {
-            display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.6rem 0.875rem;
-            background: var(--beige);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 0.82rem;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-        .btn-back:hover { background: #ede6db; }
 
         .btn-signout {
             display: flex; align-items: center; gap: 0.5rem;
@@ -177,13 +161,27 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             transition: background 0.2s;
         }
         .btn-signout:hover { background: #fff0f0; }
-
-        /* ── MAIN CONTENT ── */
-        .main {
+      
+       .main {
             margin-left: var(--sidebar-w);
-            flex: 1;
-            padding: 2.5rem 2.5rem 3rem;
+            width: calc(100% - var(--sidebar-w));
+            padding: 2rem 2.5rem;
+            box-sizing: border-box;
+
             min-width: 0;
+            overflow-x: hidden;
+        }
+        /* ── MAIN CONTENT ── */
+       .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         /* ── PAGE HEADER ── */
@@ -208,69 +206,151 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             margin-top: 0.2rem;
         }
 
-        .count-pill {
+        .live-pill {
             display: inline-flex;
             align-items: center;
-            background: var(--white);
-            border: 1px solid var(--border);
+            gap: 0.4rem;
+            background: var(--success-bg);
+            color: var(--success-txt);
+            border: 1px solid #b2dfc5;
             border-radius: 99px;
-            padding: 0.35rem 1rem;
-            font-size: 0.8rem;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: var(--dark-brown);
             white-space: nowrap;
         }
 
-        /* ── CARDS ── */
-        .card {
+        .live-dot {
+            width: 6px; height: 6px;
+            background: var(--success-txt);
+            border-radius: 50%;
+            animation: blink 1.6s ease-in-out infinite;
+        }
+
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+        /* ── STAT CARDS ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-head {
+            padding: 1.5rem 1.5rem;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 1.1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
+            gap: 1.1rem;
+            transition: box-shadow 0.2s, transform 0.2s;
         }
 
-        .card-head h2 { font-size: 1rem; color: var(--dark-brown); }
-
-        /* ── TABLE ── */
-        .tbl-wrap { overflow-x: auto; }
-
-       .data-table {
-            width: 100%;
-            border-collapse: collapse;
+        .stat-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+            transform: translateY(-2px);
         }
 
-        .data-table thead th {
-            background: var(--beige);
-            padding: 0.85rem 1.25rem;
-            text-align: center;
+        .stat-icon {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .ic-gold   { background: #FDF5E4; }
+        .ic-blue   { background: var(--info-bg); }
+        .ic-green  { background: var(--success-bg); }
+        .ic-warm   { background: #FFF0E6; }
+
+        .stat-label {
             font-size: 0.7rem;
             font-weight: 700;
             color: var(--text-light);
             text-transform: uppercase;
             letter-spacing: 0.07em;
-            white-space: nowrap;
+            display: block;
         }
 
-        .data-table tbody td {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.875rem;
-            color: var(--text-dark);
-            vertical-align: middle;
-            text-align: center;
+        .stat-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            line-height: 1.1;
+            display: block;
         }
 
-        .data-table tbody tr:last-child td { border-bottom: none; }
-        .data-table tbody tr:hover td { background: var(--cream); }
+        /* ── CARDS ── */
+        .card {
+             background: var(--white);
+             border: 1px solid var(--border);
+             border-radius: 14px;
+             overflow: hidden;
+             margin-bottom: 1.5rem;
+         }
+
+         .card-head {
+             display: flex;
+             align-items: center;
+             justify-content: space-between;
+             padding: 1.1rem 1.5rem;
+             border-bottom: 1px solid var(--border);
+         }
+
+         .card-head h2 { font-size: 1rem; color: var(--dark-brown); }
+
+        .chip {
+            background: var(--beige);
+            color: var(--text-light);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.65rem;
+            border-radius: 99px;
+        }
+
+        /* ── TABLE ── */
+        .tbl-wrap {
+             width: 100%;
+             overflow-x: auto; }
+
+         .data-table {
+            width: 100%;
+            table-layout: auto;
+            border-collapse: collapse;   
+            border: none;              
+        }
+         .data-table, 
+            .data-table th, 
+            .data-table td {
+                border: none;
+            }
+          .data-table thead th {
+              background: var(--beige);
+              padding: 0.85rem 1.25rem;
+              text-align: center;
+              font-size: 0.7rem;
+              font-weight: 700;
+              color: var(--text-light);
+              text-transform: uppercase;
+              letter-spacing: 0.07em;
+              white-space: nowrap;
+          }
+
+          .data-table tbody td {
+              padding: 1rem 1.25rem;
+              border-bottom: 1px solid var(--border);
+              font-size: 0.875rem;
+              color: var(--text-dark);
+              vertical-align: middle;
+              text-align: center;
+          }
+
+          .data-table tbody tr:last-child td { border-bottom: none; }
+          .data-table tbody tr:hover td { background: var(--cream); }
 
         /* ── BADGES ── */
         .badge {
@@ -286,38 +366,18 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
         .badge-Pending   { background: var(--warn-bg);    color: var(--warn-txt);    border: 1px solid #FFD54F; }
         .badge-Approved  { background: var(--success-bg); color: var(--success-txt); border: 1px solid #A5D6B7; }
         .badge-Completed { background: var(--info-bg);    color: var(--info-txt);    border: 1px solid #90CAF9; }
-        .badge-Cancelled { background: var(--danger-bg);  color: var(--danger-txt);  border: 1px solid #F5A0A0; }
-
-        /* ── ACTION BUTTONS ── */
-        .actions { display: flex; gap: 0.4rem; }
-
-        .btn-act {
-            padding: 0.3rem 0.8rem;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: opacity 0.2s, transform 0.15s;
-            white-space: nowrap;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-act:hover { opacity: 0.8; transform: translateY(-1px); }
-        .btn-act:active { transform: translateY(0); }
-
-        .btn-approve { background: var(--success-bg); color: var(--success-txt); border-color: #A5D6B7; }
-        .btn-done    { background: var(--info-bg);    color: var(--info-txt);    border-color: #90CAF9; }
-        .btn-delete  { background: var(--danger-bg);  color: var(--danger-txt);  border-color: #F5A0A0; }
+        .badge-Cancelled { background: #FDE8E8;           color: #9B1C1C;            border: 1px solid #F5A0A0; }
 
         /* ── PACKAGE STATISTICS INFOGRAPHIC ── */
         .pkg-list { padding: 1.5rem; }
 
+        /* Bar chart */
         .pkg-chart-wrap {
             display: flex;
             align-items: flex-end;
             gap: 0.5rem;
             height: 200px;
+            padding-bottom: 0;
             margin-bottom: 1.5rem;
             border-bottom: 2px solid var(--border);
             position: relative;
@@ -354,7 +414,11 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             gap: 4px;
         }
 
-        .pkg-bar-val { font-size: 0.7rem; font-weight: 700; color: var(--text-light); }
+        .pkg-bar-val {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
 
         .pkg-bar-outer {
             width: 100%;
@@ -386,6 +450,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             margin-top: 4px;
         }
 
+        /* Circle indicators */
         .pkg-circles {
             display: flex;
             flex-wrap: wrap;
@@ -402,10 +467,15 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             min-width: 80px;
         }
 
-        .pkg-circle-wrap { position: relative; width: 80px; height: 80px; }
+        .pkg-circle-wrap {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
 
         .pkg-circle-svg {
-            width: 80px; height: 80px;
+            width: 80px;
+            height: 80px;
             transform: rotate(-90deg);
         }
 
@@ -435,11 +505,26 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             white-space: nowrap;
         }
 
-        .pkg-circle-sub { font-size: 0.7rem; color: var(--text-light); text-align: center; }
+        .pkg-circle-sub {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-align: center;
+        }
 
-        .pkg-empty { color: var(--text-light); font-size: 0.875rem; padding: 2rem; text-align: center; }
+        .pkg-empty {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            padding: 2rem;
+            text-align: center;
+        }
 
-        .empty { text-align: center; padding: 4rem 1rem; color: var(--text-light); }
+        /* ── EMPTY ── */
+        .empty {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-light);
+        }
+
         .empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
         .empty p { font-size: 0.875rem; }
     </style>
@@ -452,7 +537,7 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="Home.aspx" class="brand">
-                
+               
                 <div>
                     <div class="brand-name">Castro Catering</div>
                     <div class="brand-sub">Admin Panel</div>
@@ -460,95 +545,123 @@ Inherits="CastroCateringBookingSystem.Pages.AdminBookingManagement" %>
             </a>
         </div>
 
-           <div class="sidebar-nav">
+          <div class="sidebar-nav">
 
-           <a href="AdminDashboard.aspx" class="nav-link">📊 Dashboard</a>
-           <a href="AdminBookingManagement.aspx" class="nav-link active">📋 Booking Management</a>
-           <a href="AdminAddPackage.aspx" class="nav-link">➕ Add Package</a>
-           <a href="AdminDatabaseBackup.aspx" class="nav-link">🗄️ Database Backup</a>
+          <a href="AdminDashboard.aspx" class="nav-link active">📊 Dashboard</a>
+          <a href="AdminBookingManagement.aspx" class="nav-link">📋 Booking Management</a>
+          <a href="AdminAddPackage.aspx" class="nav-link">➕ Add Package</a>
+          <a href="AdminDatabaseBackup.aspx" class="nav-link">🗄️ Database Backup</a>
 
-        </div>
+            </div>
 
         <div class="sidebar-footer">
-            <a href="Home.aspx" class="btn-back">← Back to Site</a>
-            <a href="LoginSignup.aspx" class="btn-signout">⎋ Sign Out</a>
+            <a href="AdminLogin.aspx?signout=1" class="btn-signout">→ Sign out</a>
         </div>
     </aside>
 
     <!-- MAIN -->
     <div class="main">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+            <ContentTemplate>
 
-        <div class="page-header">
-            <div>
-                <h1>Booking Management</h1>
-                <p class="page-sub">Review, approve, and manage all customer bookings</p>
+                <div class="page-header">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p class="page-sub">Live overview of all bookings and activity</p>
+                    </div>
+                </div>
+
+               <div class="stats-row">
+
+            <div class="stat-card">
+               
+                <div>
+                    <span class="stat-label">Upcoming</span>
+                    <asp:Label ID="lblUpcoming" runat="server" CssClass="stat-val" />
+                </div>
             </div>
-            <asp:Label ID="lblTotalBookings" runat="server" CssClass="count-pill" />
-        </div>
 
-        <!-- Bookings Table -->
-        <div class="card">
-            <div class="card-head">
-                <h2>All Bookings</h2>
+            <div class="stat-card">
+       
+                <div>
+                    <span class="stat-label">Completed</span>
+                    <asp:Label ID="lblCompleted" runat="server" CssClass="stat-val" />
+                </div>
             </div>
-            <div class="tbl-wrap">
-                <asp:GridView ID="GridViewBookings" runat="server"
-                    AutoGenerateColumns="False"
-                    CssClass="data-table"
-                    GridLines="None"
-                    DataKeyNames="BookingID"
-                    OnRowDeleting="GridViewBookings_RowDeleting"
-                    OnRowCommand="GridViewBookings_RowCommand">
-                    <EmptyDataTemplate>
-                        <div class="empty">
-                            <div class="empty-icon">📭</div>
-                            <p>No bookings found.</p>
-                        </div>
-                    </EmptyDataTemplate>
-                    <Columns>
-                      <asp:BoundField DataField="BookingID" HeaderText="ID" ItemStyle-Width="5%" />
-                        <asp:BoundField DataField="CustomerName" HeaderText="Client" ItemStyle-Width="15%" />
-                        <asp:BoundField DataField="EventType" HeaderText="Event" ItemStyle-Width="12%" />
-                        <asp:BoundField DataField="EventDate" HeaderText="Date" ItemStyle-Width="12%" />
-                        <asp:BoundField DataField="NoOfGuests" HeaderText="Guests" ItemStyle-Width="8%" />
-                        <asp:BoundField DataField="PackageID" HeaderText="Package" ItemStyle-Width="8%" />
-                        <asp:BoundField DataField="Total" HeaderText="Total" ItemStyle-Width="10%" />
-                       <asp:TemplateField HeaderText="Status" ItemStyle-Width="12%">
-                            <ItemTemplate>
-                                <span class='badge badge-<%# Eval("Status") %>'>
-                                    <%# Eval("Status") %>
-                                </span>
-                            </ItemTemplate>
-                        </asp:TemplateField>
 
-                        <asp:TemplateField HeaderText="Actions" ItemStyle-Width="18%">
-                            <ItemTemplate>
-                                <div class="actions">
-                                    <asp:Button runat="server" Text="Approve"
-                                        CommandName="Approve"
-                                        CommandArgument='<%# Eval("BookingID") %>'
-                                        CssClass="btn-act btn-approve" />
+            <div class="stat-card">
 
-                                    <asp:Button runat="server" Text="Done"
-                                        CommandName="Done"
-                                        CommandArgument='<%# Eval("BookingID") %>'
-                                        CssClass="btn-act btn-done" />
-
-                                    <asp:Button runat="server" Text="Delete"
-                                        CommandName="Delete"
-                                        CommandArgument='<%# Eval("BookingID") %>'
-                                        CssClass="btn-act btn-delete"
-                                        OnClientClick="return confirm('Delete this booking?');" />
-                                </div>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
+                <div>
+                    <span class="stat-label">Total Guests</span>
+                    <asp:Label ID="lblGuests" runat="server" CssClass="stat-val" />
+                </div>
             </div>
+
+            <div class="stat-card">
+  
+                <div>
+                    <span class="stat-label">Total Bookings</span>
+                <asp:Label ID="lblTotalBookings" runat="server" CssClass="stat-val" />                </div>
+            </div>
+
         </div>
 
 
+            <!-- LEFT: RECENT BOOKINGS -->
+            <div class="card">
+                <div class="card-head">
+                    <h2>Recent Bookings</h2>
+                    <span class="chip">Live</span>
+                </div>
+
+                <div class="tbl-wrap">
+                    <asp:GridView ID="GridViewRecent" runat="server"
+                        AutoGenerateColumns="False"
+                        CssClass="data-table">
+                        <EmptyDataTemplate>
+                            <div class="empty">
+                                <div class="empty-icon">📭</div>
+                                <p>No bookings yet.</p>
+                            </div>
+                        </EmptyDataTemplate>
+                        <Columns>
+                            <asp:BoundField DataField="BookingID"    HeaderText="ID" />
+                            <asp:BoundField DataField="CustomerName" HeaderText="Client" />
+                            <asp:BoundField DataField="EventType"    HeaderText="Event" />
+                            <asp:BoundField DataField="EventDate"    HeaderText="Date"
+                                DataFormatString="{0:MMM dd, yyyy}" HtmlEncode="false" />
+                            <asp:BoundField DataField="PackageID"    HeaderText="Package" />
+                            <asp:BoundField DataField="Total"        HeaderText="Total"
+                                DataFormatString="&#8369;{0:N0}" HtmlEncode="false" />
+                            <asp:TemplateField HeaderText="Status">
+                                <ItemTemplate>
+                                    <span class='badge badge-<%# Eval("Status") %>'>
+                                        <%# Eval("Status") %>
+                                    </span>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </div>
+
+                <!-- Package Statistics -->
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Package Statistics</h2>
+                    </div>
+                    <div class="pkg-list">
+                        <asp:Label ID="lblPackageStats" runat="server" />
+                    </div>
+                </div>
+
+                <asp:Timer ID="Timer1" runat="server" Interval="5000" OnTick="Timer1_Tick" />
+
+            </ContentTemplate>
+        </asp:UpdatePanel>
     </div>
 
-</form></body>
+</form>
+</body>
 </html>

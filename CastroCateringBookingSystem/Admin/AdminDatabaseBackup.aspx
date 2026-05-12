@@ -1,12 +1,12 @@
 <%@ Page Language="C#" AutoEventWireup="true"
     CodeBehind="AdminDatabaseBackup.aspx.cs"
-    Inherits="CastroCateringBookingSystem.Pages.AdminDatabaseBackup" %>
+    Inherits="CastroCateringBookingSystem.Admin.AdminDatabaseBackup" %>
 <!DOCTYPE html>
 <html lang="en">
 <head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Backup — Castro Admin</title>
+    <title>Admin - Castro Catering</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -56,23 +56,28 @@
         }
         .nav-link:hover { background: var(--beige); color: var(--dark-brown); }
         .nav-link.active { background: var(--beige); color: var(--gold); font-weight: 600; }
-        .sidebar-footer { padding: 1.25rem 1rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.4rem; }
-        .btn-back {
-            display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.6rem 0.875rem; background: var(--beige);
-            border: 1px solid var(--border); border-radius: 10px;
-            text-decoration: none; color: var(--text-dark);
-            font-size: 0.82rem; font-weight: 500; transition: background 0.2s;
+        .sidebar-footer {
+            padding: 1.25rem 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
         }
-        .btn-back:hover { background: #ede6db; }
+
         .btn-signout {
             display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.6rem 0.875rem; background: transparent; border: none;
-            border-radius: 10px; color: #b83232;
-            font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: background 0.2s;
+            padding: 0.6rem 0.875rem;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #b83232;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
         }
         .btn-signout:hover { background: #fff0f0; }
-
         /* ── MAIN ── */
         .main { margin-left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); padding: 2rem 2.5rem; box-sizing: border-box; }
 
@@ -153,7 +158,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <a href="Home.aspx" class="brand">
+            <a href="../Pages/Home.aspx" class="brand">
                 <div>
                     <div class="brand-name">Castro Catering</div>
                     <div class="brand-sub">Admin Panel</div>
@@ -167,8 +172,7 @@
             <a href="AdminDatabaseBackup.aspx"    class="nav-link active">🗄️ Database Backup</a>
         </div>
         <div class="sidebar-footer">
-            <a href="Home.aspx"         class="btn-back">← Back to Site</a>
-            <a href="LoginSignup.aspx"  class="btn-signout">⎋ Sign Out</a>
+            <a href="AdminLogin.aspx?signout=1" class="btn-signout">→ Sign out</a>
         </div>
     </aside>
 

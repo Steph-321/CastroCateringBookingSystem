@@ -787,7 +787,6 @@
 
             <div class="nav-icons">
                 <button class="btn-login" id="btnNavAuth" onclick="window.location='LoginSignup.aspx'">Log In</button>
-                <button class="btn-login" onclick="showAdminLogin()" style="margin-left:0.5rem;">Admin</button>
                 <button class="mobile-menu" type="button" aria-label="Open navigation menu" aria-controls="primaryNav" aria-expanded="false">
                     <span></span>
                     <span></span>
@@ -1083,33 +1082,6 @@
             box.style.transition = `all 0.6s ease-out ${index * 0.2}s`;
             observer.observe(box);
         });
-    </script>
-
-    <!-- Admin Login Modal -->
-    <script>
-        function showAdminLogin() {
-            document.getElementById('adminLoginOverlay').style.display = 'flex';
-            document.getElementById('adminUsername').value = '';
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('adminError').style.display = 'none';
-            setTimeout(function(){ document.getElementById('adminUsername').focus(); }, 100);
-        }
-        function closeAdminLogin() {
-            document.getElementById('adminLoginOverlay').style.display = 'none';
-        }
-        function submitAdminLogin() {
-            var u = document.getElementById('adminUsername').value.trim();
-            var p = document.getElementById('adminPassword').value;
-            if (u === 'admin' && p === 'admin123') {
-                closeAdminLogin();
-                window.location.href = 'AdminDashboard.aspx';
-            } else {
-                document.getElementById('adminError').style.display = 'block';
-            }
-        }
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeAdminLogin();
-        });
 
         /* ── Auth helpers ── */
         function getUser() {
@@ -1150,39 +1122,6 @@
             }
         })();
     </script>
-    <!-- Admin Login Modal -->
-    <div id="adminLoginOverlay" style="display:none;position:fixed;inset:0;background:rgba(33,28,24,0.65);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeAdminLogin()">
-        <div style="background:#fff;border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;font-family:'Inter',sans-serif;">
-            <button onclick="closeAdminLogin()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.25rem;cursor:pointer;color:#756e64;line-height:1;">&times;</button>
-            <div style="text-align:center;margin-bottom:1.5rem;">
-                <div style="font-size:2rem;margin-bottom:0.5rem;">🔐</div>
-                <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;color:#4A3F35;margin-bottom:0.25rem;">Admin Access</h2>
-                <p style="font-size:0.85rem;color:#756e64;">Enter your admin credentials to continue.</p>
-            </div>
-            <div style="margin-bottom:1rem;">
-                <label style="display:block;font-size:0.72rem;font-weight:600;color:#8a8177;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:0.4rem;">Username</label>
-                <input id="adminUsername" type="text" placeholder="admin" onkeydown="if(event.key==='Enter')submitAdminLogin()"
-                    style="width:100%;padding:0.65rem 0.9rem;border:1px solid #e5dcd0;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;color:#2C2420;background:#fcfbf9;outline:none;box-sizing:border-box;transition:border-color 0.25s;"
-                    onfocus="this.style.borderColor='#C9A961';this.style.boxShadow='0 0 0 3px rgba(201,169,97,0.15)'"
-                    onblur="this.style.borderColor='#e5dcd0';this.style.boxShadow='none'" />
-            </div>
-            <div style="margin-bottom:1.25rem;">
-                <label style="display:block;font-size:0.72rem;font-weight:600;color:#8a8177;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:0.4rem;">Password</label>
-                <input id="adminPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAdminLogin()"
-                    style="width:100%;padding:0.65rem 0.9rem;border:1px solid #e5dcd0;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;color:#2C2420;background:#fcfbf9;outline:none;box-sizing:border-box;transition:border-color 0.25s;"
-                    onfocus="this.style.borderColor='#C9A961';this.style.boxShadow='0 0 0 3px rgba(201,169,97,0.15)'"
-                    onblur="this.style.borderColor='#e5dcd0';this.style.boxShadow='none'" />
-            </div>
-            <div id="adminError" style="display:none;background:#fff0f0;border:1px solid #f5c0c0;border-radius:8px;padding:0.6rem 0.9rem;font-size:0.83rem;color:#c40000;margin-bottom:1rem;text-align:center;">
-                Invalid username or password.
-            </div>
-            <button onclick="submitAdminLogin()"
-                style="width:100%;padding:0.75rem;background:#C9A961;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:0.9rem;color:#2C2420;cursor:pointer;transition:all 0.3s;box-shadow:0 2px 12px rgba(201,169,97,0.3);"
-                onmouseover="this.style.background='#a07535';this.style.color='white'"
-                onmouseout="this.style.background='#C9A961';this.style.color='#2C2420'">
-                Sign In to Admin
-            </button>
-        </div>
-    </div>
+
 </body>
 </html>

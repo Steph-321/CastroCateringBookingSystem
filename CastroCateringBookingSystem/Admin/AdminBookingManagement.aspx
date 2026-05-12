@@ -1,0 +1,539 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true"
+CodeBehind="AdminBookingManagement.aspx.cs"
+Inherits="CastroCateringBookingSystem.Admin.AdminBookingManagement" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Castro Catering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold:        #C9A961;
+            --gold-light:  #e8c97a;
+            --dark-brown:  #4A3F35;
+            --cream:       #FAF8F3;
+            --beige:       #F5F1E8;
+            --white:       #FFFFFF;
+            --text-dark:   #2C2420;
+            --text-light:  #6B5B4F;
+            --border:      #E8E0D5;
+            --success-bg:  #EDF7F1;
+            --success-txt: #1E6B3E;
+            --warn-bg:     #FFF8E1;
+            --warn-txt:    #8A6200;
+            --info-bg:     #EBF4FD;
+            --info-txt:    #1558A0;
+            --danger-bg:   #FDE8E8;
+            --danger-txt:  #9B1C1C;
+            --sidebar-w:   260px;
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* ── LAYOUT SHELL ── */
+        #form1 {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-width: var(--sidebar-w);
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; 
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.75rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 40px; height: 40px;
+            background: var(--gold);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            color: var(--white);
+        }
+
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            line-height: 1.2;
+        }
+
+        .brand-sub {
+            font-size: 0.68rem;
+            color: var(--text-light);
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 1rem;
+            flex: 1;
+        }
+
+        .nav-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 0 0.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.875rem;
+            margin-bottom: 0.15rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .nav-link .icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-link:hover { background: var(--beige); color: var(--dark-brown); }
+       .nav-link.active {
+            background: var(--beige);
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 1.25rem 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .btn-signout {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 0.875rem;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #b83232;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-signout:hover { background: #fff0f0; }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 2.5rem 2.5rem 3rem;
+            min-width: 0;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 1.9rem;
+            color: var(--dark-brown);
+            line-height: 1.15;
+        }
+
+        .page-sub {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        .count-pill {
+            display: inline-flex;
+            align-items: center;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            padding: 0.35rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark-brown);
+            white-space: nowrap;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-head h2 { font-size: 1rem; color: var(--dark-brown); }
+
+        /* ── TABLE ── */
+        .tbl-wrap { overflow-x: auto; }
+
+       .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead th {
+            background: var(--beige);
+            padding: 0.85rem 1.25rem;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+        }
+
+        .data-table tbody td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover td { background: var(--cream); }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-Pending   { background: var(--warn-bg);    color: var(--warn-txt);    border: 1px solid #FFD54F; }
+        .badge-Approved  { background: var(--success-bg); color: var(--success-txt); border: 1px solid #A5D6B7; }
+        .badge-Completed { background: var(--info-bg);    color: var(--info-txt);    border: 1px solid #90CAF9; }
+        .badge-Cancelled { background: var(--danger-bg);  color: var(--danger-txt);  border: 1px solid #F5A0A0; }
+
+        /* ── ACTION BUTTONS ── */
+        .actions { display: flex; gap: 0.4rem; }
+
+        .btn-act {
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: opacity 0.2s, transform 0.15s;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-act:hover { opacity: 0.8; transform: translateY(-1px); }
+        .btn-act:active { transform: translateY(0); }
+
+        .btn-approve { background: var(--success-bg); color: var(--success-txt); border-color: #A5D6B7; }
+        .btn-done    { background: var(--info-bg);    color: var(--info-txt);    border-color: #90CAF9; }
+        .btn-delete  { background: var(--danger-bg);  color: var(--danger-txt);  border-color: #F5A0A0; }
+
+        /* ── PACKAGE STATISTICS INFOGRAPHIC ── */
+        .pkg-list { padding: 1.5rem; }
+
+        .pkg-chart-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            height: 200px;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            position: relative;
+        }
+
+        .pkg-y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding-bottom: 4px;
+            font-size: 0.68rem;
+            color: var(--text-light);
+            text-align: right;
+            min-width: 28px;
+            flex-shrink: 0;
+        }
+
+        .pkg-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            flex: 1;
+            height: 100%;
+        }
+
+        .pkg-bar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 1;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .pkg-bar-val { font-size: 0.7rem; font-weight: 700; color: var(--text-light); }
+
+        .pkg-bar-outer {
+            width: 100%;
+            max-width: 40px;
+            height: 160px;
+            background: var(--beige);
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .pkg-bar-inner {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-height: 4px;
+        }
+
+        .pkg-bar-label {
+            font-size: 0.62rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-align: center;
+            max-width: 48px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 4px;
+        }
+
+        .pkg-circles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: center;
+            padding-top: 0.5rem;
+        }
+
+        .pkg-circle-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 80px;
+        }
+
+        .pkg-circle-wrap { position: relative; width: 80px; height: 80px; }
+
+        .pkg-circle-svg {
+            width: 80px; height: 80px;
+            transform: rotate(-90deg);
+        }
+
+        .pkg-circle-pct {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .pkg-circle-badge {
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pkg-circle-sub { font-size: 0.7rem; color: var(--text-light); text-align: center; }
+
+        .pkg-empty { color: var(--text-light); font-size: 0.875rem; padding: 2rem; text-align: center; }
+
+        .empty { text-align: center; padding: 4rem 1rem; color: var(--text-light); }
+        .empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty p { font-size: 0.875rem; }
+    </style>
+</head>
+
+<body>
+<form id="form1" runat="server">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="Home.aspx" class="brand">
+                
+                <div>
+                    <div class="brand-name">Castro Catering</div>
+                    <div class="brand-sub">Admin Panel</div>
+                </div>
+            </a>
+        </div>
+
+           <div class="sidebar-nav">
+
+           <a href="AdminDashboard.aspx" class="nav-link">📊 Dashboard</a>
+           <a href="AdminBookingManagement.aspx" class="nav-link active">📋 Booking Management</a>
+           <a href="AdminAddPackage.aspx" class="nav-link">➕ Add Package</a>
+           <a href="AdminDatabaseBackup.aspx" class="nav-link">🗄️ Database Backup</a>
+
+           </div>
+
+         <div class="sidebar-footer">
+             <a href="AdminLogin.aspx?signout=1" class="btn-signout">→ Sign out</a>
+         </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <div class="page-header">
+            <div>
+                <h1>Booking Management</h1>
+                <p class="page-sub">Review, approve, and manage all customer bookings</p>
+            </div>
+            <asp:Label ID="lblTotalBookings" runat="server" CssClass="count-pill" />
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="card">
+            <div class="card-head">
+                <h2>All Bookings</h2>
+            </div>
+            <div class="tbl-wrap">
+                <asp:GridView ID="GridViewBookings" runat="server"
+                    AutoGenerateColumns="False"
+                    CssClass="data-table"
+                    GridLines="None"
+                    DataKeyNames="BookingID"
+                    OnRowDeleting="GridViewBookings_RowDeleting"
+                    OnRowCommand="GridViewBookings_RowCommand">
+                    <EmptyDataTemplate>
+                        <div class="empty">
+                            <div class="empty-icon">📭</div>
+                            <p>No bookings found.</p>
+                        </div>
+                    </EmptyDataTemplate>
+                    <Columns>
+                      <asp:BoundField DataField="BookingID" HeaderText="ID" ItemStyle-Width="5%" />
+                        <asp:BoundField DataField="CustomerName" HeaderText="Client" ItemStyle-Width="15%" />
+                        <asp:BoundField DataField="EventType" HeaderText="Event" ItemStyle-Width="12%" />
+                        <asp:BoundField DataField="EventDate" HeaderText="Date" ItemStyle-Width="12%" />
+                        <asp:BoundField DataField="NoOfGuests" HeaderText="Guests" ItemStyle-Width="8%" />
+                        <asp:BoundField DataField="PackageID" HeaderText="Package" ItemStyle-Width="8%" />
+                        <asp:BoundField DataField="Total" HeaderText="Total" ItemStyle-Width="10%" />
+                       <asp:TemplateField HeaderText="Status" ItemStyle-Width="12%">
+                            <ItemTemplate>
+                                <span class='badge badge-<%# Eval("Status") %>'>
+                                    <%# Eval("Status") %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+                        <asp:TemplateField HeaderText="Actions" ItemStyle-Width="18%">
+                            <ItemTemplate>
+                                <div class="actions">
+                                    <asp:Button runat="server" Text="Approve"
+                                        CommandName="Approve"
+                                        CommandArgument='<%# Eval("BookingID") %>'
+                                        CssClass="btn-act btn-approve" />
+
+                                    <asp:Button runat="server" Text="Done"
+                                        CommandName="Done"
+                                        CommandArgument='<%# Eval("BookingID") %>'
+                                        CssClass="btn-act btn-done" />
+
+                                    <asp:Button runat="server" Text="Delete"
+                                        CommandName="Delete"
+                                        CommandArgument='<%# Eval("BookingID") %>'
+                                        CssClass="btn-act btn-delete"
+                                        OnClientClick="return confirm('Delete this booking?');" />
+                                </div>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
+
+
+    </div>
+
+</form></body>
+</html>

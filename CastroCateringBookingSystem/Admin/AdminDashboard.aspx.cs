@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
 
-namespace CastroCateringBookingSystem.Pages
+namespace CastroCateringBookingSystem.Admin
 {
     public partial class AdminDashboard : System.Web.UI.Page
     {
@@ -12,6 +12,12 @@ namespace CastroCateringBookingSystem.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
+            {
+                Response.Redirect("~/Admin/AdminLogin.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 LoadDashboard();

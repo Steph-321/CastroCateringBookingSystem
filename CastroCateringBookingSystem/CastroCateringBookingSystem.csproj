@@ -67,8 +67,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Pages\AdminAddPackage.aspx" />
-    <Content Include="Pages\AdminDatabaseBackup.aspx" />
+    <Content Include="Admin\Web.config" />
+    <Content Include="Admin\AdminLogin.aspx" />
+    <Content Include="Admin\AdminDashboard.aspx" />
+    <Content Include="Admin\AdminBookingManagement.aspx" />
+    <Content Include="Admin\AdminAddPackage.aspx" />
+    <Content Include="Admin\AdminDatabaseBackup.aspx" />
     <Content Include="Pages\CheckBookedDate.ashx" />
     <Content Include="Pages\SaveBooking.ashx" />
     <Content Include="Pages\CancelBooking.ashx" />
@@ -95,8 +99,6 @@
     <Content Include="Assests\logo.png" />
     <Content Include="Assests\grad_639136243066684049.jpg" />
     <Content Include="Pages\AboutUs.aspx" />
-    <Content Include="Pages\AdminBookingManagement.aspx" />
-    <Content Include="Pages\AdminDashboard.aspx" />
     <Content Include="Pages\Calendar.aspx" />
     <Content Include="Pages\Home.aspx" />
     <Content Include="Pages\Booking.aspx" />
@@ -109,18 +111,39 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pages\AdminAddPackage.aspx.cs">
+    <Compile Include="Admin\AdminLogin.aspx.cs">
+      <DependentUpon>AdminLogin.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdminLogin.aspx.designer.cs">
+      <DependentUpon>AdminLogin.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AdminDashboard.aspx.cs">
+      <DependentUpon>AdminDashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdminDashboard.aspx.designer.cs">
+      <DependentUpon>AdminDashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AdminBookingManagement.aspx.cs">
+      <DependentUpon>AdminBookingManagement.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdminBookingManagement.aspx.designer.cs">
+      <DependentUpon>AdminBookingManagement.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AdminAddPackage.aspx.cs">
       <DependentUpon>AdminAddPackage.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Pages\AdminAddPackage.aspx.designer.cs">
+    <Compile Include="Admin\AdminAddPackage.aspx.designer.cs">
       <DependentUpon>AdminAddPackage.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Pages\AdminDatabaseBackup.aspx.cs">
+    <Compile Include="Admin\AdminDatabaseBackup.aspx.cs">
       <DependentUpon>AdminDatabaseBackup.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Pages\AdminDatabaseBackup.aspx.designer.cs">
+    <Compile Include="Admin\AdminDatabaseBackup.aspx.designer.cs">
       <DependentUpon>AdminDatabaseBackup.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\AboutUs.aspx.cs">
@@ -129,20 +152,6 @@
     </Compile>
     <Compile Include="Pages\AboutUs.aspx.designer.cs">
       <DependentUpon>AboutUs.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\AdminBookingManagement.aspx.cs">
-      <DependentUpon>AdminBookingManagement.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\AdminBookingManagement.aspx.designer.cs">
-      <DependentUpon>AdminBookingManagement.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\AdminDashboard.aspx.cs">
-      <DependentUpon>AdminDashboard.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\AdminDashboard.aspx.designer.cs">
-      <DependentUpon>AdminDashboard.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Calendar.aspx.cs">
       <DependentUpon>Calendar.aspx</DependentUpon>

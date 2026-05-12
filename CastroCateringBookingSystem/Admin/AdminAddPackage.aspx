@@ -1,9 +1,9 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminAddPackage.aspx.cs" Inherits="CastroCateringBookingSystem.Pages.AdminAddPackage" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminAddPackage.aspx.cs" Inherits="CastroCateringBookingSystem.Admin.AdminAddPackage" %>
 
 <!DOCTYPE html>
 <html>
 <head runat="server">
-    <title>Add Package - Admin</title>
+    <title>Admin - Castro Catering</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
 
@@ -98,30 +98,27 @@
 
             /* FOOTER */
             .sidebar-footer {
-                padding: 1.5rem;
+                padding: 1.25rem 1rem;
                 border-top: 1px solid var(--border);
-            }
-
-            .btn-back {
-                display: block;
-                padding: 0.6rem;
-                margin-bottom: 0.5rem;
-                background: var(--beige);
-                color: var(--text-dark);
-                text-decoration: none;
-                border-radius: 8px;
-                font-size: 0.85rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.4rem;
             }
 
             .btn-signout {
-                display: block;
-                padding: 0.6rem;
-                color: var(--danger);
+                display: flex; align-items: center; gap: 0.5rem;
+                padding: 0.6rem 0.875rem;
+                background: transparent;
+                border: none;
+                border-radius: 10px;
                 text-decoration: none;
-                border-radius: 8px;
-                font-size: 0.85rem;
+                color: #b83232;
+                font-size: 0.82rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background 0.2s;
             }
-
+            .btn-signout:hover { background: #fff0f0; }
            
             .main-content {
                 margin-left: var(--sidebar-w);
@@ -284,11 +281,10 @@
 
               <a href="AdminAddPackage.aspx" class="nav-link active">➕ Add Package</a>
               <a href="AdminDatabaseBackup.aspx" class="nav-link">🗄️ Database Backup</a>
-       </div>
+            </div>
 
             <div class="sidebar-footer">
-                <a href="Home.aspx" class="btn-back">← Back to User Site</a>
-                <a href="LoginSignup.aspx" class="btn-signout">→ Sign out</a>
+                <a href="AdminLogin.aspx?signout=1" class="btn-signout">→ Sign out</a>
             </div>
 
         </aside>
