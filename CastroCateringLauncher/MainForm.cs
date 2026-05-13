@@ -5,37 +5,30 @@ using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.WinForms;
-using Microsoft.Web.WebView2.Core;
 
 namespace CastroCateringLauncher
 {
     public class MainForm : Form
     {
-        // ── Configuration ────────────────────────────────────────────────────
-        private const int    Port      = 8080;
-        private const string StartPage = "Pages/LoginSignup.aspx";
         private const string AppTitle  = "Castro Catering Booking System";
+        private const string StartPage = "Pages/LoginSignup.aspx";
+        private const string SiteName  = "CastroCateringBookingSystem";
 
-        private static readonly string[] IisExpressPaths =
-        {
-            @"C:\Program Files\IIS Express\iisexpress.exe",
-            @"C:\Program Files (x86)\IIS Express\iisexpress.exe"
-        };
+        // HTTP port from applicationhost.config
+        private const int HttpPort  = 65499;
+        private const int HttpsPort = 44373;
 
-        // ── Fields ───────────────────────────────────────────────────────────
         private WebView2 _webView;
         private Process  _iisProcess;
         private Panel    _loadingPanel;
         private Label    _loadingLabel;
 
-        // ── Constructor ──────────────────────────────────────────────────────
         public MainForm()
         {
             InitializeComponent();
-            StartIisAndLoad();
+            StartApp();
         }
 
-        // ── UI Setup ─────────────────────────────────────────────────────────
         private void InitializeComponent()
         {
             this.Text          = AppTitle;
@@ -45,17 +38,13 @@ namespace CastroCateringLauncher
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState   = FormWindowState.Maximized;
 
-            // Try to load icon
             try
             {
-                string iconPath = Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory, "icon.ico");
-                if (File.Exists(iconPath))
-                    this.Icon = new System.Drawing.Icon(iconPath);
+                string ico = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.ico");
+                if (File.Exists(ico)) this.Icon = new System.Drawing.Icon(ico);
             }
             catch { }
 
-            // Loading panel
             _loadingPanel = new Panel
             {
                 Dock      = DockStyle.Fill,
@@ -63,8 +52,8 @@ namespace CastroCateringLauncher
             };
             _loadingLabel = new Label
             {
-                Text      = "Starting Castro Catering Booking System...\nPlease wait.",
-                Font      = new System.Drawing.Font("Segoe UI", 14f),
+                Text      = "Starting...",
+                Font      = new System.Drawing.Font("Segoe UI", 13f),
                 ForeColor = System.Drawing.Color.FromArgb(74, 63, 53),
                 AutoSize  = false,
                 TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
@@ -72,160 +61,191 @@ namespace CastroCateringLauncher
             };
             _loadingPanel.Controls.Add(_loadingLabel);
 
-            // WebView2 — renders with Edge (full modern CSS support)
-            _webView = new WebView2
-            {
-                Dock    = DockStyle.Fill,
-                Visible = false
-            };
+            _webView = new WebView2 { Dock = DockStyle.Fill, Visible = false };
 
             this.Controls.Add(_webView);
             this.Controls.Add(_loadingPanel);
-
-            this.FormClosing += MainForm_FormClosing;
+            this.FormClosing += (s, e) => KillIis();
         }
 
-        // ── Start IIS Express then navigate ──────────────────────────────────
-        private async void StartIisAndLoad()
+        private async void StartApp()
         {
-            // Find IIS Express
+            // ── Step 1: Find IIS Express (prefer 64-bit) ─────────────────
+            SetStatus("Finding IIS Express...");
             string iisPath = null;
-            foreach (var p in IisExpressPaths)
+            string[] iisCandidates = {
+                @"C:\Program Files\IIS Express\iisexpress.exe",
+                @"C:\Program Files (x86)\IIS Express\iisexpress.exe"
+            };
+            foreach (var p in iisCandidates)
                 if (File.Exists(p)) { iisPath = p; break; }
 
             if (iisPath == null)
             {
-                MessageBox.Show(
-                    "IIS Express was not found.\nPlease install Visual Studio or IIS Express.",
+                MessageBox.Show("IIS Express not found. Please install Visual Studio.",
                     AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-                return;
+                Application.Exit(); return;
             }
 
-            // Find the web project folder
-            string projectDir = FindProjectDir();
-            if (projectDir == null)
+            // ── Step 2: Find the .vs config ───────────────────────────────
+            SetStatus("Finding configuration...");
+            string vsConfig = FindVsConfig();
+            if (vsConfig == null)
             {
-                using (var dlg = new FolderBrowserDialog())
-                {
-                    dlg.Description = "Select the CastroCateringBookingSystem folder (the one with Web.config).";
-                    if (dlg.ShowDialog() == DialogResult.OK)
-                        projectDir = dlg.SelectedPath;
-                    else { Application.Exit(); return; }
-                }
+                MessageBox.Show(
+                    "Could not find the project configuration.\n\n" +
+                    "Please open the solution in Visual Studio and press F5 once\n" +
+                    "to generate the configuration, then try again.",
+                    AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Application.Exit(); return;
             }
 
-            // Kill any leftover iisexpress
-            KillExistingIis();
+            // ── Step 3: Kill any leftover iisexpress processes ────────────
+            foreach (var proc in Process.GetProcessesByName("iisexpress"))
+                try { proc.Kill(); } catch { }
+            Thread.Sleep(1500);
 
-            // Start IIS Express
+            // ── Step 4: Start IIS Express ─────────────────────────────────
+            SetStatus("Starting server, please wait...");
+
             var psi = new ProcessStartInfo
             {
                 FileName        = iisPath,
-                Arguments       = $"/path:\"{projectDir}\" /port:{Port} /clr:v4.0",
+                Arguments       = $"/config:\"{vsConfig}\" /site:\"{SiteName}\" /apppool:\"Clr4IntegratedAppPool\"",
                 CreateNoWindow  = true,
                 UseShellExecute = false
             };
+
             try { _iisProcess = Process.Start(psi); }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to start IIS Express:\n" + ex.Message,
+                MessageBox.Show("Failed to start server:\n" + ex.Message,
                     AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-                return;
+                Application.Exit(); return;
             }
 
-            // Initialize WebView2
+            // ── Step 5: Wait up to 45 seconds for server ──────────────────
+            SetStatus("Waiting for server to start...\n\nThis may take up to 30 seconds.");
+            bool ready = await System.Threading.Tasks.Task.Run(() => WaitForServer(60));
+
+            if (!ready)
+            {
+                MessageBox.Show(
+                    "Server did not start in time.\n\n" +
+                    "Try running as Administrator, or open Visual Studio\n" +
+                    "and press F5 first to initialize the project.",
+                    AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Application.Exit(); return;
+            }
+
+            // ── Step 6: Init WebView2 ─────────────────────────────────────
+            SetStatus("Initializing display...");
             try
             {
                 await _webView.EnsureCoreWebView2Async(null);
-                // Disable context menu and dev tools for cleaner app feel
-                _webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled  = false;
-                _webView.CoreWebView2.Settings.AreDevToolsEnabled             = false;
-                _webView.CoreWebView2.Settings.IsStatusBarEnabled             = false;
+                _webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+                _webView.CoreWebView2.Settings.AreDevToolsEnabled            = false;
+                _webView.CoreWebView2.Settings.IsStatusBarEnabled            = false;
             }
             catch (Exception ex)
             {
-                // WebView2 failed — show exact error so we know what's wrong
-                MessageBox.Show(
-                    "WebView2 failed to initialize.\n\nError:\n" + ex.GetType().Name + "\n" + ex.Message + "\n\nInner: " + (ex.InnerException?.Message ?? "none"),
+                MessageBox.Show("Display error:\n" + ex.Message,
                     AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-                return;
+                Application.Exit(); return;
             }
 
-            // Wait for IIS Express to be ready
-            await System.Threading.Tasks.Task.Run(() => WaitForServer(Port, 15));
+            // ── Step 7: Navigate — HTTP first (most reliable) ─────────────
+            string url = $"http://localhost:{HttpPort}/{StartPage}";
 
-            // Navigate
-            string url = $"http://localhost:{Port}/{StartPage}";
+            SetStatus("Loading...");
             _webView.CoreWebView2.NavigationCompleted += (s, e) =>
             {
-                if (_loadingPanel.Visible)
-                {
-                    _loadingPanel.Visible = false;
-                    _webView.Visible      = true;
-                }
+                _loadingPanel.Visible = false;
+                _webView.Visible      = true;
             };
             _webView.CoreWebView2.Navigate(url);
         }
 
-        // ── Find the web project folder ───────────────────────────────────────
-        private string FindProjectDir()
+        private string FindVsConfig()
         {
-            string exeDir = AppDomain.CurrentDomain.BaseDirectory;
-
-            string[] candidates =
+            // Search from exe location upward for .vs folder
+            string dir = AppDomain.CurrentDomain.BaseDirectory;
+            for (int i = 0; i < 8; i++)
             {
-                Path.GetFullPath(Path.Combine(exeDir, @"..\..\..\CastroCateringBookingSystem")),
-                Path.GetFullPath(Path.Combine(exeDir, @"..\..\CastroCateringBookingSystem")),
-                Path.GetFullPath(Path.Combine(exeDir, @"..\CastroCateringBookingSystem")),
-                Path.GetFullPath(Path.Combine(exeDir, @"CastroCateringBookingSystem")),
-            };
+                string parent = Path.GetFullPath(Path.Combine(dir, ".."));
+                if (parent == dir) break;
+                dir = parent;
 
-            foreach (var c in candidates)
-                if (Directory.Exists(c) && File.Exists(Path.Combine(c, "Web.config")))
-                    return c;
-
+                string candidate = Path.Combine(dir, ".vs", SiteName, "config", "applicationhost.config");
+                if (File.Exists(candidate)) return candidate;
+            }
             return null;
         }
 
-        // ── Poll until server responds ────────────────────────────────────────
-        private static void WaitForServer(int port, int waitSeconds)
+        private static bool WaitForServer(int timeoutSeconds)
         {
-            Thread.Sleep(2000); // always wait 2s minimum
-            string url     = $"http://localhost:{port}/";
-            var    deadline = DateTime.Now.AddSeconds(waitSeconds);
+            // Give IIS a moment to initialize
+            Thread.Sleep(3000);
+
+            ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
+            var deadline = DateTime.Now.AddSeconds(timeoutSeconds);
 
             while (DateTime.Now < deadline)
             {
-                try
-                {
-                    var req = (HttpWebRequest)WebRequest.Create(url);
-                    req.Timeout = 800;
-                    req.Method  = "HEAD";
-                    using (req.GetResponse()) { }
-                    return;
-                }
-                catch { Thread.Sleep(400); }
+                // Try HTTP first (port 65499)
+                if (IsPortUp(HttpPort)) return true;
+                // Also try HTTPS (port 44373)
+                if (IsPortUp(HttpsPort)) return true;
+                Thread.Sleep(1000);
             }
+            return false;
         }
 
-        // ── Cleanup on close ─────────────────────────────────────────────────
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private static bool IsPortUp(int port)
         {
-            KillExistingIis();
-        }
-
-        private void KillExistingIis()
-        {
-            try { if (_iisProcess != null && !_iisProcess.HasExited) _iisProcess.Kill(); }
-            catch { }
             try
             {
-                foreach (var p in Process.GetProcessesByName("iisexpress"))
-                    try { p.Kill(); } catch { }
+                using (var client = new System.Net.Sockets.TcpClient())
+                {
+                    var result = client.BeginConnect("localhost", port, null, null);
+                    bool success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(1));
+                    if (success) { client.EndConnect(result); return true; }
+                    return false;
+                }
             }
+            catch { return false; }
+        }
+
+        private static bool IsServerUp(string url, int timeoutSeconds)
+        {
+            try
+            {
+                ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
+                var req = (HttpWebRequest)WebRequest.Create(url);
+                req.Timeout = timeoutSeconds * 1000;
+                req.Method  = "GET";
+                req.ServerCertificateValidationCallback = (a, b, c, d) => true;
+                using (var resp = (HttpWebResponse)req.GetResponse())
+                    return true;
+            }
+            catch (WebException ex) when (ex.Response != null)
+            {
+                return true;
+            }
+            catch { return false; }
+        }
+
+        private void SetStatus(string msg)
+        {
+            if (this.InvokeRequired)
+                this.Invoke(new Action(() => _loadingLabel.Text = msg));
+            else
+                _loadingLabel.Text = msg;
+        }
+
+        private void KillIis()
+        {
+            try { if (_iisProcess != null && !_iisProcess.HasExited) _iisProcess.Kill(); }
             catch { }
         }
     }
